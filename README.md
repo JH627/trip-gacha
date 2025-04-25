@@ -1,93 +1,127 @@
 # SSAFY_TRIP_FINAL_PARKSANGCHAN_HONGJEONGHOON
 
+# 1. 기능 명세서 작성
 
+## 1. 지도 기능
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- 지도에서 여행지 핑 보여주기
+- 루트 보여주기
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## 2. 회원 기능
 
-## Add your files
+---
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- 필수
+    - 회원 CRUD
+        - 회원 가입
+        - 회원 정보 수정
+        - 회원 정보 조회 → 마이페이지
+        - 회원 탈퇴
+    - 로그인, 로그아웃
+        - 아이디 기억하기
+    - 아이디, 비번 찾기
+    - (할 수 있다면) OAuth
 
-```
-cd existing_repo
-git remote add origin https://lab.ssafy.com/ssafy_13th_18class/999_final/ssafy_trip_final_parksangchan_hongjeonghoon.git
-git branch -M master
-git push -uf origin master
-```
+## 3. AI 기능
 
-## Integrate with your tools
+---
 
-- [ ] [Set up project integrations](https://lab.ssafy.com/ssafy_13th_18class/999_final/ssafy_trip_final_parksangchan_hongjeonghoon/-/settings/integrations)
+- AI 여행 추천 채팅 기능
 
-## Collaborate with your team
+## 4. 게시판 기능
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+---
 
-## Test and Deploy
+- 게시판 CRUD
+    - 게시글 CRUD
+        - 게시글 조회
+        - 게시글 등록
+        - 게시글 수정
+        - 게시글 삭제
+    - 게시글 신고?
+    - 게시글 좋아요 / 싫어요
+    - 게시글 카테고리
+    - 댓글 CRUD
+        - 댓글 조회
+        - 댓글 등록 (대댓글)
+        - 댓글 삭제
+        - 댓글 좋아요
+        - 댓글 신고
+- 여행 일정 공유 게시판
+- 자유 / 질문 / 건의 게시판
+- 인기 게시판
+    - 좋아요를 가장 많이 받은 게시물 (명예의 전당)
 
-Use the built-in continuous integration in GitLab.
+- 여행지 둘러보기
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## 5. 여행 일정 계획 도움 기능 (플래너)
 
-***
+---
 
-# Editing this README
+(1) 여행지 입력 받기
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+(2) 여행 일정 입력 받기 (시작일 ~ 종료일) 
 
-## Suggestions for a good README
+(3) 숙소 입력 받기
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+- 사전에 이미 예약한 숙소가 있으면 입력받기
+- 없으면 숙소 추천부터 제공
 
-## Name
-Choose a self-explaining name for your project.
+(4) 방문할 여행 장소 입력 받기
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- 해당 지역에서 별점 기반 내림차순으로 정렬해서 보여주기
+- 카테고리 선택, 검색을 통한 필터링
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+- 신규 장소 등록하기 (선택)
+- 여행지 찜하기
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- 그래서 선택한 지역은 장바구니 같은 곳에 모아서 저장
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+(5) 이동 수단 선택
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+(6) 일정표 생성 ( 여행 일자 별 추천 이동 루트 )
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- 편집 기능
+- 저장 기능
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+일대일
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+다수
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+## 6. 여행 일정 계획 도움 기능 (게임)
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+---
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+- **바로 정해주기**
+    - 가위바위보  [일대일] [다수]
+    - 룰렛  [일대일] [다수]
+    - 사다리 타기   [일대일] [다수]
+    - 코인 토스 (동전 앞면 뒷면)  [일대일]
+        - n면체 굴리기   [일대일] [다수]
+    - 화면 바뀔 때 가장 빨리 누른 사람이 승리  [일대일] [다수]
+    
+- **심리전**
+    - 러시안 룰렛  [일대일] [다수]
+        - 번갈아가면서 쏘기 → 본인 차례에 무작위 회전 시키기 가능
+            - 쏘다 보면 최대 6번까지 쏠 수 있는데
+            - 회전 시키면 최대 6 (N+1)번 쏠 수 있고 긴장감 넘침
+    - 인디언 포커  [일대일] [다수]
+        - 상대방의 카드와 행동을 분석해서 내 카드가 더 높을 것이라 판단되면 베팅해서 승리하기
+        - 사행성?
+    - 눈싸움  [일대일]
+        - 나랑 상대랑 화면 반 나눠져서 각자의 눈을 보여줌
+        - 내 화면 누르면 눈을 조금 뜨고, 상대방 꺼를 누르면 눈을 조금 감는다
+        - 눈은 시간 지날 때마다 저절로 조금씩 감긴다
+        - 먼저 눈 감기는 사람이 패배
+    - 악어 입에 손 넣기  [일대일] [다수]
+        - 이빨을 눌렀을 때 입이 닫히면 패배
 
-## License
-For open source projects, say how it is licensed.
+# 2. 회원 ERD 설계
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+![userERD.png](./img/userERD.png)
+
+# 3. 프로젝트 디자인 툴 선정
+
+visily, figma 중에서 사용법이 익숙하고 지원 기능과 플러그인이 많은 figma를 사용하기로 결정했습니다.
