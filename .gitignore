@@ -29,3 +29,10 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+/.metadata/
+target
+.settings
+.mvn
+.classpath
+.factorypath
+.project
