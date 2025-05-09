@@ -1,17 +1,40 @@
 package com.gacha.model.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.http.HttpStatus;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.gacha.global.exception.code.BaseSuccessCode;
 
-@Getter
-@Setter
-@NoArgsConstructor
+import lombok.AllArgsConstructor;
+
 @AllArgsConstructor
+@JsonPropertyOrder({"status", "code", "message", "result"})
 public class Response<T> {
-    public String status;
-    public String code;
-    public String message;
-    public T result;
+	
+    private HttpStatus status;
+    private String code;
+    private String message;
+    private T result;
+    
+    // 일반 응답 코드
+    public static <T> Response<T> onSuccess() {
+        return new Response<>(HttpStatus.OK, String.valueOf(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), null);
+    }
+    
+    public static <T> Response<T> onSuccess(T result) {
+        return new Response<>(HttpStatus.OK, String.valueOf(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), result);
+    }
+    
+    // 커스텀 응답 코드
+    public static <T> Response<T> onSuccess(BaseSuccessCode code) {
+        return new Response<>(code.getStatus(), code.getCode(), code.getMessage(), null);
+    }
+    
+    public static <T> Response<T> onSuccess(BaseSuccessCode code, T result) {
+    	return new Response<>(code.getStatus(), code.getCode(), code.getMessage(), result);
+    }
+
+    // 실패 응답 코드
+    public static <T> Response<T> onFailure(HttpStatus status, String code, String message, T result) {
+        return new Response<>(status, code, message, result);
+    }
 }
