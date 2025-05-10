@@ -24,4 +24,8 @@
     <select id="selectByEmail" resultMap="userResultMap">
         SELECT * FROM users WHERE email = #{email}
     </select>
+
+    <select id="selectByUserId" resultMap="userResultMap">
+        SELECT * FROM users WHERE user_id = #{userId}
+    </select>
 </mapper>
