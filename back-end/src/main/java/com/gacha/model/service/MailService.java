@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
-
 public interface MailService {
     MimeMessage creatMessage(String to) throws MessagingException, UnsupportedEncodingException;
 
@@ -14,4 +13,6 @@ public interface MailService {
 
     // 메일 발송
     void sendSimpleMessage(String to) throws Exception;
+
+    boolean verifyCode(String email, String code);
 }

@@ -77,11 +77,19 @@ public class MailServiceImpl implements MailService {
         MimeMessage message = creatMessage(to); // "to" 로 메일 발송
 
         try { // 예외처리
-            emailSender.send(message);
+            //emailSender.send(message);
         } catch (Exception e) {
             e.printStackTrace();
             throw new IllegalArgumentException();
         }
     }
-    
+
+    @Override
+    public boolean verifyCode(String email, String code) {
+        if(!emailCodeMap.containsKey(email)){
+            return false;
+        }
+
+        return emailCodeMap.get(email).equals(code);
+    }
 }
