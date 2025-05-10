@@ -38,3 +38,4 @@ target
 .project
 HELP.md
 bin
+.env
