@@ -9,4 +9,8 @@ public class PasswordUtil {
     public static String hash(String rawPassword) {
         return encoder.encode(rawPassword);
     }
+
+    public static boolean isMatch(String rawPassword, String encodedPassword) {
+        return encoder.matches(rawPassword, encodedPassword);
+    }
 }
