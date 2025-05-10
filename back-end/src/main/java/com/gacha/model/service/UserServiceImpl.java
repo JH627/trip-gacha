@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.gacha.model.dao.UserDao;
 import com.gacha.model.dto.request.LoginRequest;
 import com.gacha.model.dto.request.RegistRequest;
+import com.gacha.model.dto.user.FullUserInfo;
 import com.gacha.model.dto.user.UserDto;
 import com.gacha.util.PasswordUtil;
 
@@ -51,5 +52,16 @@ public class UserServiceImpl implements UserService {
         }
 
         return findUser;
+    }
+
+    @Override
+    public FullUserInfo searchUserInfo(String userId) {
+        UserDto userDto = userDao.selectByUserId(Integer.parseInt(userId));
+
+        if(userDto == null){
+            return null;
+        }
+
+        return new FullUserInfo(userDto.getEmail(), userDto.getNickname(), userDto.getProfileImg());
     }
 }

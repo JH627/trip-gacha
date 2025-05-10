@@ -9,4 +9,6 @@ public interface UserDao {
     void regist(String email, String password, String nickname, String profile_img);
 
     UserDto selectByEmail(String email);
+
+    UserDto selectByUserId(int userId);
 }

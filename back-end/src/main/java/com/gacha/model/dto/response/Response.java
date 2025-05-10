@@ -5,11 +5,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.gacha.global.exception.code.BaseSuccessCode;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.ToString;
 
+@Data
 @AllArgsConstructor
 @JsonPropertyOrder({"status", "code", "message", "result"})
+@ToString
 public class Response<T> {
-	
     private HttpStatus status;
     private String code;
     private String message;
