@@ -5,7 +5,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import com.gacha.model.dao.UserDao;
+import com.gacha.model.dto.request.LoginRequest;
 import com.gacha.model.dto.request.RegistRequest;
+import com.gacha.model.dto.user.UserDto;
 import com.gacha.util.PasswordUtil;
 
 @Service
@@ -32,5 +34,22 @@ public class UserServiceImpl implements UserService {
         }
 
         return true;
+    }
+
+    @Override
+    public UserDto login(LoginRequest loginRequest) {
+        // 이메일로 사용자 가져옴
+        UserDto findUser = userDao.selectByEmail(loginRequest.getEmail());
+
+        if(findUser==null){
+            return null;
+        }
+
+        // 비밀번호 일치 확인
+        if(!PasswordUtil.isMatch(loginRequest.getPassword(), findUser.getPassword())){
+            return null;
+        }
+
+        return findUser;
     }
 }
