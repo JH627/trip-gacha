@@ -110,10 +110,6 @@ public class UserController {
             .body(Response.onFailure(HttpStatus.BAD_REQUEST, "400", "존재하지 않는 사용자", null));  
         }
 
-        System.out.println(fullUserInfo);
-
-        System.out.println(Response.onSuccess(fullUserInfo));
-
         return ResponseEntity.ok(Response.onSuccess(fullUserInfo));
     }    
 }
