@@ -66,8 +66,17 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public Response<?> logout(){
-        // TODO : service, dao 추가 + 로그아웃 로직 추가
-        return Response.onSuccess(null);
+    public ResponseEntity<Response<?>> logout(){
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(Duration.ofDays(0))
+            .build();
+
+        return ResponseEntity
+            .ok()
+            .header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body(Response.onSuccess());
     }
 }
