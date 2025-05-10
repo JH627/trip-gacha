@@ -21,8 +21,6 @@ public class UserController {
 
     @PostMapping("/regist")
     public ResponseEntity<Response<?>> regist(@ModelAttribute RegistRequest registRequest){
-        System.out.println(registRequest.getEmail());
-        
         if(!userService.regist(registRequest)){
             return ResponseEntity
                     .badRequest()
