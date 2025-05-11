@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gacha.model.dto.request.TripRequest;
@@ -36,6 +37,12 @@ public class TripController {
 		Integer tempUserId = 1; // 임시 유저 ID
 		tripService.toggleSpotBookmark(tempUserId, bookmarkSpot);
 		return Response.onSuccess();
+	}
+	
+	@Operation(summary = "목적지 리스트 조회", description = "검색 키워드에 따른 목적지 리스트를 반환한다. 검색 키워드가 없는 경우에는 모든 리스트를 반환한다.")
+	@GetMapping("/destination")
+	public Response<?> getDestinationList(@RequestParam(required = false) String keyword) {
+		return Response.onSuccess(tripService.getDestinationList(keyword));
 	}
 	
 }

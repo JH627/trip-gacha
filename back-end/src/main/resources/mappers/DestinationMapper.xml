@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.gacha.model.dao.DestinationDao">
+
+	<select id="selectByKeyword" parameterType="string" resultType="com.gacha.model.dto.response.trip.DestinationInfo">
+	    SELECT 
+	        destination_id as destinationId,
+	        name,
+	        country
+	    FROM destinations
+	    <where>
+	        <if test="keyword != null and keyword != ''">
+	            (name LIKE CONCAT('%', #{keyword}, '%') 
+	            OR country LIKE CONCAT('%', #{keyword}, '%'))
+	        </if>
+	    </where>
+	    ORDER BY name
+	</select>
+	
+</mapper> 
