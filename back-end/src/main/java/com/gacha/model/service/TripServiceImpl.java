@@ -1,7 +1,6 @@
 package com.gacha.model.service;
 
 import java.util.List;
-import java.time.LocalDateTime;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -79,11 +78,16 @@ public class TripServiceImpl implements TripService {
 		String imgUrl = "";
 		boolean uploaded = false;
 
-		if (form.getImg() != null && !form.getImg().isEmpty()) {
-			// TODO : 이미지 파일 S3에 올리기 -> 반환 url 저장
-//			imgUrl = s3Service.uploadImage(form.getImg());
-//			uploaded = true;
-		}
+	    if (form.getImg() != null && !form.getImg().isEmpty()) {
+	        try {
+				// TODO : 이미지 파일 S3에 올리기 -> 반환 url 저장
+//				imgUrl = s3Service.uploadImage(form.getImg());
+//				uploaded = true;
+	        } catch (Exception e) {
+	        	log.info("이미지 파일 S3 업로드 실패");
+	            throw e;
+	        }
+	    }
 
 		try {
 			spotDao.insertSpot(
@@ -94,23 +98,39 @@ public class TripServiceImpl implements TripService {
 				form.getAddress(),
 				form.getCategory().name()
 			);
+			uploaded = false;
+		} catch (DataIntegrityViolationException e) {
+			throw new TripException(TripErrorCode.DESTINATION_NOT_FOUND);
 		} catch (Exception e) {
+			throw e;
+		} finally {
 			// DB에 관광지 정보 등록 실패 시 S3이미지 롤백
 			if (uploaded) {
 //				s3Service.deleteImage(imgUrl);  // 실패 시 이미지 삭제
 			}
-			throw e;
 		}
 	}
 
 	@Override
 	@Transactional
 	public void registSchedule(Integer userId, TripRequest.ScheduleRegistForm form) {
-	    // 일정 등록
-	    tripScheduleDao.insertSchedule(userId, form);
-	    Integer scheduleId = form.getTripScheduleId();
-
-	    // 일정 아이템 등록
-	    tripScheduleDao.insertScheduleItems(form.getScheduleItems(), scheduleId);
+		try {
+			// 일정 등록
+			tripScheduleDao.insertSchedule(userId, form);
+			Integer scheduleId = form.getTripScheduleId();
+			
+			// 일정 아이템 등록
+			tripScheduleDao.insertScheduleItems(form.getScheduleItems(), scheduleId);
+		} catch (DataIntegrityViolationException e) {
+			// 목적지 ID 예외
+			if (e.getMessage().contains("destination_id")) {
+				throw new TripException(TripErrorCode.DESTINATION_NOT_FOUND);
+			} 
+			// 관광지 ID 예외
+			else if (e.getMessage().contains("spot_id")) {
+				throw new TripException(TripErrorCode.SPOT_NOT_FOUND);
+			}
+			throw e;
+		}
 	}
 }
