@@ -11,6 +11,8 @@ import com.gacha.exception.TripException;
 import com.gacha.model.dao.SpotDao;
 import com.gacha.model.dao.DestinationDao;
 import com.gacha.model.dto.request.TripRequest;
+import com.gacha.model.dto.request.TripRequest.SpotCategory;
+import com.gacha.model.dto.request.TripRequest.SpotSearchCondition;
 import com.gacha.model.dto.response.trip.DestinationInfo;
 import com.gacha.model.dto.response.trip.SpotInfo;
 
@@ -53,6 +55,17 @@ public class TripServiceImpl implements TripService {
 	public List<DestinationInfo> getDestinationList(String keyword) {
 		return destinationDao.selectByKeyword(keyword);
 	}
-	
-	
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<SpotInfo> getSpotList(Integer userId, Integer destinationId, String keyword, 
+			SpotCategory category, SpotSearchCondition sort, Integer page) {		
+		// 찜 목록
+		if (category == SpotCategory.MARKED) {
+			return spotDao.selectBookmarkedSpots(userId, destinationId, keyword, sort.name(), page);
+		}
+		
+		// 카테고리별 목록
+		return spotDao.selectByDesinationIdAndCategory(userId, destinationId, category.name(), keyword, sort.name(), page);
+	}
 }

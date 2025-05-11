@@ -10,6 +10,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.gacha.global.exception.CustomException;
 import com.gacha.global.exception.code.BaseErrorCode;
@@ -60,6 +61,20 @@ public class ExceptionAdvice {
         log.error("[BindException] message: {}", e.getMessage());
         return ResponseEntity.badRequest()
                 .body(Response.onFailure(code.getStatus(), code.getCode(), "요청 바인딩 실패", null));
+    }
+    
+    // RequestParam, PathVariable annotation error handling
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Response<String>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
+        String paramName = e.getName(); // 파라미터 이름
+        String invalidValue = e.getValue() != null ? e.getValue().toString() : "null";
+        String message = String.format("요청 파라미터 '%s'의 값 '%s'는 허용되지 않습니다.", paramName, invalidValue);
+
+        BaseErrorCode code = GeneralErrorCode.INVALID_INPUT_VALUE;
+        log.error("[MethodArgumentTypeMismatch] {}", message);
+
+        return ResponseEntity.badRequest()
+                .body(Response.onFailure(code.getStatus(), code.getCode(), message, null));
     }
 
     // Exception

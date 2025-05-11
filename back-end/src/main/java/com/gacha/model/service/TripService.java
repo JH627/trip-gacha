@@ -3,6 +3,8 @@ package com.gacha.model.service;
 import java.util.List;
 
 import com.gacha.model.dto.request.TripRequest;
+import com.gacha.model.dto.request.TripRequest.SpotCategory;
+import com.gacha.model.dto.request.TripRequest.SpotSearchCondition;
 import com.gacha.model.dto.response.trip.DestinationInfo;
 import com.gacha.model.dto.response.trip.SpotInfo;
 
@@ -33,4 +35,18 @@ public interface TripService {
 	 * @return 목적지 리스트
 	 */
 	List<DestinationInfo> getDestinationList(String keyword);
+
+	/**
+	 * 검색 키워드에 따른 관광지 리스트 반환
+	 * 
+	 * @param userId 사용자ID 
+	 * @param destinationId 목적지ID
+	 * @param keyword 검색키워드
+	 * @param category 카테고리
+	 * @param sort 정렬기준
+	 * @param page 페이지
+	 * @return 관광지 리스트
+	 */
+	List<SpotInfo> getSpotList(Integer userId, Integer destinationId, String keyword, 
+			SpotCategory category, SpotSearchCondition sort, Integer page);
 }

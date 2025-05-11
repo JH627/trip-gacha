@@ -15,4 +15,8 @@ public interface SpotDao {
     void deleteBookmark(int userId, int spotId);
     
     void addBookmark(int userId, int spotId);
+
+    List<SpotInfo> selectByDesinationIdAndCategory(Integer userId, Integer destinationId, String category, String keyword, String sort, Integer page);
+    
+    List<SpotInfo> selectBookmarkedSpots(Integer userId, Integer destinationId, String keyword, String sort, Integer page);
 }
