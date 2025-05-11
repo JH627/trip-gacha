@@ -1,6 +1,7 @@
 package com.gacha.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -89,6 +90,13 @@ public class TripController {
 		return Response.onSuccess(tripService.getSpotList(tempUserId, destinationId, keyword, category, sort, page));
 	}
 	
-	
+	@Operation(summary = "숙소, 관광지 등록", description = "숙소, 관광지를 직접 등록한다.<br/>"
+			+ "관광지 카테고리 ENUM => 숙소 -> ACCOMMODATION / ATTRACTION -> 명소 / RESTAUTRANT -> 식당 / CAFE -> 카페")
+	@PostMapping(path = "/spot", consumes = "multipart/form-data")
+	public Response<?> registSpot(@Valid @ModelAttribute TripRequest.SpotRegistForm form) {
+		Integer tempUserId = 1; // 임시 유저 ID
+		tripService.registSpot(tempUserId, form);
+		return Response.onSuccess();
+	}
 	
 }

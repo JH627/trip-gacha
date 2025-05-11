@@ -19,4 +19,6 @@ public interface SpotDao {
     List<SpotInfo> selectByDesinationIdAndCategory(Integer userId, Integer destinationId, String category, String keyword, String sort, Integer page);
     
     List<SpotInfo> selectBookmarkedSpots(Integer userId, Integer destinationId, String keyword, String sort, Integer page);
+    
+    void insertSpot(Integer destinationId, String name, String content, String img, String address, String category);
 }

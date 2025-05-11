@@ -112,4 +112,27 @@
             LIMIT #{page}, 10
         </if>
     </select>
+
+    <insert id="insertSpot">
+        INSERT INTO spots (
+            destination_id,
+            name,
+            content,
+            img,
+            address,
+            likes,
+            stars,
+            category_id
+        )
+        VALUES (
+            #{destinationId},
+            #{name},
+            #{content},
+            #{img},
+            #{address},
+            0,
+            0,
+            (SELECT category_id FROM categories WHERE name = #{category})
+        )
+    </insert>
 </mapper>

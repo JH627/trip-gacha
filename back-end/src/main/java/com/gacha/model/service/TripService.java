@@ -49,4 +49,15 @@ public interface TripService {
 	 */
 	List<SpotInfo> getSpotList(Integer userId, Integer destinationId, String keyword, 
 			SpotCategory category, SpotSearchCondition sort, Integer page);
+
+
+	/**
+	 * 장소 직접 등록
+	 * 
+	 * @param userId 사용자ID
+	 * @param form 장소정보(목적지ID, 카테고리, 이름, 주소, 설명, 이미지 파일)
+	 */
+	void registSpot(Integer userId, TripRequest.SpotRegistForm form);
+	
+	
 }
