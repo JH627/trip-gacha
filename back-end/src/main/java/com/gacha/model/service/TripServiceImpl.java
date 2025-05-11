@@ -1,6 +1,7 @@
 package com.gacha.model.service;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.gacha.exception.TripErrorCode;
 import com.gacha.exception.TripException;
 import com.gacha.model.dao.SpotDao;
 import com.gacha.model.dao.DestinationDao;
+import com.gacha.model.dao.TripScheduleDao;
 import com.gacha.model.dto.request.TripRequest;
 import com.gacha.model.dto.request.TripRequest.SpotCategory;
 import com.gacha.model.dto.request.TripRequest.SpotRegistForm;
@@ -27,6 +29,7 @@ public class TripServiceImpl implements TripService {
 	
 	private final SpotDao spotDao;
 	private final DestinationDao destinationDao;
+	private final TripScheduleDao tripScheduleDao;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -100,6 +103,14 @@ public class TripServiceImpl implements TripService {
 		}
 	}
 
-	
-	
+	@Override
+	@Transactional
+	public void registSchedule(Integer userId, TripRequest.ScheduleRegistForm form) {
+	    // 일정 등록
+	    tripScheduleDao.insertSchedule(userId, form);
+	    Integer scheduleId = form.getTripScheduleId();
+
+	    // 일정 아이템 등록
+	    tripScheduleDao.insertScheduleItems(form.getScheduleItems(), scheduleId);
+	}
 }

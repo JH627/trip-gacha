@@ -36,8 +36,14 @@ public class ExceptionAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Response<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException e) {
         Map<String, String> errors = new HashMap<>();
+        
+        // 필드 레벨 유효성 검사 오류 처리
         e.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage()));
+        
+        // 클래스 레벨 유효성 검사 오류 처리
+        e.getBindingResult().getGlobalErrors().forEach(error ->
+                errors.put("global", error.getDefaultMessage()));
         
         BaseErrorCode code = GeneralErrorCode.INVALID_INPUT_VALUE;
         log.error("[ValidationException] Invalid input: {}", errors);

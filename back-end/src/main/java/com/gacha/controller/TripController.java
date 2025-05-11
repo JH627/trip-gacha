@@ -99,4 +99,12 @@ public class TripController {
 		return Response.onSuccess();
 	}
 	
+	@Operation(summary = "여행 일정 저장", description = "여행 일정을 저장한다.")
+	@PostMapping(path = "/schedule")
+	public Response<?> registSchedule(@Valid @RequestBody TripRequest.ScheduleRegistForm form) {
+		Integer tempUserId = 1; // 임시 유저 ID
+		tripService.registSchedule(tempUserId, form);
+		return Response.onSuccess();
+	}
+	
 }

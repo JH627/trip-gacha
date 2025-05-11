@@ -59,5 +59,11 @@ public interface TripService {
 	 */
 	void registSpot(Integer userId, TripRequest.SpotRegistForm form);
 	
-	
+	/**
+	 * 여행 일정 등록
+	 * 
+	 * @param userId 사용자ID
+	 * @param form 여행 일정 정보(목적지ID, 제목, 시작일, 종료일, 일정 아이템들)
+	 */
+	void registSchedule(Integer userId, TripRequest.ScheduleRegistForm form);
 }
