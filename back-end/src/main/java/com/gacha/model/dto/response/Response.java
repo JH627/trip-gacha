@@ -2,7 +2,9 @@ package com.gacha.model.dto.response;
 
 import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.gacha.global.exception.code.BaseErrorCode;
 import com.gacha.global.exception.code.BaseSuccessCode;
+import com.gacha.global.exception.code.GeneralSuccessCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,11 +22,11 @@ public class Response<T> {
     
     // 일반 응답 코드
     public static <T> Response<T> onSuccess() {
-        return new Response<>(HttpStatus.OK, String.valueOf(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), null);
+        return new Response<>(GeneralSuccessCode.OK.getStatus(), GeneralSuccessCode.OK.getCode(), GeneralSuccessCode.OK.getMessage(), null);
     }
     
     public static <T> Response<T> onSuccess(T result) {
-        return new Response<>(HttpStatus.OK, String.valueOf(HttpStatus.OK.value()), HttpStatus.OK.getReasonPhrase(), result);
+        return new Response<>(GeneralSuccessCode.OK.getStatus(), GeneralSuccessCode.OK.getCode(), GeneralSuccessCode.OK.getMessage(), result);
     }
     
     // 커스텀 응답 코드
