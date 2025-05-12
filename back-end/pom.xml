@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<spring-ai.version>1.0.0-M6</spring-ai.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -116,6 +117,20 @@
 			<groupId>io.awspring.cloud</groupId>
 			<artifactId>spring-cloud-aws-starter-s3</artifactId>
 			<version>3.0.1</version> <!-- 최신 버전 확인 권장 -->
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.ai</groupId>
+		    <artifactId>spring-ai-core</artifactId>
+		    <version>${spring-ai.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.ai</groupId>
+		    <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+		    <version>${spring-ai.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.github.ben-manes.caffeine</groupId>
+		    <artifactId>caffeine</artifactId>
 		</dependency>
 		</dependencies>
 
