@@ -1,7 +1,6 @@
 package com.gacha.controller;
 
 import java.time.Duration;
-import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,9 +23,6 @@ import com.gacha.model.dto.user.UserDto;
 import com.gacha.model.dto.user.UserInfo;
 import com.gacha.model.service.UserService;
 import com.gacha.util.JwtUtil;
-
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/user")
@@ -87,21 +84,8 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
+    public ResponseEntity<?> getUserInfo(@RequestAttribute("userId") String userId) {
         // cookie에 있는 jwt를 까서 거기에 있는 user_id로 사용자 정보 가져오기
-        Cookie jwt = Arrays.stream(request.getCookies())
-            .filter(c -> "jwt".equals(c.getName()))
-            .findFirst()
-            .orElse(null);
-        
-        if(jwt==null){
-            return ResponseEntity
-                .badRequest()
-                .body(Response.onFailure(HttpStatus.BAD_REQUEST, "400", "쿠키가 없음", null));
-        }
-
-        String userId = JwtUtil.getSubject(jwt.getValue());
-
         FullUserInfo fullUserInfo = userService.searchUserInfo(userId);
         
         if(fullUserInfo == null){
