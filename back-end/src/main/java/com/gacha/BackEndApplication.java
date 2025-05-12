@@ -16,6 +16,7 @@ public class BackEndApplication {
 		System.setProperty("S3_ACCESS_KEY", dotenv.get("S3_ACCESS_KEY"));
 		System.setProperty("S3_SECRET_KEY", dotenv.get("S3_SECRET_KEY"));
 		System.setProperty("S3_REGION", dotenv.get("S3_REGION"));
+		System.setProperty("OPEN_API_KEY", dotenv.get("OPEN_API_KEY"));
 
 		SpringApplication.run(BackEndApplication.class, args);
 	}
