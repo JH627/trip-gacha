@@ -138,3 +138,12 @@ CREATE TABLE `trip_schedule_items` (
     FOREIGN KEY (`spot_id`) REFERENCES `spots` (`spot_id`),
     FOREIGN KEY (`trip_schedule_id`) REFERENCES `trip_schedule` (`trip_route_id`)
 );
+
+CREATE TABLE `imgs` (
+    `img_id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` INT NULL,
+    `image_path` TEXT NOT NULL,
+    `category` ENUM("profile", "spot", "board") NOT NULL,
+    PRIMARY KEY(`img_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
+);
