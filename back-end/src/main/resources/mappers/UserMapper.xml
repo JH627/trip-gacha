@@ -4,9 +4,9 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.gacha.model.dao.UserDao">
-    <insert id="regist">
+    <insert id="regist" parameterType="com.gacha.model.dto.user.UserDto" useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO users (email, password, nickname, profile_img, role)
-        VALUES (#{email}, #{password}, #{nickname}, #{profile_img}, 1)
+        VALUES (#{email}, #{password}, #{nickname}, #{profileImg}, 1)
     </insert>
 
     <resultMap id="userResultMap" type="com.gacha.model.dto.user.UserDto">

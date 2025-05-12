@@ -6,7 +6,7 @@ import com.gacha.model.dto.user.UserDto;
 
 @Mapper
 public interface UserDao {
-    void regist(String email, String password, String nickname, String profile_img);
+    void regist(UserDto user);
 
     UserDto selectByEmail(String email);
 
