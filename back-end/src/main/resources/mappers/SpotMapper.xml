@@ -19,16 +19,19 @@
         <result property="marked" column="is_bookmarked"/>
     </resultMap>
 
-    <select id="selectAll" resultMap="spotResultMap">
-        SELECT s.*, 
-               d.name as destination_name,
-               c.name as category_name,
-               CASE WHEN b.bookmark_id IS NOT NULL THEN true ELSE false END as is_bookmarked
-        FROM spots s
-        LEFT JOIN destinations d ON s.destination_id = d.destination_id
-        LEFT JOIN categories c ON s.category_id = c.category_id
-        LEFT JOIN bookmarks b ON s.spot_id = b.spot_id AND b.user_id = #{userId}
-    </select>
+	<select id="selectAll" resultMap="spotResultMap">
+	    SELECT s.*, 
+	           d.name as destination_name,
+	           c.name as category_name,
+	           CASE WHEN b.bookmark_id IS NOT NULL THEN true ELSE false END as is_bookmarked
+	    FROM spots s
+	    LEFT JOIN destinations d ON s.destination_id = d.destination_id
+	    LEFT JOIN categories c ON s.category_id = c.category_id
+	    LEFT JOIN bookmarks b ON s.spot_id = b.spot_id AND b.user_id = #{userId}
+	    WHERE s.stars >= 3
+	    ORDER BY RAND()
+	</select>
+
 
     <select id="isBookmarked" resultType="boolean">
         SELECT EXISTS (

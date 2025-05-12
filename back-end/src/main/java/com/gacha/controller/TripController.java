@@ -3,6 +3,7 @@ package com.gacha.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,22 +31,20 @@ public class TripController {
 	
 	@Operation(summary = "추천 관광지 목록 조회", description = "메인 페이지에 사용할 추천 여행지 목록을 가져옵니다.")
 	@GetMapping("/recommend")
-	public Response<?> getRecommendSpotList() {
-		Integer tempUserId = 1; // 임시 유저 ID
-		return Response.onSuccess(tripService.getRecommendSpotList(tempUserId));
+	public Response<?> getRecommendSpotList(@RequestAttribute("userId") Integer userId) {
+		return Response.onSuccess(tripService.getRecommendSpotList(userId));
 	}
 	
 	@Operation(summary = "관광지 찜하기", description = "관광지를 내 찜 목록에 추가한다. 이미 찜 목록에 있는 경우 찜을 해제한다.")
 	@PostMapping("/bookmark")
-	public Response<?> bookmark(@Valid @RequestBody TripRequest.BookmarkSpot bookmarkSpot) {
-		Integer tempUserId = 1; // 임시 유저 ID
-		tripService.toggleSpotBookmark(tempUserId, bookmarkSpot);
+	public Response<?> bookmark(@RequestAttribute("userId") Integer userId, @Valid @RequestBody TripRequest.BookmarkSpot bookmarkSpot) {
+		tripService.toggleSpotBookmark(userId, bookmarkSpot);
 		return Response.onSuccess();
 	}
 	
 	@Operation(summary = "목적지 리스트 조회", description = "검색 키워드에 따른 목적지 리스트를 반환한다. 검색 키워드가 없는 경우에는 모든 리스트를 반환한다.")
 	@GetMapping("/destination")
-	public Response<?> getDestinationList(@RequestParam(required = false) String keyword) {
+	public Response<?> getDestinationList(@RequestAttribute("userId") Integer userId, @RequestParam(required = false) String keyword) {
 		return Response.onSuccess(tripService.getDestinationList(keyword));
 	}
 	
@@ -56,13 +55,13 @@ public class TripController {
 			+ "정렬 ENUM => LIKE → 좋아요순 / STARS → 평점순 / NAME → 숙소 이름순")
 	@GetMapping("/accommodation")
 	public Response<?> getAccommodationList(
+			@RequestAttribute("userId") Integer userId,
 			@RequestParam(required = true) Integer destinationId,
 			@RequestParam(required = false) String keyword,
 			@RequestParam(required = false, defaultValue = "STARS") TripRequest.SpotSearchCondition sort,
 			@RequestParam(required = false, defaultValue = "0") Integer page
 			) {
-		Integer tempUserId = 1; // 임시 유저 ID
-		return Response.onSuccess(tripService.getSpotList(tempUserId, destinationId, keyword, SpotCategory.ACCOMMODATION, sort, page));
+		return Response.onSuccess(tripService.getSpotList(userId, destinationId, keyword, SpotCategory.ACCOMMODATION, sort, page));
 	}
 	
 	@Operation(summary = "관광지 리스트 조회", description = ""
@@ -74,6 +73,7 @@ public class TripController {
 			+ "정렬 ENUM => LIKE → 좋아요순 / STARS → 평점순 / NAME → 관광지 이름순")
 	@GetMapping("/spot")
 	public Response<?> getSpotList(
+			@RequestAttribute("userId") Integer userId,
 			@RequestParam(required = true) Integer destinationId,
 			@RequestParam(required = false) String keyword,
 			@RequestParam(required = false, defaultValue = "ATTRACTION") TripRequest.SpotCategory category,
@@ -86,24 +86,21 @@ public class TripController {
 			throw new TripException(TripErrorCode.INVALID_SPOT_CATEGORY);
 		}
 		
-		Integer tempUserId = 1; // 임시 유저 ID
-		return Response.onSuccess(tripService.getSpotList(tempUserId, destinationId, keyword, category, sort, page));
+		return Response.onSuccess(tripService.getSpotList(userId, destinationId, keyword, category, sort, page));
 	}
 	
 	@Operation(summary = "숙소, 관광지 등록", description = "숙소, 관광지를 직접 등록한다.<br/>"
 			+ "관광지 카테고리 ENUM => 숙소 -> ACCOMMODATION / ATTRACTION -> 명소 / RESTAUTRANT -> 식당 / CAFE -> 카페")
 	@PostMapping(path = "/spot", consumes = "multipart/form-data")
-	public Response<?> registSpot(@Valid @ModelAttribute TripRequest.SpotRegistForm form) {
-		Integer tempUserId = 1; // 임시 유저 ID
-		tripService.registSpot(tempUserId, form);
+	public Response<?> registSpot(@RequestAttribute("userId") Integer userId, @Valid @ModelAttribute TripRequest.SpotRegistForm form) {
+		tripService.registSpot(userId, form);
 		return Response.onSuccess();
 	}
 	
 	@Operation(summary = "여행 일정 저장", description = "여행 일정을 저장한다.")
 	@PostMapping(path = "/schedule")
-	public Response<?> registSchedule(@Valid @RequestBody TripRequest.ScheduleRegistForm form) {
-		Integer tempUserId = 1; // 임시 유저 ID
-		tripService.registSchedule(tempUserId, form);
+	public Response<?> registSchedule(@RequestAttribute("userId") Integer userId, @Valid @RequestBody TripRequest.ScheduleRegistForm form) {
+		tripService.registSchedule(userId, form);
 		return Response.onSuccess();
 	}
 	

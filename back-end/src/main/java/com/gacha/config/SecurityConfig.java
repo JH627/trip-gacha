@@ -25,7 +25,7 @@ public class SecurityConfig {
             .csrf(customizer -> customizer.disable())
             .formLogin(customizer -> customizer.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/error","/user/login", "/user/regist", "/email/verification", "/email/verification-confirm").permitAll()
+                .requestMatchers("/error","/user/login", "/user/regist", "/email/verification", "/email/verification-confirm", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

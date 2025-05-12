@@ -27,22 +27,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         "/api/user/login", 
         "/api/user/regist", 
         "/api/email/verification", 
-        "/api/email/verification-confirm"
+        "/api/email/verification-confirm",
+        "/api/swagger-ui",
+        "/api/v3/api-docs"
     );
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return excludedUrls.stream().anyMatch(path::startsWith);
+    }
+    
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                 HttpServletResponse response,
                                 FilterChain filterChain)
-                                throws ServletException, IOException {
-        String path = request.getRequestURI();
-        // 로그인 필요 없는 경로는 그냥 통과
-        if (excludedUrls.contains(path)) {
-            System.out.println("cut");
-            filterChain.doFilter(request, response);
-            return;
-        }
-                                        
+                                throws ServletException, IOException {                                        
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             System.out.println("없음");
