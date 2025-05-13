@@ -4,5 +4,69 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
 <mapper namespace="com.gacha.model.dao.BoardDao">
-    
+  <insert id="insert" parameterType="map">
+          INSERT INTO boards (
+              uploader_id,
+              title,
+              content,
+              created_at,
+              category
+          ) VALUES (
+              #{userId},
+              #{boardDto.title},
+              #{boardDto.content},
+              NOW(),
+              #{boardDto.category}
+          )
+  </insert>
+
+    <resultMap id="BoardHeaderResultMap" type="com.gacha.model.dto.board.BoardHeader">
+        <id property="boardId" column="board_id"/>
+        <result property="title" column="title"/>
+        <result property="authorName" column="author_name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="commentCount" column="comment_count"/>
+    </resultMap>
+  <select id="selectByCondition"
+          parameterType="com.gacha.model.dto.request.SearchBoardCondition"
+          resultMap="BoardHeaderResultMap">
+      SELECT 
+          b.board_id as board_id,
+          b.title as title,
+          u.nickname AS author_name,
+          b.created_at as created_at,
+          b.view_count as view_count,
+          COUNT(DISTINCT bl.board_like_id) AS like_count,
+          COUNT(DISTINCT c.comment_id) AS comment_count
+      FROM boards b
+      LEFT JOIN users u ON b.uploader_id = u.user_id
+      LEFT JOIN board_likes bl ON b.board_id = bl.board_id
+      LEFT JOIN comments c ON b.board_id = c.board_id AND c.is_deleted = false
+      WHERE b.is_deleted = false
+
+      <if test="title != null and title != ''">
+          AND b.title LIKE CONCAT('%', #{title}, '%')
+      </if>
+
+      <if test="category != null and category.value != 'popular'">
+          AND b.category = #{category.value}
+      </if>
+
+      GROUP BY b.board_id, b.title, u.nickname, b.created_at, b.view_count
+
+      ORDER BY
+      <choose>
+          <when test="orderBy.value == 'title'">title</when>
+          <when test="orderBy.value == 'view_count'">view_count</when>
+          <when test="orderBy.value == 'like_count'">like_count</when>
+          <when test="orderBy.value == 'comment_count'">comment_count</when>
+          <otherwise>created_at</otherwise>
+      </choose>
+      <if test="isDesc">DESC</if>
+      <if test="!isDesc">ASC</if>
+
+      LIMIT #{offset} OFFSET #{page}
+  </select>
 </mapper>

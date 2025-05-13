@@ -4,7 +4,7 @@ USE ssafydb;
 
 CREATE TABLE `users` (
     `user_id` INT NOT NULL AUTO_INCREMENT,
-    `email` VARCHAR(50) NOT NULL,
+    `email` VARCHAR(50) NOT NULL UNIQUE KEY,
     `password` TEXT NOT NULL,
     `nickname` VARCHAR(30) NOT NULL,
     `profile_img` TEXT NULL,
@@ -28,10 +28,12 @@ CREATE TABLE `boards` (
     `uploader_id` INT NOT NULL,
     `title` VARCHAR(50) NOT NULL,
     `content` TEXT NOT NULL,
+    `category` ENUM('free', 'idea') NOT NULL,
     `created_at` DATETIME NOT NULL,
-    `updated_at` DATETIME NOT NULL,
-    `deleted_at` DATETIME NOT NULL,
-    `is_deleted` BOOLEAN NOT NULL COMMENT 'false',
+    `updated_at` DATETIME NULL,
+    `deleted_at` DATETIME NULL,
+    `is_deleted` BOOLEAN NOT NULL DEFAULT false,
+    `view_count` INT NOT NULL DEFAULT 0,
     PRIMARY KEY (`board_id`),
     FOREIGN KEY (`uploader_id`) REFERENCES `users` (`user_id`)
 );
