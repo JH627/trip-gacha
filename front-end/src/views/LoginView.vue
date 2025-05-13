@@ -26,7 +26,7 @@
         <button type="submit" class="login-button">로그인</button>
       </form>
       <div class="signup-link">
-        <router-link to="/signup">회원가입</router-link>
+        <router-link to="/regist">회원가입</router-link>
       </div>
     </div>
   </div>
