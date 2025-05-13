@@ -20,7 +20,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfig corsConfig) throws Exception {
         return http
             .csrf(customizer -> customizer.disable())
             .formLogin(customizer -> customizer.disable())
@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .requestMatchers("/error","/user/login", "/user/regist", "/email/verification", "/email/verification-confirm", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
             )
+            .addFilter(corsConfig.corsFilter()) //
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
