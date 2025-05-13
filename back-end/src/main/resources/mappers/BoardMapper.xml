@@ -4,5 +4,19 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
 <mapper namespace="com.gacha.model.dao.BoardDao">
-    
+<insert id="insert" parameterType="map">
+        INSERT INTO boards (
+            uploader_id,
+            title,
+            content,
+            created_at,
+            category
+        ) VALUES (
+            #{userId},
+            #{boardDto.title},
+            #{boardDto.content},
+            NOW(),
+            #{boardDto.category}
+        )
+</insert>
 </mapper>

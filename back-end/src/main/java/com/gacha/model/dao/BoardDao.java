@@ -10,10 +10,10 @@ import com.gacha.model.dto.request.SearchBoardCondition;
 @Mapper
 public interface BoardDao {
     // 게시글 리스트 검색
-    List<BoardDto> selectByCondition();
+    List<BoardDto> selectByCondition(SearchBoardCondition searchBoardCondition);
     
     // 게시글 조회
-    BoardDto selectById(SearchBoardCondition searchBoardCondition, Integer boardId);
+    BoardDto selectById(Integer boardId);
 
     // 게시글 생성
     void insert(BoardDto boardDto, Integer userId);
