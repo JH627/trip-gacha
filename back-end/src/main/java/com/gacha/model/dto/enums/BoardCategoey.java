@@ -6,9 +6,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum BoardCategoey {
-    popular("인기", "popular"),
-    free("자유", "free"),
-    idea("건의", "idea");
+    POPULAR("인기", "popular"),
+    FREE("자유", "free"),
+    IDEA("건의", "idea");
 
     private final String description;
     private final String value;
