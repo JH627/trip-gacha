@@ -3,11 +3,12 @@ package com.gacha.model.service;
 import java.util.List;
 
 import com.gacha.model.dto.board.BoardDto;
+import com.gacha.model.dto.board.BoardHeader;
 import com.gacha.model.dto.request.SearchBoardCondition;
 
 public interface BoardService {
     // 게시글 리스트 검색
-    List<BoardDto> searchByCondition(SearchBoardCondition searchBoardCondition);
+    List<BoardHeader> searchByCondition(SearchBoardCondition searchBoardCondition);
     
     // 게시글 조회
     BoardDto searchById(Integer boardId);

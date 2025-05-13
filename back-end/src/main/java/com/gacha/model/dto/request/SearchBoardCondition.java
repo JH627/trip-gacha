@@ -8,12 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class SearchBoardCondition {
         // 페이지 번호 (기본 1페이지 - 페이지 오프셋은 시작이 0임)
         private int page = 0;
@@ -22,13 +24,13 @@ public class SearchBoardCondition {
 
         // 제목 필터 (검색어)
         private String title;
-    
+
         // 카테고리 (기본: 인기)
-        private BoardCategoey category = BoardCategoey.popular;
-    
+        private BoardCategoey category = BoardCategoey.POPULAR;
+
         // 정렬 기준: title, likes
         private BoardOrderBy orderBy = BoardOrderBy.TITLE; // 기본값: 작성일자
-    
+
         // 정렬 방향: asc 또는 desc
         private Boolean isDesc = false;
 }

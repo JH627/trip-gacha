@@ -1,6 +1,5 @@
 package com.gacha.model.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.gacha.model.dao.BoardDao;
 import com.gacha.model.dto.board.BoardDto;
+import com.gacha.model.dto.board.BoardHeader;
 import com.gacha.model.dto.request.SearchBoardCondition;
 
 @Service
@@ -16,10 +16,16 @@ public class BoardServiceImpl implements BoardService {
     private BoardDao boardDao;
 
     @Override
-    public List<BoardDto> searchByCondition(SearchBoardCondition searchBoardCondition) {
-        List<BoardDto> boardList = new ArrayList<>();
-
-        return boardList;
+    public List<BoardHeader> searchByCondition(SearchBoardCondition condition) {
+        try {
+            condition.setPage(condition.getPage() > 0 ? (condition.getPage() - 1) * condition.getOffset() : 0);
+            System.out.println(condition);
+            List<BoardHeader> boardList = boardDao.selectByCondition(condition);
+            return boardList;
+        } catch(Exception e){
+            System.out.println("게시글 조회 중 버그남 ㅎㅎ;");
+            throw e;
+        }
     }
 
     @Override
