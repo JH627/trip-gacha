@@ -98,4 +98,9 @@
     WHERE b.board_id=#{boardId}
     GROUP BY b.board_id, b.category, b.title, u.nickname, b.created_at, b.content, b.view_count
   </select>
+    <update id="updateViewCount" parameterType="int">
+        UPDATE boards
+        SET view_count = view_count + 1
+        WHERE board_id = #{boardId}
+    </update>
 </mapper>

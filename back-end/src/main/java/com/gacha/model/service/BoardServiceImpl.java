@@ -33,6 +33,8 @@ public class BoardServiceImpl implements BoardService {
     public BoardDetail searchById(Integer userId, Integer boardId) {
         try{
             BoardDetail boardInfo = boardDao.selectById(userId, boardId);
+            boardDao.updateViewCount(userId, boardId);
+            boardInfo.setViewCount(boardInfo.getViewCount()+1);
             return boardInfo;
         }catch(Exception e){
             throw e;

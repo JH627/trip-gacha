@@ -20,6 +20,9 @@ public interface BoardDao {
     // 게시글 생성
     void insert(BoardDto boardDto, Integer userId);
 
+    // 게시글 조회수 증가
+    void updateViewCount(Integer userId, Integer boardId);
+
     // 게시글 수정
     void updateById(BoardDto boardDto, Integer userId);
 
