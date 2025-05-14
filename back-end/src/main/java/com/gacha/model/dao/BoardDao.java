@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.gacha.model.dto.board.AddCommentRequest;
 import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
@@ -45,4 +46,6 @@ public interface BoardDao {
     void deleteDislike(Integer boardId, Integer userId);
 
     List<CommentDetail> selectCommentsById(GetCommentsRequest getCommentsRequest, Integer userId);
+
+    void insertComment(AddCommentRequest addCommentRequest, Integer userId);
 }

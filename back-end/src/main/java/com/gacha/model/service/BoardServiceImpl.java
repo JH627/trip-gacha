@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.gacha.exception.BoardErrorCode;
 import com.gacha.exception.BoardException;
 import com.gacha.model.dao.BoardDao;
+import com.gacha.model.dto.board.AddCommentRequest;
 import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
@@ -98,6 +99,15 @@ public class BoardServiceImpl implements BoardService {
     public List<CommentDetail> searchCommentsById(GetCommentsRequest getCommentsRequest, Integer userId) {
         try{
             return boardDao.selectCommentsById(getCommentsRequest, userId);
+        }catch(Exception e){
+            throw e;
+        }
+    }
+
+    @Override
+    public void createComment(AddCommentRequest addCommentRequest, Integer userId) {
+        try{
+            boardDao.insertComment(addCommentRequest, userId);
         }catch(Exception e){
             throw e;
         }

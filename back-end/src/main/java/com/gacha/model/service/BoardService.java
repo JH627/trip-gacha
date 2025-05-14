@@ -2,6 +2,7 @@ package com.gacha.model.service;
 
 import java.util.List;
 
+import com.gacha.model.dto.board.AddCommentRequest;
 import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
@@ -35,4 +36,6 @@ public interface BoardService {
     void dislike(Integer boardId, Integer userId);
 
     List<CommentDetail> searchCommentsById(GetCommentsRequest getCommentsRequest, Integer userId);
+
+    void createComment(AddCommentRequest addCommentRequest, Integer userId);
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gacha.global.api.Response;
 import com.gacha.global.jwt.annotation.LoginUser;
 import com.gacha.model.dto.board.AddBoardRequest;
+import com.gacha.model.dto.board.AddCommentRequest;
 import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
@@ -123,6 +124,13 @@ public class BoardController {
         List<CommentDetail> comments = boardService.searchCommentsById(getCommentsRequest, userId);
         
         return ResponseEntity.ok(Response.onSuccess(comments));
+    }
+
+    @PostMapping("/comment")
+    public ResponseEntity<Response<?>> addComment(@LoginUser Integer userId, @RequestBody AddCommentRequest addCommentRequest) {
+        boardService.createComment(addCommentRequest, userId);
+        
+        return ResponseEntity.ok(Response.onSuccess());
     }
     
 }

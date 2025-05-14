@@ -143,20 +143,27 @@
     </delete>
 
     <resultMap id="CommentetailResultMap" type="com.gacha.model.dto.board.CommentDetail">
-        <id property="commentId" column="comment_id">
+        <id property="commentId" column="comment_id"/>
         <result property="authorName" column="author_name"/>
         <result property="createdAt" column="created_at"/>
         <result property="content" column="content"/>
         <result property="isMine" column="is_mine"/>
     </resultMap>
+
     <select id="selectCommentsById" parameterType="map" resultMap="CommentetailResultMap">
         SELECT comment_id, 
-                u.nickname as author_name, 
-                c.created_at as created_at, 
-                content,
-                MAX(CASE WHEN c.uploder_id = #{userId} THEN 1 ELSE 0 END) AS is_mine,
-        FROM comments as c
-        LEFT JOIN users as u ON c.uploader_id=u.user_id
-        WHERE c.board_id=#{getCommentsRequest.boardId}
+            u.nickname AS author_name, 
+            c.created_at AS created_at, 
+            content,
+            MAX(CASE WHEN c.uploader_id = #{userId} THEN 1 ELSE 0 END) AS is_mine
+        FROM comments AS c
+        LEFT JOIN users AS u ON c.uploader_id = u.user_id
+        WHERE c.board_id = #{getCommentsRequest.boardId}
+        GROUP BY comment_id, author_name, created_at, content
     </select>
+
+    <insert id="insertComment" parameterType="map">
+        INSERT INTO comments (board_id, content, uploader_id, created_at)
+        VALUES (#{addCommentRequest.boardId}, #{addCommentRequest.content}, #{userId}, NOW());
+    </insert>
 </mapper>
