@@ -121,4 +121,24 @@
         SET is_deleted=true, deleted_at=now()
         WHERE uploader_id=#{userId} AND board_id = #{boardId}
     </update>
+    <insert id="report" parameterType="map">
+        INSERT INTO board_reports(user_id, board_id)
+        VALUES (#{userId}, #{boardId})
+    </insert>
+        <insert id="dislike" parameterType="map">
+        INSERT INTO board_dislikes(user_id, board_id)
+        VALUES (#{userId}, #{boardId})
+    </insert>
+    <delete id="deleteDislike">
+        DELETE FROM board_dislikes
+        WHERE user_id = #{userId} AND board_id = #{boardId}
+    </delete>
+    <insert id="like" parameterType="map">
+        INSERT INTO board_likes(user_id, board_id)
+        VALUES (#{userId}, #{boardId})
+    </insert>
+    <delete id="deleteLike">
+        DELETE FROM board_likes
+        WHERE user_id = #{userId} AND board_id = #{boardId}
+    </delete>
 </mapper>

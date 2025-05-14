@@ -3,8 +3,11 @@ package com.gacha.model.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import com.gacha.exception.BoardErrorCode;
+import com.gacha.exception.BoardException;
 import com.gacha.model.dao.BoardDao;
 import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
@@ -64,16 +67,28 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void report(Integer boardId, Integer userId) {
-        return;
+        try{
+            boardDao.report(boardId, userId);
+        }catch(DuplicateKeyException e){
+            throw new BoardException(BoardErrorCode.DUPLICATED_REPORT);
+        }
     }
 
     @Override
     public void like(Integer boardId, Integer userId) {
-        return;
+        try{
+            boardDao.like(boardId, userId);
+        }catch(DuplicateKeyException e){
+            boardDao.deleteLike(boardId, userId);
+        }
     }
 
     @Override
     public void dislike(Integer boardId, Integer userId) {
-        return;
+        try{
+            boardDao.dislike(boardId, userId);
+        }catch(DuplicateKeyException e){
+            boardDao.deleteDislike(boardId, userId);
+        }
     }    
 }

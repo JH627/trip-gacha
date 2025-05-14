@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gacha.global.api.Response;
@@ -91,6 +92,27 @@ public class BoardController {
     public ResponseEntity<Response<?>> deleteBoard(@LoginUser Integer userId, @PathVariable Integer boardId) {        
         boardService.removeById(boardId, userId);
 
+        return ResponseEntity.ok(Response.onSuccess());
+    }
+
+    @PostMapping("/report")
+    public ResponseEntity<Response<?>> reportBoard(@LoginUser Integer userId, @RequestParam("boardId") Integer boardId) {
+        boardService.report(boardId, userId);
+        
+        return ResponseEntity.ok(Response.onSuccess());
+    }
+
+    @PostMapping("/like")
+    public ResponseEntity<Response<?>> likeBoard(@LoginUser Integer userId, @RequestParam("boardId") Integer boardId) {
+        boardService.like(boardId, userId);
+        
+        return ResponseEntity.ok(Response.onSuccess());
+    }
+
+    @PostMapping("/dislike")
+    public ResponseEntity<Response<?>> dislikeBoard(@LoginUser Integer userId, @RequestParam("boardId") Integer boardId) {
+        boardService.dislike(boardId, userId);
+        
         return ResponseEntity.ok(Response.onSuccess());
     }
 }

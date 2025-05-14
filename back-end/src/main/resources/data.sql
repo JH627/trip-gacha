@@ -55,6 +55,7 @@ CREATE TABLE `board_dislikes` (
     `user_id` INT NOT NULL,
     `board_id` INT NOT NULL,
     PRIMARY KEY (`board_dislike_id`),
+    UNIQUE KEY (`user_id`, `board_id`),
     FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
     FOREIGN KEY (`board_id`) REFERENCES `boards` (`board_id`)
 );
@@ -64,6 +65,7 @@ CREATE TABLE `board_likes` (
     `user_id` INT NOT NULL,
     `board_id` INT NOT NULL,
     PRIMARY KEY (`board_like_id`),
+    UNIQUE KEY (`user_id`, `board_id`),
     FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
     FOREIGN KEY (`board_id`) REFERENCES `boards` (`board_id`)
 );
@@ -73,6 +75,7 @@ CREATE TABLE `board_reports` (
     `user_id` INT NOT NULL,
     `board_id` INT NOT NULL,
     PRIMARY KEY (`board_report_id`),
+    UNIQUE KEY (`user_id`, `board_id`),
     FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
     FOREIGN KEY (`board_id`) REFERENCES `boards` (`board_id`)
 );

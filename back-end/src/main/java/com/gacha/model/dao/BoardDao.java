@@ -37,4 +37,8 @@ public interface BoardDao {
 
     // 게시글 싫어요
     void dislike(Integer boardId, Integer userId);
+
+    void deleteLike(Integer boardId, Integer userId);
+
+    void deleteDislike(Integer boardId, Integer userId);
 }
