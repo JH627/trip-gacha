@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gacha.model.dao.BoardDao;
+import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
 import com.gacha.model.dto.board.SearchBoardCondition;
@@ -29,8 +30,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardDto searchById(Integer boardId) {
-        return null;
+    public BoardDetail searchById(Integer userId, Integer boardId) {
+        try{
+            BoardDetail boardInfo = boardDao.selectById(userId, boardId);
+            return boardInfo;
+        }catch(Exception e){
+            throw e;
+        }
     }   
 
     @Override
@@ -66,7 +72,5 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public void dislike(Integer boardId, Integer userId) {
         return;
-    }
-
-    
+    }    
 }

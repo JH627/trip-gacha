@@ -39,3 +39,5 @@ target
 HELP.md
 bin
 .env
+
+*.pem

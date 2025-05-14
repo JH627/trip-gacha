@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
 import com.gacha.model.dto.board.SearchBoardCondition;
@@ -14,7 +15,7 @@ public interface BoardDao {
     List<BoardHeader> selectByCondition(SearchBoardCondition searchBoardCondition);
     
     // 게시글 조회
-    BoardDto selectById(Integer boardId);
+    BoardDetail selectById(Integer userId, Integer boardId);
 
     // 게시글 생성
     void insert(BoardDto boardDto, Integer userId);

@@ -69,4 +69,33 @@
 
       LIMIT #{offset} OFFSET #{page}
   </select>
+
+    <resultMap id="BoardDetailResultMap" type="com.gacha.model.dto.board.BoardDetail">
+        <result property="category" column="category"/>
+        <result property="title" column="title"/>
+        <result property="authorName" column="author_name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="content" column="content"/>
+        <result property="liked" column="liked"/>
+        <result property="isReported" column="is_reported"/>
+    </resultMap>
+  <select id="selectById" resultMap="BoardDetailResultMap" parameterType="map">
+    SELECT b.category as category, 
+            b.title as title, 
+            u.nickname as author_name, 
+            b.created_at as created_at, 
+            b.view_count as view_count,
+            COUNT(DISTINCT bl.board_like_id) AS like_count,
+            b.content as content, 
+            MAX(CASE WHEN bl.user_id = #{userId} THEN 1 ELSE 0 END) AS liked,
+            MAX(CASE WHEN br.user_id = #{userId} THEN 1 ELSE 0 END) AS is_reported
+    FROM boards as b
+    LEFT JOIN users as u ON b.uploader_id = u.user_id
+    LEFT JOIN board_likes bl ON b.board_id = bl.board_id
+    LEFT JOIN board_reports br ON b.board_id = br.board_id
+    WHERE b.board_id=#{boardId}
+    GROUP BY b.board_id, b.category, b.title, u.nickname, b.created_at, b.content, b.view_count
+  </select>
 </mapper>

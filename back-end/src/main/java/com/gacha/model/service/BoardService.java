@@ -2,6 +2,7 @@ package com.gacha.model.service;
 
 import java.util.List;
 
+import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
 import com.gacha.model.dto.board.SearchBoardCondition;
@@ -11,7 +12,7 @@ public interface BoardService {
     List<BoardHeader> searchByCondition(SearchBoardCondition searchBoardCondition);
     
     // 게시글 조회
-    BoardDto searchById(Integer boardId);
+    BoardDetail searchById(Integer userId, Integer boardId);
 
     // 게시글 생성
     void createBoard(BoardDto boardDto, Integer userId);
