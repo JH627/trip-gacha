@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Tag(name = "게시판 도메인 API")
@@ -82,6 +83,13 @@ public class BoardController {
                                 .build();
         
         boardService.updateById(boardDto, userId);
+
+        return ResponseEntity.ok(Response.onSuccess());
+    }
+
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<Response<?>> deleteBoard(@LoginUser Integer userId, @PathVariable Integer boardId) {        
+        boardService.removeById(boardId, userId);
 
         return ResponseEntity.ok(Response.onSuccess());
     }

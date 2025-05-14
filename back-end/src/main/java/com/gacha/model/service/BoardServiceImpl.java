@@ -58,6 +58,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void removeById(Integer boardId, Integer userId) {
+        boardDao.deleteById(boardId, userId);
         return;
     }
 

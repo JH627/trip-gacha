@@ -116,4 +116,9 @@
         </set>
         WHERE board_id = #{boardDto.boardId} AND uploader_id=#{userId}
     </update>
+    <update id="deleteById" parameterType="map">
+        UPDATE boards
+        SET is_deleted=true, deleted_at=now()
+        WHERE uploader_id=#{userId} AND board_id = #{boardId}
+    </update>
 </mapper>
