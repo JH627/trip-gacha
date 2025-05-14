@@ -21,7 +21,7 @@ public class SecurityConfig {
     
 	private final String[] ALLOW_URL = {
 			"/error",
-			"/auth/login", "/auth/regist", 
+			"/auth/login", "/user/regist", 
 			"/email/verification", "/email/verification-confirm", 
 			"/swagger-ui/**", "/v3/api-docs/**"
 	};
@@ -29,7 +29,7 @@ public class SecurityConfig {
 	private final JwtFilter jwtFilter;
     
     @Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain filterChain(HttpSecurity http, CorsConfig corsConfig) throws Exception {
 		http
 			// 세션 사용하지 않음
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -39,6 +39,8 @@ public class SecurityConfig {
 				.requestMatchers(ALLOW_URL).permitAll()
 				// 이외의 요청에 대해서는 인증이 필요하도록 설정
 				.anyRequest().authenticated())
+			// Cors 설정 추가
+			.addFilter(corsConfig.corsFilter())
 			// jwtFilter를 UsernamePasswordAuthenticationFilter 앞에 오도록 설정
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			// formLogin 비활성화

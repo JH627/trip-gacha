@@ -43,7 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	
 	private final List<String> EXCLUDE_URL = List.of(
 			"/error",
-			"/auth/login", "/auth/regist", 
+			"/auth/login", "/user/regist", 
 			"/email/verification", 
 			"/email/verification-confirm",
 			"/swagger-ui",

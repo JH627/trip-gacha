@@ -9,7 +9,7 @@ const testPostRequest = async () => {
       email: 'string@test.com',
       password: 'string',
     }
-    const response = await defaultApi.post('/user/login', testData)
+    const response = await defaultApi.post('/auth/login', testData)
     console.log('POST 요청 성공:', response.data)
   } catch (error) {
     console.error('POST 요청 실패:', error)
