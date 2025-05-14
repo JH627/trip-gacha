@@ -10,15 +10,15 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class BackEndApplication {
 
 	public static void main(String[] args) {
-		Dotenv dotenv = Dotenv.load();
+		Dotenv dotenv = Dotenv.configure()
+				.directory("./") // .env 파일 경로 설정 (기본: 프로젝트 루트)
+				.load();
 
-		System.setProperty("S3_BUCKET_NAME", dotenv.get("S3_BUCKET_NAME"));
-		System.setProperty("S3_ACCESS_KEY", dotenv.get("S3_ACCESS_KEY"));
-		System.setProperty("S3_SECRET_KEY", dotenv.get("S3_SECRET_KEY"));
-		System.setProperty("S3_REGION", dotenv.get("S3_REGION"));
-		System.setProperty("OPEN_API_KEY", dotenv.get("OPEN_API_KEY"));
+		// 환경변수를 시스템 프로퍼티에 추가
+		dotenv.entries().forEach(entry ->
+									System.setProperty(entry.getKey(), entry.getValue())
+								);
 
 		SpringApplication.run(BackEndApplication.class, args);
 	}
-
 }
