@@ -1,32 +1,33 @@
 package com.gacha.model.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gacha.model.dao.ImageDao;
 import com.gacha.model.dao.UserDao;
 import com.gacha.model.dto.enums.ImageCategory;
 import com.gacha.model.dto.image.ImageDto;
 import com.gacha.model.dto.user.FullUserInfo;
-import com.gacha.model.dto.user.LoginRequest;
 import com.gacha.model.dto.user.RegistRequest;
 import com.gacha.model.dto.user.UserDto;
 import com.gacha.util.ImageUtil;
 import com.gacha.util.PasswordUtil;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private ImageUtil imageUtil;
 
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private ImageDao imageDao;
+    private final ImageUtil imageUtil;
+    private final UserDao userDao;
+    private final ImageDao imageDao;
 
     @Override
+    @Transactional
     public boolean regist(RegistRequest registRequest) {    
         String email = registRequest.getEmail();
         String hashingPassword = PasswordUtil.hash(registRequest.getPassword());
@@ -71,27 +72,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto login(LoginRequest loginRequest) {
-        // 이메일로 사용자 가져옴
-        UserDto findUser = userDao.selectByEmail(loginRequest.getEmail());
-
-        if(findUser==null){
-            return null;
-        }
-
-        // 비밀번호 일치 확인
-        if(!PasswordUtil.isMatch(loginRequest.getPassword(), findUser.getPassword())){
-            return null;
-        }
-
-        return findUser;
-    }
-
-    @Override
+    @Transactional(readOnly = true)
     public FullUserInfo searchUserInfo(String userId) {
         UserDto userDto = userDao.selectByUserId(Integer.parseInt(userId));
 
-        if(userDto == null){
+        if (userDto == null){
             return null;
         }
 

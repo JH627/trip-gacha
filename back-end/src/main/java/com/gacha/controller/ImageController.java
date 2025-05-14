@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.gacha.global.api.Response;
+import com.gacha.global.jwt.annotation.LoginUser;
 import com.gacha.model.dao.ImageDao;
 import com.gacha.model.dto.enums.ImageCategory;
 import com.gacha.model.dto.image.ImageDto;
@@ -14,7 +15,6 @@ import com.gacha.model.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 
 
 @RestController
@@ -28,7 +28,7 @@ public class ImageController {
     private ImageDao imageDao;
 
     @PostMapping("/board")
-    public ResponseEntity<Response<?>> uploadBoardImg(@RequestAttribute("userId") String userId, @RequestParam("img") MultipartFile file) {
+    public ResponseEntity<Response<?>> uploadBoardImg(@LoginUser Integer userId, @RequestParam("img") MultipartFile file) {
         String url = imageService.upload(file, ImageCategory.board);
         
         ImageDto img = ImageDto.builder()

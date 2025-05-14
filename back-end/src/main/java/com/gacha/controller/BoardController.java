@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gacha.global.api.Response;
+import com.gacha.global.jwt.annotation.LoginUser;
 import com.gacha.model.dto.board.AddBoardRequest;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
@@ -18,7 +19,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Tag(name = "게시판 도메인 API")
@@ -29,7 +29,7 @@ public class BoardController {
     private BoardService boardService;
 
     @PostMapping("")
-    public ResponseEntity<Response<?>> addBoard(@RequestAttribute("userId") Integer userId, @ModelAttribute AddBoardRequest addBoardRequest) {
+    public ResponseEntity<Response<?>> addBoard(@LoginUser Integer userId, @ModelAttribute AddBoardRequest addBoardRequest) {
         System.out.println(addBoardRequest);
         
         BoardDto boardDto = BoardDto.builder()

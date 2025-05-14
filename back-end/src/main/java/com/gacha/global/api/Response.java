@@ -2,7 +2,6 @@ package com.gacha.global.api;
 
 import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.gacha.global.exception.code.BaseErrorCode;
 import com.gacha.global.exception.code.BaseSuccessCode;
 import com.gacha.global.exception.code.GeneralSuccessCode;
 

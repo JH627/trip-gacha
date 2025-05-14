@@ -23,7 +23,7 @@ public class CorsConfig {
 		config.setAllowCredentials(true);
 
 		config.setAllowedHeaders(List.of(
-			"Authorization",
+			"Authorization",    // 로그인 유저 확인 용
 			"Content-Type",
 			"X-Requested-With",
 			"Accept",           // 쿠키 처리를 위해 추가 (RefreshToken 용)
@@ -33,7 +33,7 @@ public class CorsConfig {
 		));
 
 		config.setExposedHeaders(List.of(
-			"Authorization",
+			"Authorization",    // 로그인 시 AccessToken 발급
 			"Set-Cookie",       // 쿠키 설정을 위해 필요 (RefreshToken 용)
 			"Access-Control-Allow-Origin",
 			"Access-Control-Allow-Credentials"

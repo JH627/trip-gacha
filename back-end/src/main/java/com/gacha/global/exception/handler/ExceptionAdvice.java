@@ -87,6 +87,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Response<String>> handleException(Exception e) {
     	log.error("[UnhandledException] message: {}", e.getMessage());
+    	e.printStackTrace();
         BaseErrorCode code = GeneralErrorCode.INTERNAL_SERVER_ERROR;
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Response.onFailure(code.getStatus(), code.getCode(), code.getMessage(), null));
