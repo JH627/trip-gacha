@@ -4,7 +4,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
 import com.gacha.config.ChatClientFactory;
-import com.gacha.model.dto.request.ChatRequest.ChatDetail;
+import com.gacha.model.dto.chat.ChatRequest.ChatDetail;
 
 import lombok.RequiredArgsConstructor;
 

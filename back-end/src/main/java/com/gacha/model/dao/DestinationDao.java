@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.gacha.model.dto.response.trip.DestinationInfo;
+import com.gacha.model.dto.trip.DestinationInfo;
 
 @Mapper
 public interface DestinationDao {

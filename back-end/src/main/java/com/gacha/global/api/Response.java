@@ -1,4 +1,4 @@
-package com.gacha.model.dto.response;
+package com.gacha.global.api;
 
 import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

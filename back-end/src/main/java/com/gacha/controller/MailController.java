@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gacha.model.dto.request.EmailVerificationConfirmRequest;
-import com.gacha.model.dto.request.EmailVerificationRequest;
-import com.gacha.model.dto.response.Response;
+import com.gacha.global.api.Response;
+import com.gacha.model.dto.user.EmailVerificationConfirmRequest;
+import com.gacha.model.dto.user.EmailVerificationRequest;
 import com.gacha.model.service.MailService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

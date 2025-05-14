@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gacha.model.dto.request.ChatRequest.ChatDetail;
-import com.gacha.model.dto.response.Response;
+import com.gacha.global.api.Response;
+import com.gacha.model.dto.chat.ChatRequest.ChatDetail;
 import com.gacha.model.service.ChatService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

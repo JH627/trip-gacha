@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
-import com.gacha.model.dto.request.SearchBoardCondition;
+import com.gacha.model.dto.board.SearchBoardCondition;
 
 @Mapper
 public interface BoardDao {

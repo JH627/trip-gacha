@@ -1,4 +1,4 @@
-package com.gacha.model.dto.request;
+package com.gacha.model.dto.board;
 
 import com.gacha.model.dto.enums.BoardCategoey;
 import com.gacha.model.dto.enums.BoardOrderBy;

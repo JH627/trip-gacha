@@ -30,7 +30,7 @@
         <result property="commentCount" column="comment_count"/>
     </resultMap>
   <select id="selectByCondition"
-          parameterType="com.gacha.model.dto.request.SearchBoardCondition"
+          parameterType="com.gacha.model.dto.board.SearchBoardCondition"
           resultMap="BoardHeaderResultMap">
       SELECT 
           b.board_id as board_id,

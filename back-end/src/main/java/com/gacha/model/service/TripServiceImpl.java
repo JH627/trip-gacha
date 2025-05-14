@@ -11,12 +11,13 @@ import com.gacha.exception.TripException;
 import com.gacha.model.dao.SpotDao;
 import com.gacha.model.dao.DestinationDao;
 import com.gacha.model.dao.TripScheduleDao;
-import com.gacha.model.dto.request.TripRequest;
-import com.gacha.model.dto.request.TripRequest.SpotCategory;
-import com.gacha.model.dto.request.TripRequest.SpotRegistForm;
-import com.gacha.model.dto.request.TripRequest.SpotSearchCondition;
-import com.gacha.model.dto.response.trip.DestinationInfo;
-import com.gacha.model.dto.response.trip.SpotInfo;
+import com.gacha.model.dto.enums.SpotCategory;
+import com.gacha.model.dto.enums.SpotSearchCondition;
+import com.gacha.model.dto.trip.BookmarkSpotRequest;
+import com.gacha.model.dto.trip.DestinationInfo;
+import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
+import com.gacha.model.dto.trip.SpotInfo;
+import com.gacha.model.dto.trip.SpotRegistFormRequest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class TripServiceImpl implements TripService {
 
 	@Override
 	@Transactional
-	public void toggleSpotBookmark(Integer userId, TripRequest.BookmarkSpot dto) {
+	public void toggleSpotBookmark(Integer userId, BookmarkSpotRequest dto) {
 		boolean isBookmarked = spotDao.isBookmarked(userId, dto.getSpotId());
 		
 		try {
@@ -74,7 +75,7 @@ public class TripServiceImpl implements TripService {
 
 	@Override
 	@Transactional
-	public void registSpot(Integer userId, SpotRegistForm form) {
+	public void registSpot(Integer userId, SpotRegistFormRequest form) {
 		String imgUrl = "";
 		boolean uploaded = false;
 
@@ -113,7 +114,7 @@ public class TripServiceImpl implements TripService {
 
 	@Override
 	@Transactional
-	public void registSchedule(Integer userId, TripRequest.ScheduleRegistForm form) {
+	public void registSchedule(Integer userId, ScheduleRegistFormRequest form) {
 		try {
 			// 일정 등록
 			tripScheduleDao.insertSchedule(userId, form);

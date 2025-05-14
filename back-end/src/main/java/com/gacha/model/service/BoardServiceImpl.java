@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.gacha.model.dao.BoardDao;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
-import com.gacha.model.dto.request.SearchBoardCondition;
+import com.gacha.model.dto.board.SearchBoardCondition;
 
 @Service
 public class BoardServiceImpl implements BoardService {

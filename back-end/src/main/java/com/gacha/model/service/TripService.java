@@ -2,11 +2,13 @@ package com.gacha.model.service;
 
 import java.util.List;
 
-import com.gacha.model.dto.request.TripRequest;
-import com.gacha.model.dto.request.TripRequest.SpotCategory;
-import com.gacha.model.dto.request.TripRequest.SpotSearchCondition;
-import com.gacha.model.dto.response.trip.DestinationInfo;
-import com.gacha.model.dto.response.trip.SpotInfo;
+import com.gacha.model.dto.enums.SpotCategory;
+import com.gacha.model.dto.enums.SpotSearchCondition;
+import com.gacha.model.dto.trip.BookmarkSpotRequest;
+import com.gacha.model.dto.trip.DestinationInfo;
+import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
+import com.gacha.model.dto.trip.SpotInfo;
+import com.gacha.model.dto.trip.SpotRegistFormRequest;
 
 public interface TripService {
 	
@@ -26,7 +28,7 @@ public interface TripService {
 	 * @param userId 사용자ID
 	 * @param dto 찜 상태를 변경할 관광지ID
 	 */
-	void toggleSpotBookmark(Integer userId, TripRequest.BookmarkSpot dto);
+	void toggleSpotBookmark(Integer userId, BookmarkSpotRequest dto);
 
 	/**
 	 * 검색키워드에 따른 목적지리스트 반환
@@ -57,7 +59,7 @@ public interface TripService {
 	 * @param userId 사용자ID
 	 * @param form 장소정보(목적지ID, 카테고리, 이름, 주소, 설명, 이미지 파일)
 	 */
-	void registSpot(Integer userId, TripRequest.SpotRegistForm form);
+	void registSpot(Integer userId, SpotRegistFormRequest form);
 	
 	/**
 	 * 여행 일정 등록
@@ -65,5 +67,5 @@ public interface TripService {
 	 * @param userId 사용자ID
 	 * @param form 여행 일정 정보(목적지ID, 제목, 시작일, 종료일, 일정 아이템들)
 	 */
-	void registSchedule(Integer userId, TripRequest.ScheduleRegistForm form);
+	void registSchedule(Integer userId, ScheduleRegistFormRequest form);
 }

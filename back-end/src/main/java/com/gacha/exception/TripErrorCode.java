@@ -2,8 +2,8 @@ package com.gacha.exception;
 
 import org.springframework.http.HttpStatus;
 
+import com.gacha.global.api.Response;
 import com.gacha.global.exception.code.BaseErrorCode;
-import com.gacha.model.dto.response.Response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gacha.global.api.Response;
 import com.gacha.model.dto.board.AddBoardRequest;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
-import com.gacha.model.dto.request.SearchBoardCondition;
-import com.gacha.model.dto.response.Response;
+import com.gacha.model.dto.board.SearchBoardCondition;
 import com.gacha.model.service.BoardService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

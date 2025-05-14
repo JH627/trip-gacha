@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.gacha.global.api.Response;
 import com.gacha.model.dao.ImageDao;
 import com.gacha.model.dto.enums.ImageCategory;
 import com.gacha.model.dto.image.ImageDto;
-import com.gacha.model.dto.response.Response;
 import com.gacha.model.service.ImageService;
 
 import org.springframework.beans.factory.annotation.Autowired;

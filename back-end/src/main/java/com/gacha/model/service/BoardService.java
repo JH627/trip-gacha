@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
-import com.gacha.model.dto.request.SearchBoardCondition;
+import com.gacha.model.dto.board.SearchBoardCondition;
 
 public interface BoardService {
     // 게시글 리스트 검색

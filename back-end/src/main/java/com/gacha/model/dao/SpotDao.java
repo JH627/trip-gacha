@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.gacha.model.dto.response.trip.SpotInfo;
+import com.gacha.model.dto.trip.SpotInfo;
 
 @Mapper
 public interface SpotDao {

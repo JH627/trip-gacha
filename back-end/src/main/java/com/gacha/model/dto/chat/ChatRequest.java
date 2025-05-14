@@ -1,4 +1,4 @@
-package com.gacha.model.dto.request;
+package com.gacha.model.dto.chat;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

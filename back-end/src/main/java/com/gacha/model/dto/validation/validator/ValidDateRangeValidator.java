@@ -2,7 +2,7 @@ package com.gacha.model.dto.validation.validator;
 
 import org.springframework.stereotype.Component;
 
-import com.gacha.model.dto.request.TripRequest.ScheduleRegistForm;
+import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
 import com.gacha.model.dto.validation.annotation.ValidDateRange;
 
 import jakarta.validation.ConstraintValidator;
@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ValidDateRangeValidator implements ConstraintValidator<ValidDateRange, ScheduleRegistForm> {
+public class ValidDateRangeValidator implements ConstraintValidator<ValidDateRange, ScheduleRegistFormRequest> {
 
     private String message;
 
@@ -21,7 +21,7 @@ public class ValidDateRangeValidator implements ConstraintValidator<ValidDateRan
     }
 	
     @Override
-    public boolean isValid(ScheduleRegistForm dto, ConstraintValidatorContext context) {
+    public boolean isValid(ScheduleRegistFormRequest dto, ConstraintValidatorContext context) {
         if (dto.getStartDate() == null || dto.getEndDate() == null) {
             return true; 
         }

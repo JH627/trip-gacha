@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gacha.model.dto.request.LoginRequest;
-import com.gacha.model.dto.request.RegistRequest;
-import com.gacha.model.dto.response.Response;
+import com.gacha.global.api.Response;
 import com.gacha.model.dto.user.FullUserInfo;
+import com.gacha.model.dto.user.LoginRequest;
+import com.gacha.model.dto.user.RegistRequest;
 import com.gacha.model.dto.user.UserDto;
 import com.gacha.model.dto.user.UserInfo;
 import com.gacha.model.service.UserService;

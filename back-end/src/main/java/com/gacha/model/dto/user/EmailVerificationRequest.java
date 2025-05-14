@@ -1,4 +1,4 @@
-package com.gacha.model.dto.request;
+package com.gacha.model.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

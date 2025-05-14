@@ -1,4 +1,4 @@
-package com.gacha.model.dto.response.trip;
+package com.gacha.model.dto.trip;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

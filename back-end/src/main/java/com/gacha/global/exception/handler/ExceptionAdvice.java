@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.gacha.global.api.Response;
 import com.gacha.global.exception.CustomException;
 import com.gacha.global.exception.code.BaseErrorCode;
 import com.gacha.global.exception.code.GeneralErrorCode;
-import com.gacha.model.dto.response.Response;
 
 import lombok.extern.slf4j.Slf4j;
 

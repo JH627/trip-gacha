@@ -3,7 +3,7 @@ package com.gacha.model.dao;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.gacha.model.dto.request.TripRequest;
+import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import java.util.List;
 public interface TripScheduleDao {
 
     int insertSchedule(@Param("userId") Integer userId,
-    				   @Param("form") TripRequest.ScheduleRegistForm form);
+    				   @Param("form") ScheduleRegistFormRequest form);
 
-    void insertScheduleItems(@Param("items") List<TripRequest.ScheduleRegistForm.ScheduleItem> items,
+    void insertScheduleItems(@Param("items") List<ScheduleRegistFormRequest.ScheduleItem> items,
                              @Param("scheduleId") Integer scheduleId);
 } 

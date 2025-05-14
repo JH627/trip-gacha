@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.gacha.model.dao.SpotDao">
-    <resultMap id="spotResultMap" type="com.gacha.model.dto.response.trip.SpotInfo">
+    <resultMap id="spotResultMap" type="com.gacha.model.dto.trip.SpotInfo">
         <id property="spotId" column="spot_id"/>
         <result property="destination" column="destination_name"/>
         <result property="name" column="name"/>

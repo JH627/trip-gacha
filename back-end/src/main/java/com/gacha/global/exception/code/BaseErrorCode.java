@@ -2,7 +2,7 @@ package com.gacha.global.exception.code;
 
 import org.springframework.http.HttpStatus;
 
-import com.gacha.model.dto.response.Response;
+import com.gacha.global.api.Response;
 
 public interface BaseErrorCode {
     <T> Response<T> getResponse();
