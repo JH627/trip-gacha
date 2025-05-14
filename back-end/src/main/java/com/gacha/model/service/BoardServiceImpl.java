@@ -53,7 +53,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void updateById(BoardDto boardDto, Integer userId) {
-        return;
+        boardDao.updateById(boardDto, userId);
     }
 
     @Override

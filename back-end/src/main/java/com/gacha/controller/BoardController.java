@@ -3,9 +3,9 @@ package com.gacha.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gacha.global.api.Response;
@@ -15,13 +15,17 @@ import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
 import com.gacha.model.dto.board.SearchBoardCondition;
+import com.gacha.model.dto.board.UpdateBoardRequest;
 import com.gacha.model.service.BoardService;
+import com.gacha.util.StringValidator;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Tag(name = "게시판 도메인 API")
@@ -62,5 +66,23 @@ public class BoardController {
         BoardDetail boardInfo = boardService.searchById(userId, boardId);
 
         return ResponseEntity.ok(Response.onSuccess(boardInfo));
+    }
+
+    @PatchMapping("")
+    public ResponseEntity<Response<?>> updateBoard(@RequestBody UpdateBoardRequest updateBoardRequest, @LoginUser Integer userId) {        
+        if(StringValidator.isEmpty(updateBoardRequest.getTitle(), updateBoardRequest.getContent())){
+            return ResponseEntity.ok(Response.onFailure(HttpStatus.BAD_REQUEST, "400", "제대로 입력 부탁", null));
+        }
+        
+        BoardDto boardDto = BoardDto
+                                .builder()
+                                .boardId(updateBoardRequest.getBoardId())
+                                .title(updateBoardRequest.getTitle())
+                                .content(updateBoardRequest.getContent())
+                                .build();
+        
+        boardService.updateById(boardDto, userId);
+
+        return ResponseEntity.ok(Response.onSuccess());
     }
 }
