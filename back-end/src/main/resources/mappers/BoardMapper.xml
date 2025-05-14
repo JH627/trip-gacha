@@ -103,4 +103,17 @@
         SET view_count = view_count + 1
         WHERE board_id = #{boardId}
     </update>
+        <update id="updateById" parameterType="map">
+        UPDATE boards
+        <set>
+            updated_at = now(),
+            <if test="boardDto.title != null">
+            title = #{boardDto.title},
+            </if>
+            <if test="boardDto.content != null">
+            content = #{boardDto.content},
+            </if>
+        </set>
+        WHERE board_id = #{boardDto.boardId} AND uploader_id=#{userId}
+    </update>
 </mapper>
