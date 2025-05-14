@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Mapper;
 import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
+import com.gacha.model.dto.board.CommentDetail;
+import com.gacha.model.dto.board.GetCommentsRequest;
 import com.gacha.model.dto.board.SearchBoardCondition;
 
 @Mapper
@@ -41,4 +43,6 @@ public interface BoardDao {
     void deleteLike(Integer boardId, Integer userId);
 
     void deleteDislike(Integer boardId, Integer userId);
+
+    List<CommentDetail> selectCommentsById(GetCommentsRequest getCommentsRequest, Integer userId);
 }

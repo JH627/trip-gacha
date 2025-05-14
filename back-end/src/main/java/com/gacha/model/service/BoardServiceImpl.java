@@ -12,6 +12,8 @@ import com.gacha.model.dao.BoardDao;
 import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
+import com.gacha.model.dto.board.CommentDetail;
+import com.gacha.model.dto.board.GetCommentsRequest;
 import com.gacha.model.dto.board.SearchBoardCondition;
 
 @Service
@@ -89,6 +91,15 @@ public class BoardServiceImpl implements BoardService {
             boardDao.dislike(boardId, userId);
         }catch(DuplicateKeyException e){
             boardDao.deleteDislike(boardId, userId);
+        }
+    }
+
+    @Override
+    public List<CommentDetail> searchCommentsById(GetCommentsRequest getCommentsRequest, Integer userId) {
+        try{
+            return boardDao.selectCommentsById(getCommentsRequest, userId);
+        }catch(Exception e){
+            throw e;
         }
     }    
 }

@@ -15,6 +15,8 @@ import com.gacha.model.dto.board.AddBoardRequest;
 import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
+import com.gacha.model.dto.board.CommentDetail;
+import com.gacha.model.dto.board.GetCommentsRequest;
 import com.gacha.model.dto.board.SearchBoardCondition;
 import com.gacha.model.dto.board.UpdateBoardRequest;
 import com.gacha.model.service.BoardService;
@@ -115,4 +117,12 @@ public class BoardController {
         
         return ResponseEntity.ok(Response.onSuccess());
     }
+
+    @GetMapping("/comments")
+    public ResponseEntity<Response<?>> getComments(@LoginUser Integer userId, @ModelAttribute GetCommentsRequest getCommentsRequest) {
+        List<CommentDetail> comments = boardService.searchCommentsById(getCommentsRequest, userId);
+        
+        return ResponseEntity.ok(Response.onSuccess(comments));
+    }
+    
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
 import com.gacha.model.dto.board.BoardHeader;
+import com.gacha.model.dto.board.CommentDetail;
+import com.gacha.model.dto.board.GetCommentsRequest;
 import com.gacha.model.dto.board.SearchBoardCondition;
 
 public interface BoardService {
@@ -31,4 +33,6 @@ public interface BoardService {
 
     // 게시글 싫어요
     void dislike(Integer boardId, Integer userId);
+
+    List<CommentDetail> searchCommentsById(GetCommentsRequest getCommentsRequest, Integer userId);
 }
