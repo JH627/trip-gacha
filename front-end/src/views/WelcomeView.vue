@@ -1,36 +1,47 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { defaultApi } from '@/api/axios'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { authApi } from '@/api/axios'
+
+const content = ref('')
 
 // API 테스트를 위한 함수
-const testPostRequest = async () => {
+
+const testLogoutRequest = async () => {
   try {
-    const testData = {
-      email: 'string@test.com',
-      password: 'string',
-    }
-    const response = await defaultApi.post('/auth/login', testData)
-    console.log('POST 요청 성공:', response.data)
+    const response = await authApi.post('/auth/logout')
+    console.error('로그아웃 요청 성공:', response)
   } catch (error) {
-    console.error('POST 요청 실패:', error)
+    console.error('로그아웃 요청 실패:', error)
   }
 }
 
-// 컴포넌트 마운트 시 테스트 실행
-onMounted(() => {
-  testGetRequest()
-  testPostRequest()
-})
+const testGetRequest = async () => {
+  try {
+    const response = await authApi.get('/trip/recommend')
+    content.value = response.data
+    console.log('GET 요청 성공:', response.data)
+  } catch (error) {
+    console.error('GET 요청 실패:', error)
+  }
+}
+
+const router = useRouter()
+const goToLogin = () => {
+  router.push('/login') // 로그인 페이지로
+}
 </script>
 
 <template>
   <div class="welcome">
     <h1>API 테스트 페이지</h1>
     <div class="test-buttons">
-      <button @click="testGetRequest" class="test-button">GET 요청 테스트</button>
-      <button @click="testPostRequest" class="test-button">POST 요청 테스트</button>
+      <button @click="goToLogin" class="test-button">로그인 페이지로</button>
+      <button @click="testGetRequest" class="test-button">GET 테스트</button>
+      <button @click="testLogoutRequest" class="test-button">로그아웃 테스트</button>
     </div>
   </div>
+  <p>{{ content }}</p>
 </template>
 
 <style scoped>
