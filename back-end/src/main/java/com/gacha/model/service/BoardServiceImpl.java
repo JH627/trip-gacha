@@ -111,5 +111,14 @@ public class BoardServiceImpl implements BoardService {
         }catch(Exception e){
             throw e;
         }
+    }
+
+    @Override
+    public void removeCommentById(Integer commentId, Integer userId) {
+        try{
+            boardDao.deleteComment(commentId, userId);
+        }catch(Exception e){
+            throw e;
+        }
     }    
 }

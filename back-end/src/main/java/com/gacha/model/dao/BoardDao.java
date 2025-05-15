@@ -48,4 +48,6 @@ public interface BoardDao {
     List<CommentDetail> selectCommentsById(GetCommentsRequest getCommentsRequest, Integer userId);
 
     void insertComment(AddCommentRequest addCommentRequest, Integer userId);
+
+    void deleteComment(Integer commentId, Integer userId);
 }

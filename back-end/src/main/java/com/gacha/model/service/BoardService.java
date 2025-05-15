@@ -38,4 +38,6 @@ public interface BoardService {
     List<CommentDetail> searchCommentsById(GetCommentsRequest getCommentsRequest, Integer userId);
 
     void createComment(AddCommentRequest addCommentRequest, Integer userId);
+
+    void removeCommentById(Integer commentId, Integer userId);
 }

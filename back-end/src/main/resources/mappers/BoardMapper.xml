@@ -166,4 +166,10 @@
         INSERT INTO comments (board_id, content, uploader_id, created_at)
         VALUES (#{addCommentRequest.boardId}, #{addCommentRequest.content}, #{userId}, NOW());
     </insert>
+
+    <delete id="deleteComment" parameterType="map">
+        UPDATE comments
+        SET is_deleted=true, deleted_at=now()
+        WHERE uploader_id=#{userId} AND comment_id = #{commentId}
+    </delete>
 </mapper>

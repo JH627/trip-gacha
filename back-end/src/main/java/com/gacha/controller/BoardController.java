@@ -132,5 +132,12 @@ public class BoardController {
         
         return ResponseEntity.ok(Response.onSuccess());
     }
+
+    @DeleteMapping("comment/{commentId}")
+    public ResponseEntity<Response<?>> deleteComment(@LoginUser Integer userId, @PathVariable Integer commentId){
+        boardService.removeCommentById(commentId, userId);
+
+        return ResponseEntity.ok(Response.onSuccess());
+    }
     
 }
