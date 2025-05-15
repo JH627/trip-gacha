@@ -40,4 +40,6 @@ public interface BoardService {
     void createComment(AddCommentRequest addCommentRequest, Integer userId);
 
     void removeCommentById(Integer commentId, Integer userId);
+
+    void reportComment(Integer commentId, Integer userId);
 }

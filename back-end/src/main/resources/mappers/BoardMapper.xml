@@ -172,4 +172,8 @@
         SET is_deleted=true, deleted_at=now()
         WHERE uploader_id=#{userId} AND comment_id = #{commentId}
     </delete>
+    <insert id="reportComment" parameterType="map">
+        INSERT INTO comment_reports(user_id, comment_id)
+        VALUES (#{userId}, #{commentId})
+    </insert>
 </mapper>

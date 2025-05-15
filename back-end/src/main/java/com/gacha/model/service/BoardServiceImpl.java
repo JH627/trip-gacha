@@ -120,5 +120,14 @@ public class BoardServiceImpl implements BoardService {
         }catch(Exception e){
             throw e;
         }
-    }    
+    }
+
+    @Override
+    public void reportComment(Integer commentId, Integer userId) {
+        try{
+            boardDao.reportComment(commentId, userId);
+        }catch(DuplicateKeyException e){
+            throw new BoardException(BoardErrorCode.DUPLICATED_REPORT);
+        }
+    }
 }

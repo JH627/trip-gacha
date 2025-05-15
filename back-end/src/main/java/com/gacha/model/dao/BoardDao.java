@@ -50,4 +50,6 @@ public interface BoardDao {
     void insertComment(AddCommentRequest addCommentRequest, Integer userId);
 
     void deleteComment(Integer commentId, Integer userId);
+
+    void reportComment(Integer commentId, Integer userId);
 }

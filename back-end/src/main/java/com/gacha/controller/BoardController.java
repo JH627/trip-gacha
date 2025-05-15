@@ -140,4 +140,10 @@ public class BoardController {
         return ResponseEntity.ok(Response.onSuccess());
     }
     
+    @PostMapping("comment/report")
+    public ResponseEntity<Response<?>> reportComment(@LoginUser Integer userId, @RequestParam("commentId") Integer commentId) {
+        boardService.reportComment(commentId, userId);
+        
+        return ResponseEntity.ok(Response.onSuccess());
+    }
 }
