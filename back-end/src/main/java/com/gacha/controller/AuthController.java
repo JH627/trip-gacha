@@ -80,7 +80,7 @@ public class AuthController {
     }
     
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@CookieValue(REFRESH_TOKEN_COOKIE_NAME) String refreshToken) {
+    public ResponseEntity<?> refreshToken(@CookieValue(name = REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken) {
 
         String newAccessToken = authService.reGenerateAccessToken(refreshToken);
 

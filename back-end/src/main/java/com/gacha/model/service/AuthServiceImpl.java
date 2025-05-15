@@ -54,23 +54,26 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(String authorization, String refreshToken) {
-    	// accessToken과 refreshToken 둘중 하나라도 비어있다면
-        if (authorization.isBlank() || refreshToken.isBlank()) {
-            throw new JwtException(JwtErrorCode.MALFORMED_TOKEN);
+        // 둘 다 없으면 아무 것도 하지 않음
+        if ((authorization == null || authorization.isBlank()) && 
+            (refreshToken == null || refreshToken.isBlank())) {
+            return;
         }
 
-        String accessToken = authorization.substring(7);
+        // accessToken 처리
+        if (authorization != null && !authorization.isBlank()) {
+            String accessToken = authorization.substring(7);
+            String accessTokenKey = BLACKLIST_PREFIX + accessToken;
+            redisTemplate.opsForValue().set(accessTokenKey, "blacklisted");
+            redisTemplate.expire(accessTokenKey, jwtUtil.getRemainingExpirationTime(accessToken), TimeUnit.SECONDS);
+        }
 
-        String accessTokenKey = BLACKLIST_PREFIX + accessToken;
-        String refreshTokenKey = BLACKLIST_PREFIX + refreshToken;
-
-        // 토큰을 블랙리스트에 등록 (값을 "blacklisted"로 설정)
-        redisTemplate.opsForValue().set(accessTokenKey, "blacklisted");
-        redisTemplate.opsForValue().set(refreshTokenKey, "blacklisted");
-
-        // 토큰 만료 시간에 맞춰 Redis에서 해당 키가 자동으로 삭제되도록 설정
-        redisTemplate.expire(accessTokenKey, jwtUtil.getRemainingExpirationTime(accessToken), TimeUnit.SECONDS);
-        redisTemplate.expire(refreshTokenKey, jwtUtil.getRemainingExpirationTime(refreshToken), TimeUnit.SECONDS);
+        // refreshToken 처리
+        if (refreshToken != null && !refreshToken.isBlank()) {
+            String refreshTokenKey = BLACKLIST_PREFIX + refreshToken;
+            redisTemplate.opsForValue().set(refreshTokenKey, "blacklisted");
+            redisTemplate.expire(refreshTokenKey, jwtUtil.getRemainingExpirationTime(refreshToken), TimeUnit.SECONDS);
+        }
     }
 
     @Override

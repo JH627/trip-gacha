@@ -1,3 +1,46 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { defaultApi } from '@/api/axios'
+
+const emit = defineEmits<{
+  (e: 'next'): void
+}>()
+
+const email = ref('')
+const emailCheck = ref('')
+const showEmailCheck = ref(false)
+const isEmailVerified = ref(false)
+
+const handleEmailVerify = async () => {
+  try {
+    await defaultApi.post('/email/verification', {
+      email: email.value,
+    })
+    showEmailCheck.value = true
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleEmailCheck = async () => {
+  try {
+    await defaultApi.post('/email/verification-confirm', {
+      email: email.value,
+      code: emailCheck.value,
+    })
+    isEmailVerified.value = true
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleNext = () => {
+  if (isEmailVerified.value) {
+    emit('next')
+  }
+}
+</script>
+
 <template>
   <div class="regist-form">
     <h1 class="form-title">회원가입</h1>
@@ -5,7 +48,14 @@
       <label for="email">이메일</label>
       <div class="input-group">
         <input type="email" id="email" v-model="email" placeholder="이메일을 입력하세요" required />
-        <button type="button" class="verify-btn" @click="handleEmailVerify">인증</button>
+        <button
+          type="button"
+          class="verify-btn"
+          @click="handleEmailVerify"
+          :disabled="showEmailCheck"
+        >
+          전송
+        </button>
       </div>
     </div>
 
@@ -30,35 +80,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const emit = defineEmits<{
-  (e: 'next'): void
-}>()
-
-const email = ref('')
-const emailCheck = ref('')
-const showEmailCheck = ref(false)
-const isEmailVerified = ref(false)
-
-const handleEmailVerify = async () => {
-  // TODO: 이메일 인증 API 호출
-  showEmailCheck.value = true
-}
-
-const handleEmailCheck = async () => {
-  // TODO: 이메일 인증번호 확인 API 호출
-  isEmailVerified.value = true
-}
-
-const handleNext = () => {
-  if (isEmailVerified.value) {
-    emit('next')
-  }
-}
-</script>
 
 <style scoped>
 .regist-form {

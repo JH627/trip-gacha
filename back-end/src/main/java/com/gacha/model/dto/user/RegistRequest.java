@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegistRequest {
-    private @NonNull String  email;
+    private @NonNull String email;
     private @NonNull String nickname;
     private @NonNull String password;
     private MultipartFile profileImg;

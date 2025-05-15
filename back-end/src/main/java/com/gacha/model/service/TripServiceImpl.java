@@ -11,6 +11,7 @@ import com.gacha.exception.TripException;
 import com.gacha.model.dao.SpotDao;
 import com.gacha.model.dao.DestinationDao;
 import com.gacha.model.dao.TripScheduleDao;
+import com.gacha.model.dto.enums.ImageCategory;
 import com.gacha.model.dto.enums.SpotCategory;
 import com.gacha.model.dto.enums.SpotSearchCondition;
 import com.gacha.model.dto.trip.BookmarkSpotRequest;
@@ -18,6 +19,7 @@ import com.gacha.model.dto.trip.DestinationInfo;
 import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
 import com.gacha.model.dto.trip.SpotInfo;
 import com.gacha.model.dto.trip.SpotRegistFormRequest;
+import com.gacha.util.ImageUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ public class TripServiceImpl implements TripService {
 	private final SpotDao spotDao;
 	private final DestinationDao destinationDao;
 	private final TripScheduleDao tripScheduleDao;
+	private final ImageUtil imageUtil;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -81,9 +84,8 @@ public class TripServiceImpl implements TripService {
 
 	    if (form.getImg() != null && !form.getImg().isEmpty()) {
 	        try {
-				// TODO : 이미지 파일 S3에 올리기 -> 반환 url 저장
-//				imgUrl = s3Service.uploadImage(form.getImg());
-//				uploaded = true;
+				imgUrl = imageUtil.upload(form.getImg(), ImageCategory.spot);
+				uploaded = true;
 	        } catch (Exception e) {
 	        	log.info("이미지 파일 S3 업로드 실패");
 	            throw e;
