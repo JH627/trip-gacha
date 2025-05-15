@@ -43,7 +43,8 @@ public class JwtFilter extends OncePerRequestFilter {
 	
 	private final List<String> EXCLUDE_URL = List.of(
 			"/error",
-			"/auth/login", "/user/regist", 
+			"/auth/login", "/auth/refresh-token", "/auth/logout", 
+			"/user/regist", 
 			"/email/verification", 
 			"/email/verification-confirm",
 			"/swagger-ui",
@@ -89,7 +90,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			// 토큰이 블랙리스트에 있는 토큰인 경우 예외 발생
 			if (Boolean.TRUE.equals(redisTemplate.hasKey(BLACKLIST_PREFIX + accessToken))) {
 				log.error("Blacklisted Token: {}", accessToken);
-				sendErrorResponse(response, JwtErrorCode.INVALID_TOKEN);
+				sendErrorResponse(response, JwtErrorCode.BLACKLISTED_TOKEN);
 				return;
 			}
 
@@ -126,16 +127,16 @@ public class JwtFilter extends OncePerRequestFilter {
 			}
 		} catch (MalformedJwtException e) {
 			log.error("Malformed JWT Token: {}", e.getMessage());
-			sendErrorResponse(response, JwtErrorCode.INVALID_TOKEN);
+			sendErrorResponse(response, JwtErrorCode.MALFORMED_TOKEN);
 		} catch (SignatureException e) {
 			log.error("Invalid JWT Signature: {}", e.getMessage());
-			sendErrorResponse(response, JwtErrorCode.INVALID_TOKEN);
+			sendErrorResponse(response, JwtErrorCode.INVALID_SIGNATURE);
 		} catch (UnsupportedJwtException e) {
 			log.error("Unsupported JWT Token: {}", e.getMessage());
-			sendErrorResponse(response, JwtErrorCode.INVALID_TOKEN);
+			sendErrorResponse(response, JwtErrorCode.UNSUPPORTED_TOKEN);
 		} catch (ExpiredJwtException e) {
 			log.error("JWT Token expired: {}", e.getMessage());
-			sendErrorResponse(response, JwtErrorCode.INVALID_TOKEN);
+			sendErrorResponse(response, JwtErrorCode.EXPIRED_ACCESS_TOKEN);
 		} catch (JwtException e) {
 			log.error("JWT Token error: {}", e.getMessage());
 			sendErrorResponse(response, JwtErrorCode.INVALID_TOKEN);

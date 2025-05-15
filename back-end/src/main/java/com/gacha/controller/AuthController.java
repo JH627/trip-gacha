@@ -32,7 +32,7 @@ public class AuthController {
     private static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(7);
     private static final String COOKIE_PATH = "/";
     private static final boolean HTTP_ONLY = true;
-    private static final boolean SECURE = true;
+    private static final boolean SECURE = false;
 
     @PostMapping("/login")
     public ResponseEntity<Response<?>> login(@RequestBody LoginRequest loginRequest){
@@ -45,7 +45,7 @@ public class AuthController {
                 .maxAge(REFRESH_TOKEN_DURATION)
                 .sameSite("Lax")
                 .httpOnly(HTTP_ONLY)
-                .secure(false)
+                .secure(SECURE)
                 .path(COOKIE_PATH)
                 .build();
 
@@ -58,10 +58,12 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Response<?>> logout(
-    		@RequestHeader(value = "Authorization", required = false) String authorization,
-    		@CookieValue("refresh_token") String refreshToken){
-    	
-        authService.logout(authorization, refreshToken);
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @CookieValue(value = REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken) {
+        
+        if (authorization != null || refreshToken != null) {
+            authService.logout(authorization, refreshToken);
+        }
 
         HttpHeaders httpHeaders = new HttpHeaders();
         ResponseCookie responseCookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, "")
@@ -78,7 +80,7 @@ public class AuthController {
     }
     
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@CookieValue("refresh_token") String refreshToken) {
+    public ResponseEntity<?> refreshToken(@CookieValue(REFRESH_TOKEN_COOKIE_NAME) String refreshToken) {
 
         String newAccessToken = authService.reGenerateAccessToken(refreshToken);
 

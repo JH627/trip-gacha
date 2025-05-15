@@ -21,7 +21,8 @@ public class SecurityConfig {
     
 	private final String[] ALLOW_URL = {
 			"/error",
-			"/auth/login", "/user/regist", 
+			"/auth/login", "/auth/refresh-token", "/auth/logout",
+			"/user/regist", 
 			"/email/verification", "/email/verification-confirm", 
 			"/swagger-ui/**", "/v3/api-docs/**"
 	};

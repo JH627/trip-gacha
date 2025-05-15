@@ -18,6 +18,7 @@ import com.gacha.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import io.jsonwebtoken.ExpiredJwtException;
 
 @Slf4j
 @Service
@@ -53,9 +54,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(String authorization, String refreshToken) {
-    	// accessToken과 refreshToken 둘 다 없는 경우
+    	// accessToken과 refreshToken 둘중 하나라도 비어있다면
         if (authorization.isBlank() || refreshToken.isBlank()) {
-            throw new JwtException(JwtErrorCode.INVALID_TOKEN);
+            throw new JwtException(JwtErrorCode.MALFORMED_TOKEN);
         }
 
         String accessToken = authorization.substring(7);
@@ -78,18 +79,26 @@ public class AuthServiceImpl implements AuthService {
         // 리프레시 토큰이 없는 경우
         if (refreshToken == null || refreshToken.isBlank()) {
         	log.error("리프레시 토큰이 없음");
-        	throw new JwtException(JwtErrorCode.INVALID_TOKEN);
+        	throw new JwtException(JwtErrorCode.MALFORMED_TOKEN);
         }
         
         // 블랙리스트 토큰 확인
         if (Boolean.TRUE.equals(redisTemplate.hasKey(BLACKLIST_PREFIX + refreshToken))) {
         	log.error("만료되거나 블랙리스트에 있는 리프레시 토큰");
-        	throw new JwtException(JwtErrorCode.INVALID_TOKEN);
+        	throw new JwtException(JwtErrorCode.BLACKLISTED_TOKEN);
         }
 
         // 유효한 리프레시 토큰이라면 userId 기반으로 다시 발급
-        Integer userId = jwtUtil.extractUserId(refreshToken);
-        return jwtUtil.generateAccessToken(userId);
+        try {
+            Integer userId = jwtUtil.extractUserId(refreshToken);
+            return jwtUtil.generateAccessToken(userId);
+        } catch (ExpiredJwtException e) {
+            log.error("리프레시 토큰이 만료됨");
+            throw new JwtException(JwtErrorCode.EXPIRED_REFRESH_TOKEN);
+        } catch (Exception e) {
+            log.error("리프레시 토큰 검증 실패: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.INVALID_TOKEN);
+        }
     }
 
     @Override
