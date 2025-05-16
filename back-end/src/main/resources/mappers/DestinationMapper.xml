@@ -9,7 +9,8 @@
 	    SELECT 
 	        destination_id as destinationId,
 	        name,
-	        country
+	        country,
+	        img
 	    FROM destinations
 	    <where>
 	        <if test="keyword != null and keyword != ''">
