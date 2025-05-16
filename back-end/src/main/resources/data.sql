@@ -93,6 +93,12 @@ CREATE TABLE `comments` (
     FOREIGN KEY (`uploader_id`) REFERENCES `users` (`user_id`)
 );
 
+CREATE TABLE `categories` (
+    `category_id` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(50) NOT NULL,
+    PRIMARY KEY (`category_id`)
+);
+
 CREATE TABLE `comment_reports` (
     `comment_report_id` INT NOT NULL AUTO_INCREMENT,
     `user_id` INT NOT NULL,
@@ -116,7 +122,8 @@ CREATE TABLE `spots` (
     `phone` VARCHAR(15) NULL,
     `work_time` TEXT NULL,
     PRIMARY KEY (`spot_id`),
-    FOREIGN KEY (`destination_id`) REFERENCES `destinations` (`destination_id`)
+    FOREIGN KEY (`destination_id`) REFERENCES `destinations` (`destination_id`),
+    FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`)
 );
 
 CREATE TABLE `bookmarks` (
