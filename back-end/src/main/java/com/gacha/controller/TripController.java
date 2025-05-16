@@ -47,7 +47,7 @@ public class TripController {
 	
 	@Operation(summary = "목적지 리스트 조회", description = "검색 키워드에 따른 목적지 리스트를 반환한다. 검색 키워드가 없는 경우에는 모든 리스트를 반환한다.")
 	@GetMapping("/destination")
-	public Response<?> getDestinationList(@LoginUser Integer userId, @RequestParam(required = false) String keyword) {
+	public Response<?> getDestinationList(@RequestParam(required = false) String keyword) {
 		return Response.onSuccess(tripService.getDestinationList(keyword));
 	}
 	

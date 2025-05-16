@@ -16,4 +16,5 @@ public class DestinationInfo {
 	private Integer destinationId;
 	private String name;
 	private String country;
+	private String img;
 }
