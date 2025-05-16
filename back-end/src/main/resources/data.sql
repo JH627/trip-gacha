@@ -20,6 +20,7 @@ CREATE TABLE `destinations` (
     `destination_id` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(100) NOT NULL,
     `country` VARCHAR(50) NOT NULL,
+    `img` TEXT NOT NULL,
     PRIMARY KEY (`destination_id`)
 );
 
@@ -44,8 +45,8 @@ CREATE TABLE `board_images` (
     `origin_name` VARCHAR(100) NOT NULL,
     `uuid` TEXT NOT NULL,
     `created_at` DATETIME NOT NULL,
-    `deleted_at` DATETIME NOT NULL,
-    `is_deleted` BOOLEAN NOT NULL,
+    `deleted_at` DATETIME NULL,
+    `is_deleted` BOOLEAN NULL,
     PRIMARY KEY (`board_image_id`),
     FOREIGN KEY (`board_id`) REFERENCES `boards` (`board_id`)
 );
@@ -93,7 +94,7 @@ CREATE TABLE `comments` (
     FOREIGN KEY (`uploader_id`) REFERENCES `users` (`user_id`)
 );
 
-CREATE TABLE `categories` (
+CREATE TABLE `spot_categories` (
     `category_id` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(50) NOT NULL,
     PRIMARY KEY (`category_id`)
@@ -123,7 +124,7 @@ CREATE TABLE `spots` (
     `work_time` TEXT NULL,
     PRIMARY KEY (`spot_id`),
     FOREIGN KEY (`destination_id`) REFERENCES `destinations` (`destination_id`),
-    FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`)
+    FOREIGN KEY (`category_id`) REFERENCES `spot_categories` (`category_id`)
 );
 
 CREATE TABLE `bookmarks` (
