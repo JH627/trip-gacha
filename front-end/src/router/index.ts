@@ -14,30 +14,29 @@ const router = createRouter({
       component: DefaultLayout,
       children: [
         {
-          path: '',
+          path: '/',
           name: 'home',
-          component: WelcomeView
-        }
-      ]
+          component: WelcomeView,
+        },
+        {
+          path: 'login',
+          name: 'login',
+          component: LoginView,
+        },
+        {
+          path: 'regist',
+          name: 'regist',
+          component: RegistView,
+        },
+      ],
     },
     {
       path: '/',
       name: 'emptyLayout',
       component: EmptyLayout,
-      children: [
-        {
-          path: 'login',
-          name: 'login',
-          component: LoginView
-        },
-        {
-          path: 'regist',
-          name: 'regist',
-          component: RegistView
-        }
-      ]
-    }
-  ]
+      children: [],
+    },
+  ],
 })
 
 export default router

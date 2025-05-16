@@ -126,7 +126,7 @@ input:focus {
 }
 
 /* Mobile styles */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .login-box {
     padding: 1.5rem;
   }

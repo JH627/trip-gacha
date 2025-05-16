@@ -1,7 +1,7 @@
 <template>
   <a-result status="success" title="회원가입 성공!" sub-title="로그인 하고 서비스를 즐겨보세요!">
     <template #extra>
-      <a-button @click="goToWelcome">웰컴 페이지로</a-button>
+      <a-button @click="goToWelcome">메인 페이지로</a-button>
       <a-button type="primary" @click="goToLogin">로그인</a-button>
     </template>
   </a-result>
@@ -13,11 +13,11 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const goToWelcome = () => {
-  router.push('/') // 웰컴 페이지 경로
+  router.push('/')
 }
 
 const goToLogin = () => {
-  router.push('/login') // 로그인 페이지 경로
+  router.push('/login')
 }
 </script>
 

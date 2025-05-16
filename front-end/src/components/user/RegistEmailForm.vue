@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { defaultApi } from '@/api/axios'
 
 const emit = defineEmits<{
-  (e: 'next'): void
+  (e: 'next', email: string): void
 }>()
 
 const email = ref('')
@@ -11,32 +11,38 @@ const emailCheck = ref('')
 const showEmailCheck = ref(false)
 const isEmailVerified = ref(false)
 
+// 이메일 인증 번호 전송
 const handleEmailVerify = async () => {
-  try {
-    await defaultApi.post('/email/verification', {
+  await defaultApi
+    .post('/email/verification', {
       email: email.value,
     })
-    showEmailCheck.value = true
-  } catch (error) {
-    console.error(error)
-  }
+    .then(() => {
+      showEmailCheck.value = true
+    })
+    .catch((error) => console.log(error))
 }
 
+// 인증번호 검증
 const handleEmailCheck = async () => {
-  try {
-    await defaultApi.post('/email/verification-confirm', {
+  await defaultApi
+    .post('/email/verification-confirm', {
       email: email.value,
       code: emailCheck.value,
     })
-    isEmailVerified.value = true
-  } catch (error) {
-    console.error(error)
-  }
+    .then(() => {
+      isEmailVerified.value = true
+    })
+    .catch((error) => {
+      console.error(error)
+    })
 }
 
+// 다음 단계로
+// 이메일 전달
 const handleNext = () => {
   if (isEmailVerified.value) {
-    emit('next')
+    emit('next', email.value)
   }
 }
 </script>
@@ -69,7 +75,14 @@ const handleNext = () => {
           placeholder="인증번호를 입력하세요"
           required
         />
-        <button type="button" class="verify-btn" @click="handleEmailCheck">확인</button>
+        <button
+          type="button"
+          class="verify-btn"
+          @click="handleEmailCheck"
+          :disabled="isEmailVerified"
+        >
+          확인
+        </button>
       </div>
     </div>
 
@@ -109,15 +122,17 @@ label {
 
 .input-group {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
+  width: 100%;
 }
 
 input {
   flex: 1;
-  padding: 0.8rem;
+  padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+  min-width: 0;
 }
 
 input:focus {
@@ -126,17 +141,23 @@ input:focus {
 }
 
 .verify-btn {
-  padding: 0.8rem 1.5rem;
+  padding: 8px 16px;
   background-color: #4a90e2;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   white-space: nowrap;
+  min-width: 80px;
 }
 
 .verify-btn:hover {
   background-color: #357abd;
+}
+
+.verify-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .button-group {
@@ -162,5 +183,22 @@ input:focus {
 .next-btn:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+@media screen and (max-width: 375px) {
+  .input-group {
+    gap: 4px;
+  }
+
+  input {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .verify-btn {
+    padding: 8px;
+    min-width: 60px;
+    font-size: 0.9rem;
+  }
 }
 </style>

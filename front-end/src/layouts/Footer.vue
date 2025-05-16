@@ -1,16 +1,28 @@
 <template>
-  <div class="footer">
-    <h1>Footer</h1>
+  <div class="footer-content">
+    <p>&copy; SSAFY PARKSANGCHAN HONGJEONGHOON</p>
   </div>
 </template>
 
 <style scoped>
-  .footer {
-    text-align: center;
-    background-color: lightgray;
-  }
+.footer-content {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+}
 
-  a {
-    color: #42b983;
+p {
+  color: gray;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+@media screen and (max-width: 768px) {
+  p {
+    font-size: 0.8rem;
   }
+}
 </style>

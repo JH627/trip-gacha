@@ -4,7 +4,7 @@
     <div class="desktop-only">
       <a-steps :current="currentStepIndex">
         <a-step title="이메일 인증" :icon="h(UserOutlined)" />
-        <a-step title="개인정보 설정" :icon="h(SolutionOutlined)" />
+        <a-step title="개인정보" :icon="h(SolutionOutlined)" />
         <a-step title="완료" :icon="h(SmileOutlined)" />
       </a-steps>
     </div>
