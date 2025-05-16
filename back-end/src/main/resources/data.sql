@@ -50,6 +50,16 @@ CREATE TABLE `board_images` (
     FOREIGN KEY (`board_id`) REFERENCES `boards` (`board_id`)
 );
 
+CREATE TABLE `board_reports` (
+    `board_report_id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` INT NOT NULL,
+    `board_id` INT NOT NULL,
+    PRIMARY KEY (`board_report_id`),
+    UNIQUE KEY (`user_id`, `board_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+    FOREIGN KEY (`board_id`) REFERENCES `boards` (`board_id`)
+);
+
 CREATE TABLE `board_dislikes` (
     `board_dislike_id` INT NOT NULL AUTO_INCREMENT,
     `user_id` INT NOT NULL,
@@ -70,28 +80,27 @@ CREATE TABLE `board_likes` (
     FOREIGN KEY (`board_id`) REFERENCES `boards` (`board_id`)
 );
 
-CREATE TABLE `board_reports` (
-    `board_report_id` INT NOT NULL AUTO_INCREMENT,
-    `user_id` INT NOT NULL,
-    `board_id` INT NOT NULL,
-    PRIMARY KEY (`board_report_id`),
-    UNIQUE KEY (`user_id`, `board_id`),
-    FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-    FOREIGN KEY (`board_id`) REFERENCES `boards` (`board_id`)
-);
-
 CREATE TABLE `comments` (
     `comment_id` INT NOT NULL AUTO_INCREMENT,
     `board_id` INT NOT NULL,
     `content` TEXT NOT NULL,
     `uploader_id` INT NOT NULL,
     `created_at` DATETIME NOT NULL,
-    `updated_at` DATETIME NOT NULL,
-    `deleted_at` DATETIME NOT NULL,
+    `deleted_at` DATETIME NULL,
     `is_deleted` BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (`comment_id`),
     FOREIGN KEY (`board_id`) REFERENCES `boards` (`board_id`),
     FOREIGN KEY (`uploader_id`) REFERENCES `users` (`user_id`)
+);
+
+CREATE TABLE `comment_reports` (
+    `comment_report_id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` INT NOT NULL,
+    `comment_id` INT NOT NULL,
+    PRIMARY KEY (`comment_report_id`),
+    UNIQUE KEY (`user_id`, `comment_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+    FOREIGN KEY (`comment_id`) REFERENCES `comments` (`comment_id`)
 );
 
 CREATE TABLE `spots` (
@@ -152,3 +161,5 @@ CREATE TABLE `imgs` (
     PRIMARY KEY(`img_id`),
     FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
 );
+
+SET NAMES 'utf8mb4';
