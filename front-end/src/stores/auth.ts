@@ -30,8 +30,27 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const checkLogin = async () => {
+    if (accessToken.value) {
+      return true
+    }
+    try {
+      const response = await authApi.post('/auth/refresh-token')
+      const newToken = response.headers.authorization
+      if (newToken) {
+        accessToken.value = newToken
+        authApi.defaults.headers.common['Authorization'] = newToken
+        return true
+      }
+    } catch (e) {
+      accessToken.value = null
+    }
+    return false
+  }
+
   return {
     accessToken,
+    checkLogin,
 
     login,
     logout,
