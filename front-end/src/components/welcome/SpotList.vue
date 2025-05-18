@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import SpotListDetail from './SpotListDetail.vue'
 import { ref } from 'vue'
-
-interface Destination {
-  id: number
-  name: string
-  description: string
-  img: string
-}
+import type { Destination } from '@/types/trip'
 
 defineProps<{
   destinations: Destination[]
@@ -15,9 +9,12 @@ defineProps<{
 
 const spotListRef = ref<HTMLElement | null>(null)
 
+// 스크롤 이동
 const scroll = (direction: 'left' | 'right') => {
-  if (!spotListRef.value) return
-  
+  if (!spotListRef.value) {
+    return
+  }
+
   const scrollAmount = spotListRef.value.clientWidth
   const newScrollPosition = spotListRef.value.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount)
   
@@ -30,25 +27,32 @@ const scroll = (direction: 'left' | 'right') => {
 
 <template>
   <div class="spot-list-container">
+    <!-- 스크롤 이동 버튼 - 왼쪽 -->
     <button class="nav-button left" @click="scroll('left')">&lt;</button>
+    <!-- 여행지 목록 -->
     <div class="spot-list" ref="spotListRef">
+      <!-- 여행지 상세 블럭 -->
       <SpotListDetail
         v-for="destination in destinations"
         :key="destination.id"
         :destination="destination"
+        @click="() => $emit('select', destination)"
       />
     </div>
+    <!-- 스크롤 이동 버튼 - 오른쪽 -->
     <button class="nav-button right" @click="scroll('right')">&gt;</button>
   </div>
 </template>
 
 <style scoped>
+/* 여행지 목록 컨테이너 */
 .spot-list-container {
   width: 100%;
   overflow: hidden;
   position: relative;
 }
 
+/* 여행지 목록 */
 .spot-list {
   display: flex;
   gap: 1rem;
@@ -58,10 +62,12 @@ const scroll = (direction: 'left' | 'right') => {
   -webkit-overflow-scrolling: touch;
 }
 
+/* 여행지 목록 스크롤바 */
 .spot-list::-webkit-scrollbar {
   display: none;
 }
 
+/* 스크롤 이동 버튼 */
 .nav-button {
   position: absolute;
   top: 50%;
@@ -78,15 +84,16 @@ const scroll = (direction: 'left' | 'right') => {
   z-index: 2;
   transition: background-color 0.3s;
 }
-
 .nav-button:hover {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
+/* 스크롤 이동 버튼 - 왼쪽 */
 .nav-button.left {
   left: 0.5rem;
 }
 
+/* 스크롤 이동 버튼 - 오른쪽 */
 .nav-button.right {
   right: 0.5rem;
 }
@@ -110,6 +117,7 @@ const scroll = (direction: 'left' | 'right') => {
     cursor: grab;
   }
 
+  /* 모바일 터치 이벤트 */
   .spot-list:active {
     cursor: grabbing;
   }
