@@ -37,19 +37,32 @@
 /* 상단 오토 스크롤 이미지 슬라이드 스타일 */
 :deep(.slick-slide) {
   text-align: center;
-  height: 50vh;
+  height: 60vh;
   background: #f3f3f3;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 :deep(.ant-carousel) {
   overflow: hidden;
 }
 
 .carousel-image {
-  max-height: 100%;
-  max-width: 100%;
-  object-fit: fill;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media screen and (max-width: 768px) {
+  :deep(.slick-slide) {
+    height: 40vh;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  :deep(.slick-slide) {
+    height: 35vh;
+  }
 }
 </style>
