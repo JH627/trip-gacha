@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router'
 import logoImage from '@/assets/logo.jpg'
 import { UserOutlined } from '@ant-design/icons-vue'
 import { useAuthStore } from '@/stores/auth'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -32,8 +32,8 @@ const handleMenuClick = (path: string) => {
 }
 
 // 로그아웃 시 실행
-const handleLogout = () => {
-  authStore.logout()
+const handleLogout = async () => {
+  await authStore.logout()
   router.push('/login')
   if (isMobile.value) {
     closeDrawer()
@@ -47,6 +47,11 @@ onMounted(async () => {
     isMobile.value = window.innerWidth <= 768
   })
 })
+
+// accessToken 변경 감지
+watch(() => authStore.accessToken, (newToken) => {
+  isLoggedIn.value = !!newToken
+}, { immediate: true })
 </script>
 
 <template>
@@ -94,12 +99,7 @@ onMounted(async () => {
   </div>
 
   <!-- 모바일 메뉴 Drawer -->
-  <a-drawer
-    placement="right"
-    :visible="drawerVisible"
-    @close="closeDrawer"
-    class="mobile-drawer"
-  >
+  <a-drawer placement="right" :visible="drawerVisible" @close="closeDrawer" class="mobile-drawer">
     <!-- 모바일 메뉴 컨테이너 -->
     <div class="drawer-content">
       <div class="drawer-menu-item" @click="handleMenuClick('/trip')">여행 시작</div>
@@ -113,32 +113,42 @@ onMounted(async () => {
 <style scoped>
 /* 헤더 컨테이너 */
 .header-content {
-  height: 100%; display: flex; justify-content: center; align-items: center;
-  padding: 0 20px; width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  width: 100%;
 }
 
 /* 헤더 메인 컨테이너 */
 .header-main-content {
-  width: 100%; display: flex; justify-content: space-between; align-items: center;
-  max-width: 1500px; padding: 0 10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1500px;
+  padding: 0 10px;
 }
 
 /* 로고 컨테이너 */
 .logo-container {
-  display: flex; align-items: center; gap: 40px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
 }
 
 /* 로고 이미지 */
 .logo {
-  height: 70px; 
-  cursor: pointer; 
+  height: 70px;
+  cursor: pointer;
   object-fit: contain;
 }
 
 /* 게시판 링크 */
 .board-link {
-  color: black; 
-  text-decoration: none; 
+  color: black;
+  text-decoration: none;
   font-size: 16px;
 }
 .board-link:hover {
@@ -147,7 +157,8 @@ onMounted(async () => {
 
 /* 로그인 버튼 */
 .login-btn {
-  color: white; background-color: black;
+  color: white;
+  background-color: black;
 }
 
 /* 프로필 이미지 */
@@ -157,54 +168,59 @@ onMounted(async () => {
 }
 
 /* 모바일 메뉴 Drawer */
-.mobile-drawer { 
-  display: none; 
+.mobile-drawer {
+  display: none;
 }
 
 /* 모바일 메뉴 아이템 */
 .drawer-content {
-  display: flex; 
-  flex-direction: column; 
-  gap: 20px; 
-  padding: 20px; 
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
   height: 100%;
 }
 .drawer-menu-item {
-  font-size: 18px; cursor: pointer; padding: 10px 0;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 10px 0;
 }
 .drawer-menu-item:hover {
   color: #666;
 }
 
 /* 로그아웃 메뉴 */
-.drawer-menu-item.logout, .logout-menu {
-  margin-top: auto; 
+.drawer-menu-item.logout,
+.logout-menu {
+  margin-top: auto;
   color: #ff4d4f !important;
 }
-.drawer-menu-item.logout:hover, .logout-menu:hover {
+.drawer-menu-item.logout:hover,
+.logout-menu:hover {
   color: #ff7875 !important;
 }
 
 @media screen and (max-width: 768px) {
-  .header-content { 
-    padding: 0 10px; 
+  .header-content {
+    padding: 0 10px;
   }
-  .header-main-content { 
-    min-width: auto; padding: 0; 
+  .header-main-content {
+    min-width: auto;
+    padding: 0;
   }
-  .logo { 
-    height: 50px; 
+  .logo {
+    height: 50px;
   }
-  .board-link { 
-    display: none; 
+  .board-link {
+    display: none;
   }
-  .mobile-drawer { 
-    display: block; 
+  .mobile-drawer {
+    display: block;
   }
 }
 
 @media screen and (min-width: 769px) {
-  .mobile-drawer { 
+  .mobile-drawer {
     display: none;
   }
 }
