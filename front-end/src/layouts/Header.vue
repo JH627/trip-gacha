@@ -49,9 +49,13 @@ onMounted(async () => {
 })
 
 // accessToken 변경 감지
-watch(() => authStore.accessToken, (newToken) => {
-  isLoggedIn.value = !!newToken
-}, { immediate: true })
+watch(
+  () => authStore.accessToken,
+  (newToken) => {
+    isLoggedIn.value = !!newToken
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
