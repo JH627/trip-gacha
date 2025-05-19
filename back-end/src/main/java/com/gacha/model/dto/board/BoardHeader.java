@@ -23,4 +23,5 @@ public class BoardHeader {
     private Integer likeCount;
     private Integer viewCount;
     private Integer commentCount;
+    private String category;
 }

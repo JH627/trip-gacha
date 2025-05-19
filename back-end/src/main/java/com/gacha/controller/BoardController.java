@@ -1,6 +1,8 @@
 package com.gacha.controller;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import com.gacha.model.dto.board.SearchBoardCondition;
 import com.gacha.model.dto.board.UpdateBoardRequest;
 import com.gacha.model.service.BoardService;
 import com.gacha.util.StringValidator;
+import com.gacha.model.dto.board.BoardSearchResponse;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -59,11 +62,8 @@ public class BoardController {
     
     @GetMapping("s")
     public ResponseEntity<Response<?>> searchBoards(@ModelAttribute SearchBoardCondition condition) {
-        List<BoardHeader> boardHeaderList = boardService.searchByCondition(condition); 
-        
-        System.out.println(boardHeaderList);
-
-        return ResponseEntity.ok(Response.onSuccess(boardHeaderList));
+        BoardSearchResponse response = boardService.searchByCondition(condition);
+        return ResponseEntity.ok(Response.onSuccess(response));
     }
     
     @GetMapping("/{boardId}")

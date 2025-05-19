@@ -17,6 +17,9 @@ public interface BoardDao {
     // 게시글 리스트 검색
     List<BoardHeader> selectByCondition(SearchBoardCondition searchBoardCondition);
     
+    // 전체 게시글 개수 조회
+    int countByCondition(SearchBoardCondition searchBoardCondition);
+    
     // 게시글 조회
     BoardDetail selectById(Integer userId, Integer boardId);
 

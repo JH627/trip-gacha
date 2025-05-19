@@ -16,6 +16,7 @@ import com.gacha.model.dto.board.BoardHeader;
 import com.gacha.model.dto.board.CommentDetail;
 import com.gacha.model.dto.board.GetCommentsRequest;
 import com.gacha.model.dto.board.SearchBoardCondition;
+import com.gacha.model.dto.board.BoardSearchResponse;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -23,12 +24,18 @@ public class BoardServiceImpl implements BoardService {
     private BoardDao boardDao;
 
     @Override
-    public List<BoardHeader> searchByCondition(SearchBoardCondition condition) {
+    public BoardSearchResponse searchByCondition(SearchBoardCondition condition) {
         try {
             condition.setPage(condition.getPage() > 0 ? (condition.getPage() - 1) * condition.getOffset() : 0);
             System.out.println(condition);
             List<BoardHeader> boardList = boardDao.selectByCondition(condition);
-            return boardList;
+            int totalCount = boardDao.countByCondition(condition);
+            
+            return BoardSearchResponse.builder()
+                .boards(boardList)
+                .currentPage(condition.getPage() / condition.getOffset() + 1)
+                .totalCount(totalCount)
+                .build();
         } catch(Exception e){
             System.out.println("게시글 조회 중 버그남 ㅎㅎ;");
             throw e;

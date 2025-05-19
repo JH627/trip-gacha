@@ -28,6 +28,7 @@
         <result property="viewCount" column="view_count"/>
         <result property="likeCount" column="like_count"/>
         <result property="commentCount" column="comment_count"/>
+        <result property="category" column="category"/>
     </resultMap>
   <select id="selectByCondition"
           parameterType="com.gacha.model.dto.board.SearchBoardCondition"
@@ -39,7 +40,8 @@
           b.created_at as created_at,
           b.view_count as view_count,
           COUNT(DISTINCT bl.board_like_id) AS like_count,
-          COUNT(DISTINCT c.comment_id) AS comment_count
+          COUNT(DISTINCT c.comment_id) AS comment_count,
+          b.category as category
       FROM boards b
       LEFT JOIN users u ON b.uploader_id = u.user_id
       LEFT JOIN board_likes bl ON b.board_id = bl.board_id
@@ -54,7 +56,7 @@
           AND b.category = #{category.value}
       </if>
 
-      GROUP BY b.board_id, b.title, u.nickname, b.created_at, b.view_count
+      GROUP BY b.board_id, b.title, u.nickname, b.created_at, b.view_count, b.category
 
       ORDER BY
       <choose>
@@ -68,6 +70,20 @@
       <if test="!isDesc">ASC</if>
 
       LIMIT #{offset} OFFSET #{page}
+  </select>
+
+  <select id="countByCondition"
+          parameterType="com.gacha.model.dto.board.SearchBoardCondition"
+          resultType="int">
+      SELECT COUNT(DISTINCT b.board_id)
+      FROM boards b
+      WHERE b.is_deleted = false
+      <if test="title != null and title != ''">
+          AND b.title LIKE CONCAT('%', #{title}, '%')
+      </if>
+      <if test="category != null and category.value != 'popular'">
+          AND b.category = #{category.value}
+      </if>
   </select>
 
     <resultMap id="BoardDetailResultMap" type="com.gacha.model.dto.board.BoardDetail">

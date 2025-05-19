@@ -9,10 +9,11 @@ import com.gacha.model.dto.board.BoardHeader;
 import com.gacha.model.dto.board.CommentDetail;
 import com.gacha.model.dto.board.GetCommentsRequest;
 import com.gacha.model.dto.board.SearchBoardCondition;
+import com.gacha.model.dto.board.BoardSearchResponse;
 
 public interface BoardService {
     // 게시글 리스트 검색
-    List<BoardHeader> searchByCondition(SearchBoardCondition searchBoardCondition);
+    BoardSearchResponse searchByCondition(SearchBoardCondition searchBoardCondition);
     
     // 게시글 조회
     BoardDetail searchById(Integer userId, Integer boardId);
