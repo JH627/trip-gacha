@@ -64,7 +64,7 @@ watch(
       <!-- 로고, 링크들 -->
       <div class="logo-container">
         <img :src="logoImage" alt="로고" class="logo" @click="router.push('/')" />
-        <router-link to="/trip" class="board-link">여행 시작</router-link>
+        <router-link to="/lobby" class="board-link">여행 시작</router-link>
         <router-link to="/board" class="board-link">게시판</router-link>
       </div>
       <div>
