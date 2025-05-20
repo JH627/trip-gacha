@@ -53,7 +53,13 @@ const router = createRouter({
       path: '/',
       name: 'emptyLayout',
       component: EmptyLayout,
-      children: [],
+      children: [
+        {
+          path: '/lobby',
+          name: 'lobby',
+          component: () => import('../views/LobbyView.vue'),
+        },
+      ],
     },
   ],
 })

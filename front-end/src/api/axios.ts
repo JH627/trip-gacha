@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { setupInterceptors } from '@/api/interceptors'
+import { useAuthStore } from '@/stores/auth'
 
 const BASE_URL = 'http://localhost:8080/api'
 
