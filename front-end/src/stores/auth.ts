@@ -36,6 +36,13 @@ export const useAuthStore = defineStore(
       if (accessToken.value) {
         return true
       }
+
+      await refreshAccessToken()
+
+      return false
+    }
+
+    const refreshAccessToken = async () => {
       try {
         const response = await authApi.post('/auth/refresh-token')
         const newToken = response.headers.authorization
@@ -44,10 +51,14 @@ export const useAuthStore = defineStore(
           authApi.defaults.headers.common['Authorization'] = newToken
           return true
         }
-      } catch (e) {
+      } catch (error) {
+        console.error(error)
         accessToken.value = null
       }
-      return false
+    }
+
+    const setAccessToken = (newAccessToken: string) => {
+      accessToken.value = newAccessToken
     }
 
     return {
@@ -55,6 +66,8 @@ export const useAuthStore = defineStore(
       checkLogin,
       login,
       logout,
+      setAccessToken,
+      refreshAccessToken,
     }
   },
   {
