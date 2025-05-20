@@ -38,6 +38,7 @@ export interface Comment {
   authorName: string
   createdAt: string
   isMine: boolean
+  isDeleted: boolean
 }
 
 export interface BoardDetail {

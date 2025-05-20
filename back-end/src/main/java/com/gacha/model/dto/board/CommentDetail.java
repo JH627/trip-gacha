@@ -11,4 +11,5 @@ public class CommentDetail {
     private LocalDateTime createdAt;
     private String content;
     private Boolean isMine;
+    private Boolean isDeleted;
 }

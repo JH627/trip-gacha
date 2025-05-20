@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { List, Typography, Button } from 'ant-design-vue'
-import { Comment } from '@/types/board'
+import type { Comment } from '@/types/board'
 
 const { Text } = Typography
 
@@ -34,9 +34,12 @@ const handleDelete = (commentId: number) => {
               }}
             </Text>
           </div>
-          <div class="comment-content">{{ item.content }}</div>
+          <div class="comment-content">
+            <Text v-if="item.isDeleted" type="secondary">삭제된 댓글입니다</Text>
+            <template v-else>{{ item.content }}</template>
+          </div>
           <div class="comment-actions">
-            <Button v-if="item.isMine" type="text" danger @click="handleDelete(item.commentId)">
+            <Button v-if="item.isMine && !item.isDeleted" type="text" danger @click="handleDelete(item.commentId)">
               삭제
             </Button>
           </div>

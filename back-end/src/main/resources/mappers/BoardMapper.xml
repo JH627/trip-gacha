@@ -174,6 +174,7 @@
         <result property="createdAt" column="created_at"/>
         <result property="content" column="content"/>
         <result property="isMine" column="is_mine"/>
+        <result property="isDeleted" column="is_deleted"/>
     </resultMap>
 
     <select id="selectCommentsById" parameterType="map" resultMap="CommentetailResultMap">
@@ -181,11 +182,15 @@
             u.nickname AS author_name, 
             c.created_at AS created_at, 
             content,
-            MAX(CASE WHEN c.uploader_id = #{userId} THEN 1 ELSE 0 END) AS is_mine
+            c.is_deleted as is_deleted,
+            CASE 
+                WHEN c.is_deleted = true THEN false
+                ELSE MAX(CASE WHEN c.uploader_id = #{userId} THEN 1 ELSE 0 END)
+            END AS is_mine
         FROM comments AS c
         LEFT JOIN users AS u ON c.uploader_id = u.user_id
         WHERE c.board_id = #{getCommentsRequest.boardId}
-        GROUP BY comment_id, author_name, created_at, content
+        GROUP BY comment_id, author_name, created_at, content, is_deleted
     </select>
 
     <insert id="insertComment" parameterType="map">
