@@ -10,7 +10,7 @@ import {
 } from '@/socket/webSocket'
 import defaultProfile from '../assets/no_profile.png'
 
-onMounted(() => {
+onMounted(async () => {
   const newUser: SocketUserInfo = {
     socketId: '',
     nickname: '깐총이',
@@ -18,7 +18,7 @@ onMounted(() => {
     loginTime: Date.now(),
   }
 
-  connect(
+  await connect(
     (body) => {
       try {
         const data: LobbyResponse = JSON.parse(body)
