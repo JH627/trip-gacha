@@ -15,4 +15,5 @@ public class BoardDetail {
     private String content;
     private boolean liked;
     private boolean isReported;
+    private boolean isMine;
 }

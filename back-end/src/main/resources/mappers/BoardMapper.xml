@@ -104,6 +104,7 @@
         <result property="content" column="content"/>
         <result property="liked" column="liked"/>
         <result property="isReported" column="is_reported"/>
+        <result property="isMine" column="is_mine"/>
     </resultMap>
   <select id="selectById" resultMap="BoardDetailResultMap" parameterType="map">
     SELECT b.category as category, 
@@ -114,7 +115,8 @@
             COUNT(DISTINCT bl.board_like_id) AS like_count,
             b.content as content, 
             MAX(CASE WHEN bl.user_id = #{userId} THEN 1 ELSE 0 END) AS liked,
-            MAX(CASE WHEN br.user_id = #{userId} THEN 1 ELSE 0 END) AS is_reported
+            MAX(CASE WHEN br.user_id = #{userId} THEN 1 ELSE 0 END) AS is_reported,
+            MAX(CASE WHEN b.uploader_id = #{userId} THEN 1 ELSE 0 END) AS is_mine
     FROM boards as b
     LEFT JOIN users as u ON b.uploader_id = u.user_id
     LEFT JOIN board_likes bl ON b.board_id = bl.board_id

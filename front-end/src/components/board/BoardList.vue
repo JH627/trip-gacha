@@ -24,14 +24,6 @@ const selectedCategory = ref<string>('POPULAR') // 선택된 카테고리
 
 // 게시글 가져오기
 const fetchBoards = () => {
-  console.log({
-    page: currentPage.value,
-    offset: pageSize.value,
-    category: selectedCategory.value,
-    searchType: props.searchType,
-    searchKeyword: props.searchKeyword,
-  })
-
   authApi
     .get('/board/s', {
       params: {

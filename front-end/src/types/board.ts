@@ -31,3 +31,24 @@ export interface BoardListProps {
 export interface BoardDetailProps {
   boardId: number
 }
+
+export interface Comment {
+  commentId: number
+  content: string
+  authorName: string
+  createdAt: string
+  isMine: boolean
+}
+
+export interface BoardDetail {
+  boardId: number
+  title: string
+  content: string
+  authorName: string
+  createdAt: string
+  viewCount: number
+  likeCount: number
+  isLiked: boolean
+  isDisliked: boolean
+  isMine: boolean
+}
