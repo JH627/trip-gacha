@@ -9,7 +9,7 @@ const formRef = ref()
 const formState = ref({
   title: '',
   content: '',
-  category: 'general',
+  category: 'FREE',
 })
 
 const handleSubmit = async () => {
@@ -40,7 +40,6 @@ const handleSubmit = async () => {
         :rules="[{ required: true, message: '카테고리를 선택해주세요' }]"
       >
         <Select v-model:value="formState.category">
-          <Select.Option value="POPULAR">인기</Select.Option>
           <Select.Option value="FREE">자유</Select.Option>
           <Select.Option value="IDEA">건의</Select.Option>
         </Select>

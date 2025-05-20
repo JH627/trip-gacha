@@ -1,8 +1,6 @@
 package com.gacha.controller;
 
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +15,6 @@ import com.gacha.model.dto.board.AddBoardRequest;
 import com.gacha.model.dto.board.AddCommentRequest;
 import com.gacha.model.dto.board.BoardDetail;
 import com.gacha.model.dto.board.BoardDto;
-import com.gacha.model.dto.board.BoardHeader;
 import com.gacha.model.dto.board.CommentDetail;
 import com.gacha.model.dto.board.GetCommentsRequest;
 import com.gacha.model.dto.board.SearchBoardCondition;
@@ -44,28 +41,29 @@ public class BoardController {
     private BoardService boardService;
 
     @PostMapping("")
-    public ResponseEntity<Response<?>> addBoard(@LoginUser Integer userId, @ModelAttribute AddBoardRequest addBoardRequest) {
+    public ResponseEntity<Response<?>> addBoard(@LoginUser Integer userId,
+            @RequestBody AddBoardRequest addBoardRequest) {
         System.out.println(addBoardRequest);
-        
+
         BoardDto boardDto = BoardDto.builder()
-                                    .title(addBoardRequest.getTitle())
-                                    .content(addBoardRequest.getContent())
-                                    .category(addBoardRequest.getCategory())
-                                    .build();
-        
+                .title(addBoardRequest.getTitle())
+                .content(addBoardRequest.getContent())
+                .category(addBoardRequest.getCategory())
+                .build();
+
         System.out.println(boardDto);
-        
+
         boardService.createBoard(boardDto, userId);
-        
+
         return ResponseEntity.ok(Response.onSuccess());
     }
-    
+
     @GetMapping("s")
     public ResponseEntity<Response<?>> searchBoards(@ModelAttribute SearchBoardCondition condition) {
         BoardSearchResponse response = boardService.searchByCondition(condition);
         return ResponseEntity.ok(Response.onSuccess(response));
     }
-    
+
     @GetMapping("/{boardId}")
     public ResponseEntity<Response<?>> searchBoard(@LoginUser Integer userId, @PathVariable Integer boardId) {
         BoardDetail boardInfo = boardService.searchById(userId, boardId);
@@ -74,76 +72,82 @@ public class BoardController {
     }
 
     @PatchMapping("")
-    public ResponseEntity<Response<?>> updateBoard(@RequestBody UpdateBoardRequest updateBoardRequest, @LoginUser Integer userId) {        
-        if(StringValidator.isEmpty(updateBoardRequest.getTitle(), updateBoardRequest.getContent())){
+    public ResponseEntity<Response<?>> updateBoard(@RequestBody UpdateBoardRequest updateBoardRequest,
+            @LoginUser Integer userId) {
+        if (StringValidator.isEmpty(updateBoardRequest.getTitle(), updateBoardRequest.getContent())) {
             return ResponseEntity.ok(Response.onFailure(HttpStatus.BAD_REQUEST, "400", "제대로 입력 부탁", null));
         }
-        
+
         BoardDto boardDto = BoardDto
-                                .builder()
-                                .boardId(updateBoardRequest.getBoardId())
-                                .title(updateBoardRequest.getTitle())
-                                .content(updateBoardRequest.getContent())
-                                .build();
-        
+                .builder()
+                .boardId(updateBoardRequest.getBoardId())
+                .title(updateBoardRequest.getTitle())
+                .content(updateBoardRequest.getContent())
+                .build();
+
         boardService.updateById(boardDto, userId);
 
         return ResponseEntity.ok(Response.onSuccess());
     }
 
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<Response<?>> deleteBoard(@LoginUser Integer userId, @PathVariable Integer boardId) {        
+    public ResponseEntity<Response<?>> deleteBoard(@LoginUser Integer userId, @PathVariable Integer boardId) {
         boardService.removeById(boardId, userId);
 
         return ResponseEntity.ok(Response.onSuccess());
     }
 
     @PostMapping("/report")
-    public ResponseEntity<Response<?>> reportBoard(@LoginUser Integer userId, @RequestParam("boardId") Integer boardId) {
+    public ResponseEntity<Response<?>> reportBoard(@LoginUser Integer userId,
+            @RequestParam("boardId") Integer boardId) {
         boardService.report(boardId, userId);
-        
+
         return ResponseEntity.ok(Response.onSuccess());
     }
 
     @PostMapping("/like")
     public ResponseEntity<Response<?>> likeBoard(@LoginUser Integer userId, @RequestParam("boardId") Integer boardId) {
         boardService.like(boardId, userId);
-        
+
         return ResponseEntity.ok(Response.onSuccess());
     }
 
     @PostMapping("/dislike")
-    public ResponseEntity<Response<?>> dislikeBoard(@LoginUser Integer userId, @RequestParam("boardId") Integer boardId) {
+    public ResponseEntity<Response<?>> dislikeBoard(@LoginUser Integer userId,
+            @RequestParam("boardId") Integer boardId) {
         boardService.dislike(boardId, userId);
-        
+
         return ResponseEntity.ok(Response.onSuccess());
     }
 
     @GetMapping("/comments")
-    public ResponseEntity<Response<?>> getComments(@LoginUser Integer userId, @ModelAttribute GetCommentsRequest getCommentsRequest) {
+    public ResponseEntity<Response<?>> getComments(@LoginUser Integer userId,
+            @ModelAttribute GetCommentsRequest getCommentsRequest) {
         List<CommentDetail> comments = boardService.searchCommentsById(getCommentsRequest, userId);
-        
+
         return ResponseEntity.ok(Response.onSuccess(comments));
     }
 
     @PostMapping("/comment")
-    public ResponseEntity<Response<?>> addComment(@LoginUser Integer userId, @RequestBody AddCommentRequest addCommentRequest) {
+    public ResponseEntity<Response<?>> addComment(@LoginUser Integer userId,
+            @RequestBody AddCommentRequest addCommentRequest) {
         boardService.createComment(addCommentRequest, userId);
-        
+
         return ResponseEntity.ok(Response.onSuccess());
     }
 
     @DeleteMapping("comment/{commentId}")
-    public ResponseEntity<Response<?>> deleteComment(@LoginUser Integer userId, @PathVariable Integer commentId){
+    public ResponseEntity<Response<?>> deleteComment(@LoginUser Integer userId, @PathVariable Integer commentId) {
         boardService.removeCommentById(commentId, userId);
 
         return ResponseEntity.ok(Response.onSuccess());
     }
-    
+
     @PostMapping("comment/report")
-    public ResponseEntity<Response<?>> reportComment(@LoginUser Integer userId, @RequestParam("commentId") Integer commentId) {
+    public ResponseEntity<Response<?>> reportComment(@LoginUser Integer userId,
+            @RequestParam("commentId") Integer commentId) {
         boardService.reportComment(commentId, userId);
-        
+
         return ResponseEntity.ok(Response.onSuccess());
     }
 }
