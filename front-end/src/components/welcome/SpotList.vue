@@ -16,11 +16,12 @@ const scroll = (direction: 'left' | 'right') => {
   }
 
   const scrollAmount = spotListRef.value.clientWidth
-  const newScrollPosition = spotListRef.value.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount)
-  
+  const newScrollPosition =
+    spotListRef.value.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount)
+
   spotListRef.value.scrollTo({
     left: newScrollPosition,
-    behavior: 'smooth'
+    behavior: 'smooth',
   })
 }
 </script>
@@ -102,7 +103,7 @@ const scroll = (direction: 'left' | 'right') => {
   .nav-button {
     display: block;
   }
-  
+
   .spot-list {
     cursor: default;
   }
@@ -112,7 +113,7 @@ const scroll = (direction: 'left' | 'right') => {
   .nav-button {
     display: none;
   }
-  
+
   .spot-list {
     cursor: grab;
   }

@@ -4,6 +4,9 @@ import EmptyLayout from '@/layouts/EmptyLayout.vue'
 import WelcomeView from '@/views/WelcomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegistView from '@/views/RegistView.vue'
+import BoardListView from '@/views/board/BoardListView.vue'
+import BoardDetailView from '@/views/board/BoardDetailView.vue'
+import BoardWriteView from '@/views/board/BoardWriteView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +30,22 @@ const router = createRouter({
           path: 'regist',
           name: 'regist',
           component: RegistView,
+        },
+        {
+          path: 'board',
+          name: 'board',
+          component: BoardListView,
+        },
+        {
+          path: 'board/:id',
+          name: 'boardDetail',
+          component: BoardDetailView,
+          props: true,
+        },
+        {
+          path: 'board/write',
+          name: 'boardWrite',
+          component: BoardWriteView,
         },
       ],
     },
