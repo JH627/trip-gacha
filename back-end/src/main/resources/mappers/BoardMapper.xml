@@ -49,7 +49,15 @@
       WHERE b.is_deleted = false
 
       <if test="title != null and title != ''">
-          AND b.title LIKE CONCAT('%', #{title}, '%')
+      	  <if test="searchType == 'content'">
+          	AND b.content LIKE CONCAT('%', #{title}, '%')
+      	  </if>
+      	  <if test="searchType == 'authorName'">
+      	  	AND u.nickname LIKE CONCAT('%', #{title}, '%')
+      	  </if>
+      	  <if test="searchType == 'title'">
+      	  	AND b.title LIKE CONCAT('%', #{title}, '%')
+      	  </if>
       </if>
 
       <if test="category != null and category.value != 'popular'">

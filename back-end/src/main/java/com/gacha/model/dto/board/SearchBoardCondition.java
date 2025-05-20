@@ -25,6 +25,9 @@ public class SearchBoardCondition {
         // 제목 필터 (검색어)
         private String title;
 
+        // 검색어 검색 기준 (제목, 내용, 글쓴이)
+        private String searchType = "title";
+        
         // 카테고리 (기본: 인기)
         private BoardCategoey category = BoardCategoey.POPULAR;
 
@@ -33,4 +36,6 @@ public class SearchBoardCondition {
 
         // 정렬 방향: asc 또는 desc
         private Boolean isDesc = false;
+        
+        
 }
