@@ -1,5 +1,6 @@
 import SockJS from 'sockjs-client'
 import { Client, type Message, over } from 'stompjs'
+import { useAuthStore } from '@/stores/auth'
 
 export interface RoomInfo {
   roomId: string
@@ -37,22 +38,36 @@ export function connect(onMessage: (msg: string) => void, onConnected?: () => vo
   const socket = new SockJS('http://localhost:8081/ws')
   stompClient = over(socket)
 
-  stompClient.connect({}, () => {
-    console.log('✅ 연결됨')
+  const userAuth = useAuthStore()
+  console.log(userAuth.accessToken)
 
-    // 이걸로 사용자를 맵핑함
-    stompClient?.subscribe('/user/queue/loby', (message: Message) => {
-      onMessage(message.body)
-    })
+  stompClient.connect(
+    { Authorization: userAuth.accessToken },
+    () => {
+      console.log('✅ 연결됨')
 
-    // 이걸로 특정 토픽을 구독함
-    stompClient?.subscribe('/topic/loby', (message: Message) => {
-      onMessage(message.body)
-    })
+      // 이걸로 사용자를 맵핑함
+      stompClient?.subscribe('/user/queue/loby', (message: Message) => {
+        onMessage(message.body)
+      })
 
-    // 위 두개 연결이 끝나면 실행함
-    onConnected?.()
-  })
+      // 이걸로 특정 토픽을 구독함
+      stompClient?.subscribe('/topic/loby', (message: Message) => {
+        onMessage(message.body)
+      })
+
+      stompClient?.subscribe('/user/queue/errors', (message: Message) => {
+        const errorMessage = message.body
+        alert('WebSocket 인증 실패: ' + errorMessage)
+      })
+
+      // 위 두개 연결이 끝나면 실행함
+      onConnected?.()
+    },
+    (error) => {
+      console.error('웹소켓 연결 실패:', error)
+    },
+  )
 }
 
 export function enterLoby(socketUserInfo: SocketUserInfo) {
