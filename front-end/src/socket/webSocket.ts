@@ -29,3 +29,31 @@ export interface LobbyResponse<T> {
   type: LobyEventType
   data: T
 }
+
+export enum RoomEventType {
+  CREATE = 'CREATE',
+  INIT = 'INIT',
+  LEAVE = 'LEAVE',
+}
+
+export interface CreateRoomRequest {
+  title: string
+  destination: string
+  password: string
+  startDate: string
+  endDate: string
+}
+
+export interface RoomHeader {
+  roomId: string
+  title: string
+  destination: string
+  userCount: number | null
+  startDate: string
+  endDate: string
+}
+
+export interface RoomResponse<T> {
+  type: RoomEventType
+  data: T
+}

@@ -40,12 +40,12 @@ public class WebSocketEventListener {
 
             System.out.println("remove :" + removedUser);
 
-            LobbyResponse msg = new LobbyResponse(LobyEventType.LEAVE, removeUserList);
+            LobbyResponse<SocketUserInfo> msg = new LobbyResponse<SocketUserInfo>(LobyEventType.LEAVE, removedUser);
 
             if (removedUser != null) {
                 // 다른 사용자들에게 알림 전송
                 messagingTemplate.convertAndSend(
-                    "/topic/loby",
+                    "/topic/lobby",
                     msg // 또는 유저가 나갔다는 별도의 메시지 객체를 만들어 보내도 됨
                 );
             }

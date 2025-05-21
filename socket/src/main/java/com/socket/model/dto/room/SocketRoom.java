@@ -16,9 +16,9 @@ public class SocketRoom {
     private String roomId;
     private String title;
     private String password;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private String tripTarget;
+    private String startDate;
+    private String endDate;
+    private String destination;
     private SocketRoomUser owner;
     private List<SocketRoomUser> userList;
 }

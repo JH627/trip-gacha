@@ -11,6 +11,9 @@ import org.springframework.stereotype.Controller;
 import com.socket.model.dto.lobby.LobbyResponse;
 import com.socket.model.dto.lobby.LobyEventType;
 import com.socket.model.dto.lobby.SocketUserInfo;
+import com.socket.model.dto.room.RoomEventType;
+import com.socket.model.dto.room.RoomResponse;
+import com.socket.model.dto.room.SocketRoomHeader;
 import com.socket.model.store.LobbySessionStore;
 import com.socket.model.store.RoomSessionStore;
 
@@ -51,7 +54,7 @@ public class LobbyController {
 
         messagingTemplate.convertAndSend(
             "/topic/room",
-            roomStore.getAll()
+            new RoomResponse<List<SocketRoomHeader>>( RoomEventType.INIT, roomStore.getAll())
         );
     }
 

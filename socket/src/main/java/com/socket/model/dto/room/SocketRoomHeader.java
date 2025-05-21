@@ -1,7 +1,5 @@
 package com.socket.model.dto.room;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,8 +12,8 @@ import lombok.ToString;
 public class SocketRoomHeader {
     private String roomId;
     private String title;
-    private String tripTarget;
+    private String destination;
     private Integer userCount;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private String startDate;
+    private String endDate;
 }

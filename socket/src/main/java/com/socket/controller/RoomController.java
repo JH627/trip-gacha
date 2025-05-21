@@ -13,6 +13,8 @@ import com.socket.model.dto.lobby.LobbyResponse;
 import com.socket.model.dto.lobby.LobyEventType;
 import com.socket.model.dto.lobby.SocketUserInfo;
 import com.socket.model.dto.room.CreateRoomRequest;
+import com.socket.model.dto.room.RoomEventType;
+import com.socket.model.dto.room.RoomResponse;
 import com.socket.model.dto.room.SocketRoom;
 import com.socket.model.dto.room.SocketRoomHeader;
 import com.socket.model.dto.room.SocketRoomUser;
@@ -43,8 +45,8 @@ public class RoomController {
                                             roomInfo.getPassword(),
                                             roomInfo.getStartDate(),
                                             roomInfo.getEndDate(),
-                                            roomInfo.getTripTarget(),
-                                            roomInfo.getOwner(),
+                                            roomInfo.getDestination(),
+                                            owner,
                                             new ArrayList<>());
 
         store.add(newRoom.getRoomId(), newRoom);
@@ -52,19 +54,21 @@ public class RoomController {
         // 자기 자신
         messagingTemplate.convertAndSendToUser(
             sessionId,
-            "/queue/loby", // 유니캐스트용 endpoint
+            "/queue/lobby", // 유니캐스트용 endpoint
             newRoom.getRoomId()
         );
+
+        SocketRoomHeader roomHeader = new SocketRoomHeader(newRoom.getRoomId(), 
+                                newRoom.getTitle(), 
+                                newRoom.getDestination(), 
+                                1, 
+                                newRoom.getStartDate(), 
+                                newRoom.getEndDate());
         
         // 모든 사용자
         messagingTemplate.convertAndSend(
             "/topic/room",
-            new SocketRoomHeader(newRoom.getRoomId(), 
-                                newRoom.getTitle(), 
-                                newRoom.getTripTarget(), 
-                                1, 
-                                newRoom.getStartDate(), 
-                                newRoom.getEndDate())
+            new RoomResponse<SocketRoomHeader>(RoomEventType.CREATE, roomHeader)
         );
     }
 }

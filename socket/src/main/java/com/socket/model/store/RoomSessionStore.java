@@ -30,7 +30,7 @@ public class RoomSessionStore {
             int userCount = room.getUserList().size() + 1;
             roomHeaders.add(new SocketRoomHeader(room.getRoomId(), 
                                                 room.getTitle(), 
-                                                room.getTripTarget(), 
+                                                room.getDestination(),
                                                 userCount, 
                                                 room.getStartDate(), 
                                                 room.getEndDate()));
