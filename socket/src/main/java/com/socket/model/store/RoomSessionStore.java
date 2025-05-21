@@ -27,7 +27,7 @@ public class RoomSessionStore {
         List<SocketRoomHeader> roomHeaders = new ArrayList<>();
 
         for(SocketRoom room : roomList){
-            int userCount = room.getUserList().length + 1;
+            int userCount = room.getUserList().size() + 1;
             roomHeaders.add(new SocketRoomHeader(room.getRoomId(), 
                                                 room.getTitle(), 
                                                 room.getTripTarget(), 

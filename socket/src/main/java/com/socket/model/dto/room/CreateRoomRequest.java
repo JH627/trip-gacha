@@ -1,7 +1,6 @@
 package com.socket.model.dto.room;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,13 +11,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class SocketRoom {
-    private String roomId;
+public class CreateRoomRequest {
     private String title;
     private String password;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String tripTarget;
     private SocketRoomUser owner;
-    private List<SocketRoomUser> userList;
 }
