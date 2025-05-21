@@ -26,7 +26,7 @@
 	           CASE WHEN b.bookmark_id IS NOT NULL THEN true ELSE false END as is_bookmarked
 	    FROM spots s
 	    LEFT JOIN destinations d ON s.destination_id = d.destination_id
-	    LEFT JOIN categories c ON s.category_id = c.category_id
+	    LEFT JOIN spot_categories c ON s.category_id = c.category_id
 	    LEFT JOIN bookmarks b ON s.spot_id = b.spot_id AND b.user_id = #{userId}
 	    WHERE s.stars >= 3
 	    ORDER BY RAND()
@@ -50,37 +50,41 @@
         WHERE user_id = #{userId} AND spot_id = #{spotId}
     </delete>
 
-    <select id="selectByDesinationIdAndCategory" resultMap="spotResultMap">
-        SELECT s.*, 
-               d.name as destination_name,
-               c.name as category_name,
-               CASE WHEN b.bookmark_id IS NOT NULL THEN true ELSE false END as is_bookmarked
-        FROM spots s
-        LEFT JOIN destinations d ON s.destination_id = d.destination_id
-        JOIN categories c ON s.category_id = c.category_id
-        LEFT JOIN bookmarks b ON s.spot_id = b.spot_id AND b.user_id = #{userId}
-        WHERE s.destination_id = #{destinationId}
-        AND c.name = #{category}
-        <if test="keyword != null and keyword != ''">
-            AND (s.name LIKE CONCAT('%', #{keyword}, '%')
-            OR s.address LIKE CONCAT('%', #{keyword}, '%')
-            OR s.content LIKE CONCAT('%', #{keyword}, '%'))
-        </if>
-        <choose>
-            <when test="sort == 'LIKE'">
-                ORDER BY s.likes DESC
-            </when>
-            <when test="sort == 'NAME'">
-                ORDER BY s.name ASC
-            </when>
-            <otherwise>
-                ORDER BY s.stars DESC
-            </otherwise>
-        </choose>
-        <if test="page != null">
-            LIMIT #{page}, 10
-        </if>
-    </select>
+	<select id="selectByDesinationIdAndCategory" resultMap="spotResultMap">
+	    SELECT s.*, 
+	           d.name as destination_name,
+	           c.name as category_name,
+	           CASE WHEN b.bookmark_id IS NOT NULL THEN true ELSE false END as is_bookmarked
+	    FROM spots s
+	    LEFT JOIN destinations d ON s.destination_id = d.destination_id
+	    JOIN spot_categories c ON s.category_id = c.category_id
+	    LEFT JOIN bookmarks b ON s.spot_id = b.spot_id AND b.user_id = #{userId}
+	    WHERE 1=1
+	    <if test="destinationId != null">
+	        AND s.destination_id = #{destinationId}
+	    </if>
+	    AND c.name = #{category}
+	    <if test="keyword != null and keyword != ''">
+	        AND (s.name LIKE CONCAT('%', #{keyword}, '%')
+	        OR s.address LIKE CONCAT('%', #{keyword}, '%')
+	        OR s.content LIKE CONCAT('%', #{keyword}, '%'))
+	    </if>
+	    <choose>
+	        <when test="sort == 'LIKE'">
+	            ORDER BY s.likes DESC
+	        </when>
+	        <when test="sort == 'NAME'">
+	            ORDER BY s.name ASC
+	        </when>
+	        <otherwise>
+	            ORDER BY s.stars DESC
+	        </otherwise>
+	    </choose>
+	    <if test="page != null">
+	        LIMIT #{page}, 10
+	    </if>
+	</select>
+
 
     <select id="selectBookmarkedSpots" resultMap="spotResultMap">
         SELECT s.*, 
@@ -89,7 +93,7 @@
                true as is_bookmarked
         FROM spots s
         JOIN destinations d ON s.destination_id = d.destination_id
-        JOIN categories c ON s.category_id = c.category_id
+        JOIN spot_categories c ON s.category_id = c.category_id
         JOIN bookmarks b ON s.spot_id = b.spot_id
         WHERE b.user_id = #{userId}
         <if test="destinationId != null">

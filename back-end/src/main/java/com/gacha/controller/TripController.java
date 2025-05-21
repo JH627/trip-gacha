@@ -77,7 +77,7 @@ public class TripController {
 	@GetMapping("/spot")
 	public Response<?> getSpotList(
 			@LoginUser Integer userId,
-			@RequestParam(required = true) Integer destinationId,
+			@RequestParam(required = false) Integer destinationId,
 			@RequestParam(required = false) String keyword,
 			@RequestParam(required = false, defaultValue = "ATTRACTION") SpotCategory category,
 			@RequestParam(required = false, defaultValue = "STARS") SpotSearchCondition sort,
