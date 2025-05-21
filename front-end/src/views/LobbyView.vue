@@ -1,54 +1,75 @@
 <script setup lang="ts">
-import { onMounted, ref, reactive, computed } from 'vue'
+import { onMounted, ref, reactive, computed, watch } from 'vue'
 import {
-  connect,
-  enterLoby,
   LobyEventType,
   type LobbyResponse,
   type RoomInfo,
   type SocketUserInfo,
 } from '@/socket/webSocket'
 import defaultProfile from '../assets/no_profile.png'
+import { useAuthStore } from '@/stores/auth'
+import { useSocketStore } from '@/stores/socket'
+import { useRouter } from 'vue-router'
 
-onMounted(async () => {
-  const newUser: SocketUserInfo = {
-    socketId: '',
-    nickname: '깐총이',
-    img: defaultProfile,
-    loginTime: Date.now(),
-  }
+const socketStore = useSocketStore()
 
-  await connect(
-    (body) => {
-      try {
-        const data: LobbyResponse = JSON.parse(body)
+const processLobbyData = (body: string) => {
+  const response: LobbyResponse<SocketUserInfo | SocketUserInfo[]> = JSON.parse(body)
 
-        console.log(data.type)
-        console.log(data.userInfos)
-
-        if (data.type === LobyEventType.LEAVE) {
-          console.log('삭제 :' + data.userInfos[0])
-          removeUser(data.userInfos[0].socketId)
-          return
-        }
-
-        const userInfos = data.userInfos
-
-        if (!userInfos.length) {
-          return
-        }
-
-        userInfos.sort((a, b) => a.loginTime - b.loginTime)
-        userInfos.forEach(addUser)
-      } catch (e) {
-        console.error('파싱 실패:', e)
+  switch (response.type) {
+    case LobyEventType.LEAVE:
+      if (!Array.isArray(response.data)) {
+        console.log('삭제 :' + response.data)
+        removeUser(response.data.socketId)
       }
-    },
-    () => {
-      enterLoby(newUser)
-    },
-  )
-})
+      return
+    case LobyEventType.INIT:
+      if (!Array.isArray(response.data)) {
+        return
+      }
+
+      const userInfoList = response.data
+
+      if (userInfoList.length === 0) {
+        return
+      }
+
+      userInfoList.sort((a, b) => a.loginTime - b.loginTime)
+      userInfoList.forEach(addUser)
+      return
+    case LobyEventType.JOIN:
+      if (Array.isArray(response.data)) {
+        return
+      }
+      const userInfo = response.data
+      addUser(userInfo)
+  }
+}
+
+const processRoomData = (body: string) => {}
+
+watch(
+  () => socketStore.connected,
+  async (connected) => {
+    console.log('lobbyView')
+    if (connected) {
+      const authStore = useAuthStore()
+      const profile = await authStore.getProfile()
+      const newUser: SocketUserInfo = {
+        socketId: '',
+        nickname: profile?.nickname || '',
+        img: profile?.profileImg || defaultProfile,
+        loginTime: Date.now(),
+      }
+      socketStore.subscribe('/user/queue/lobby', processLobbyData)
+      socketStore.subscribe('/topic/lobby', processLobbyData)
+      socketStore.subscribe('/topic/room', processRoomData)
+      socketStore.subscribeError()
+
+      socketStore.send('/app/lobby/join', authStore.accessToken || '', newUser)
+    }
+  },
+)
 
 const rooms = ref<RoomInfo[]>([])
 const userMap = reactive(new Map<string, SocketUserInfo>())
@@ -80,16 +101,12 @@ const onSearch = () => {
 import type { SelectProps } from 'ant-design-vue'
 const options1 = ref<SelectProps['options']>([
   {
-    value: 'jack',
-    label: 'Jack',
+    value: 'title',
+    label: '제목',
   },
   {
-    value: 'lucy',
-    label: 'Lucy',
-  },
-  {
-    value: 'yiminghe',
-    label: 'Yiminghe',
+    value: 'tripTarger',
+    label: '목적지',
   },
 ])
 const focusOn = () => {
@@ -98,13 +115,19 @@ const focusOn = () => {
 const customHandleChange = (value: string) => {
   console.log(`selected ${value}`)
 }
+
+const router = useRouter()
+
+const goNext = () => {
+  router.push('/trip/room')
+}
 </script>
 
 <template>
   <div id="container">
     <div id="lobyHeader">
       <div>로고</div>
-      <button>방 생성</button>
+      <button @click="goNext">방 생성</button>
     </div>
     <div id="lobyBody">
       <div id="lobyList">

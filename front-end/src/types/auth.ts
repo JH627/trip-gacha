@@ -6,5 +6,5 @@ export interface LoginRequest {
 export interface Profile {
   email: string
   nickname: string
-  profileImg: String
+  profileImg: string
 }
