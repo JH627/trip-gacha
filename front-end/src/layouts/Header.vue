@@ -4,11 +4,12 @@ import logoImage from '@/assets/logo.jpg'
 import { UserOutlined } from '@ant-design/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted, watch } from 'vue'
+import type { Profile } from '@/types/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const isLoggedIn = ref(false)
-const userProfileUrl = ref<string | null>(null)
+const userInfo = ref<Profile | null>(authStore.profile)
 
 // 모바일 메뉴 표시 여부
 const drawerVisible = ref(false)
@@ -64,17 +65,19 @@ watch(
       <!-- 로고, 링크들 -->
       <div class="logo-container">
         <img :src="logoImage" alt="로고" class="logo" @click="router.push('/')" />
-        <router-link to="/lobby" class="board-link">여행 시작</router-link>
+        <router-link to="/trip" class="board-link">여행 시작</router-link>
+        <router-link to="/spot" class="board-link">관광지 둘러보기</router-link>
         <router-link to="/board" class="board-link">게시판</router-link>
       </div>
       <div>
         <!-- 로그인 상태 확인: 로그인 시 -->
         <template v-if="isLoggedIn">
+          <span>{{ userInfo?.nickname }}님 안녕하세요 &nbsp;</span>
           <!-- 데스크톱: hover dropdown -->
           <a-dropdown v-if="!isMobile" trigger="hover" placement="bottomRight">
             <!-- 프로필 이미지 -->
-            <a-avatar :src="userProfileUrl" class="profile-avatar">
-              <template #icon v-if="!userProfileUrl">
+            <a-avatar :src="userInfo?.profileImg" class="profile-avatar">
+              <template #icon v-if="!userInfo?.profileImg">
                 <UserOutlined />
               </template>
             </a-avatar>
@@ -87,9 +90,9 @@ watch(
             </template>
           </a-dropdown>
           <!-- 모바일: 클릭 시 Drawer 표시 -->
-          <a-avatar v-else :src="userProfileUrl" class="profile-avatar" @click="showDrawer">
+          <a-avatar v-else :src="userInfo?.profileImg" class="profile-avatar" @click="showDrawer">
             <!-- 프로필 이미지 -->
-            <template #icon v-if="!userProfileUrl">
+            <template #icon v-if="!userInfo?.profileImg">
               <UserOutlined />
             </template>
           </a-avatar>
@@ -107,6 +110,7 @@ watch(
     <!-- 모바일 메뉴 컨테이너 -->
     <div class="drawer-content">
       <div class="drawer-menu-item" @click="handleMenuClick('/trip')">여행 시작</div>
+      <div class="drawer-menu-item" @click="handleMenuClick('/spot')">관광지 둘러보기</div>
       <div class="drawer-menu-item" @click="handleMenuClick('/board')">게시판</div>
       <div class="drawer-menu-item" @click="handleMenuClick('/mypage')">마이페이지</div>
       <div class="drawer-menu-item logout" @click="handleLogout">로그아웃</div>
@@ -121,7 +125,7 @@ watch(
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 40px;
   width: 100%;
 }
 

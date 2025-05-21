@@ -7,6 +7,8 @@ import RegistView from '@/views/RegistView.vue'
 import BoardListView from '@/views/board/BoardListView.vue'
 import BoardDetailView from '@/views/board/BoardDetailView.vue'
 import BoardWriteView from '@/views/board/BoardWriteView.vue'
+import MyPageView from '@/views/user/MyPageView.vue'
+import SpotListView from '@/views/spot/SpotListView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +48,16 @@ const router = createRouter({
           path: 'board/write',
           name: 'boardWrite',
           component: BoardWriteView,
+        },
+        {
+          path: 'mypage',
+          name: 'mypage',
+          component: MyPageView,
+        },
+        {
+          path: 'spot',
+          name: 'spot',
+          component: SpotListView,
         },
       ],
     },
