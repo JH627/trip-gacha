@@ -1,6 +1,5 @@
 package com.socket.controller;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,19 +11,24 @@ import org.springframework.stereotype.Controller;
 import com.socket.model.dto.lobby.LobbyResponse;
 import com.socket.model.dto.lobby.LobyEventType;
 import com.socket.model.dto.lobby.SocketUserInfo;
+import com.socket.model.dto.room.RoomEventType;
+import com.socket.model.dto.room.RoomResponse;
+import com.socket.model.dto.room.SocketRoomHeader;
 import com.socket.model.store.LobbySessionStore;
+import com.socket.model.store.RoomSessionStore;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Controller
-public class ChatController {
+public class LobbyController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final LobbySessionStore store;
+    private final RoomSessionStore roomStore;
 
     // 로비로 들어옴
-    @MessageMapping("/loby/enter")
+    @MessageMapping("/lobby/join")
     public void enterLoby(StompHeaderAccessor accessor, SocketUserInfo userInfo) {
         String sessionId = accessor.getUser().getName();
 
@@ -37,15 +41,20 @@ public class ChatController {
 
         messagingTemplate.convertAndSendToUser(
             sessionId,
-            "/queue/loby", // 유니캐스트용 endpoint
-            new LobbyResponse( LobyEventType.ENTER, store.getAll())
+            "/queue/lobby", // 유니캐스트용 endpoint
+            new LobbyResponse<List<SocketUserInfo>>( LobyEventType.INIT, store.getAll())
         );
 
         store.add(sessionId, userInfo);
 
         messagingTemplate.convertAndSend(
-            "/topic/loby",
-            new LobbyResponse( LobyEventType.ENTER, new ArrayList<SocketUserInfo>(List.of(userInfo)))
+            "/topic/lobby",
+            new LobbyResponse<SocketUserInfo>( LobyEventType.JOIN, userInfo)
+        );
+
+        messagingTemplate.convertAndSend(
+            "/topic/room",
+            new RoomResponse<List<SocketRoomHeader>>( RoomEventType.INIT, true, roomStore.getAll())
         );
     }
 
