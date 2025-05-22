@@ -32,11 +32,10 @@ public class RoomSessionStore {
         List<SocketRoomHeader> roomHeaders = new ArrayList<>();
 
         for(SocketRoom room : roomList){
-            int userCount = room.getUserList().size() + 1;
             roomHeaders.add(new SocketRoomHeader(room.getRoomId(), 
                                                 room.getTitle(), 
                                                 room.getDestination(),
-                                                userCount, 
+                                                room.getUserList().size(), 
                                                 room.getStartDate(), 
                                                 room.getEndDate()));
         }
@@ -57,17 +56,26 @@ public class RoomSessionStore {
     }
 
     public List<String> removeRoomsByOwnerUserId(String ownerUserId) {
-    List<String> removedRoomIds = new ArrayList<>();
+        List<String> removedRoomIds = new ArrayList<>();
 
-    rooms.entrySet().removeIf(entry -> {
-        SocketRoom room = entry.getValue();
-        if (room.getOwner() != null && ownerUserId.equals(room.getOwner().getUserId())) {
-            removedRoomIds.add(room.getRoomId());
-            return true;
-        }
-        return false;
-    });
+        rooms.entrySet().removeIf(entry -> {
+            SocketRoom room = entry.getValue();
+            if (room.getOwner() != null && ownerUserId.equals(room.getOwner().getUserId())) {
+                removedRoomIds.add(room.getRoomId());
+                return true;
+            }
+            return false;
+        });
 
-    return removedRoomIds;
-}
+        return removedRoomIds;
+    }
+
+    public boolean removeUserFromRoom(String roomId, String userId) {
+        SocketRoom room = rooms.get(roomId);
+        if (room == null) return false;
+
+        List<SocketRoomUser> userList = room.getUserList();
+        return userList.removeIf(user -> user.getUserId().equals(userId));
+    }
+
 }

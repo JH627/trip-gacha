@@ -151,6 +151,10 @@ public class RoomController {
             // 이후 로직 처리
             SocketRoom room = store.get(roomId);
 
+            if(room==null){
+                return;
+            }
+
             SocketRoom coptRoom = new SocketRoom();
             
             coptRoom.setRoomId(room.getRoomId());

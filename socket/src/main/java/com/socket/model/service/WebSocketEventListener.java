@@ -60,6 +60,10 @@ public class WebSocketEventListener {
             String roomId = roomStore.findUsersRoomId(sessionId);
             SocketRoom userRoom = roomStore.get(roomId);
 
+            if(userRoom==null){
+                return;
+            }
+
             if(roomId != null && !roomId.isBlank()){
                 // 해당 방에서 사용자 정보를 삭제하라는 뜻
                 SocketRoom leaveUserRoom = new SocketRoom();
@@ -76,6 +80,8 @@ public class WebSocketEventListener {
 
                 leaveUserRoom.setUserList(leaveUserList);
 
+                roomStore.removeUserFromRoom(roomId, sessionId);
+
                 messagingTemplate.convertAndSend(
                     "/topic/room/" + roomId,
                     new RoomResponse<>(RoomEventType.LEAVE, true, leaveUserRoom)
@@ -84,6 +90,7 @@ public class WebSocketEventListener {
 
             // 삭제된 유저가 owner일 경우, 방 삭제
             if(userRoom.getOwner().getUserId().equals(sessionId)){
+                roomStore.remove(roomId);
                 messagingTemplate.convertAndSend(
                     "/topic/room/" + roomId,
                     new RoomResponse<>(RoomEventType.BOOM, true, null)
