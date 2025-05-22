@@ -1,7 +1,14 @@
-<script setup>
+<script setup lang="ts">
+import {
+  RoomEventType,
+  type RoomInfo,
+  type RoomResponse,
+  type SocketRoomUser,
+  type SocketUserInfo,
+} from '@/socket/webSocket'
 import { useAuthStore } from '@/stores/auth'
 import { useSocketStore } from '@/stores/socket'
-import { onMounted } from 'vue'
+import { onMounted, ref, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 // roomId를 url에서 빼옴
 const route = useRoute()
@@ -12,16 +19,32 @@ const roomId = route.params.roomId
 const socketStore = useSocketStore()
 const authStore = useAuthStore()
 
-onMounted(() => {
-  socketStore.subscribe(`/user/queue/room/${roomId}`, () => {})
-  socketStore.subscribe(`/room/${roomId}`, () => {})
+const processRoomRequest = (body: string) => {
+  const response: RoomResponse<RoomInfo> = JSON.parse(body)
 
-  // 방 입장 로직
-  socketStore.send(`/app/room/${roomId}`, authStore.accessToken || '', null)
+  switch (response.type) {
+    case RoomEventType.INIT:
+    case RoomEventType.JOIN:
+      ownerId.value = response.data.owner.userId
+      userList.value = response.data.userList
+    case RoomEventType.LEAVE:
+      return
+    default:
+      return
+  }
+}
+
+onMounted(() => {
+  socketStore.subscribe(`/user/queue/room/${roomId}`, processRoomRequest)
+  socketStore.subscribe(`/topic/room/${roomId}`, processRoomRequest)
+
+  // 방 정보 불러오는 로직
+  socketStore.send(`/app/room/info/${roomId}`, authStore.accessToken || '', null)
 })
 
+const ownerId = ref('')
 // 사람 리스트를 출력함
-const userList = []
+const userList: Ref<SocketRoomUser[]> = ref([])
 // 채팅은 아직 미구현으로 하쟈..
 </script>
 
@@ -33,12 +56,17 @@ const userList = []
       <button>시작하기</button>
     </div>
     <div>
-      <div v-for="user in userList">
-        <div>사진</div>
-        <div>사용자 이름</div>
+      <div class="userContainer" v-for="user in userList" :key="user.userId">
+        <img :src="user.img" />
+        <div>{{ user.nickname }}</div>
+        <div>{{ user.userId === ownerId ? '방장임' : '' }}</div>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.userContainer {
+  border: 1px solid black;
+}
+</style>

@@ -5,11 +5,17 @@ import { useAuthStore } from '@/stores/auth'
 export interface RoomInfo {
   roomId: string
   title: string
-  startDate: number
-  endDate: number
-  tripTarget: string
-  inPeople: number
-  maxPeople: number
+  startDate: string
+  endDate: string
+  destination: string
+  owner: SocketRoomUser
+  userList: SocketRoomUser[]
+}
+
+export interface SocketRoomUser {
+  userId: string
+  nickname: string
+  img: string
 }
 
 export interface SocketUserInfo {

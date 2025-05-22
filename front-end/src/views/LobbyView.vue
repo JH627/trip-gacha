@@ -5,7 +5,6 @@ import {
   RoomEventType,
   type LobbyResponse,
   type RoomHeader,
-  type RoomInfo,
   type RoomResponse,
   type SocketUserInfo,
 } from '@/socket/webSocket'

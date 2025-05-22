@@ -1,9 +1,11 @@
 package com.socket.controller;
 
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -84,6 +86,7 @@ public class RoomController {
         String userId = accessor.getUser().getName();
         boolean success = false;
         SocketRoomHeader roomHeader = new SocketRoomHeader();
+        SocketRoom roomInfo = new SocketRoom();
 
         System.out.println(destination);
         System.out.println(userId);
@@ -104,6 +107,9 @@ public class RoomController {
             // 방장이거나 비밀번호가 일치하면
             if(room.getOwner().getUserId().equals(userId) || room.getPassword().equals(request.getPassword())){
                 // 유저 리스트에 추가
+                BeanUtils.copyProperties(room, roomInfo);
+                roomInfo.setPassword("");
+
                 SocketUserInfo user = lobbyStore.get(userId);
                 SocketRoomUser simpleUser = new SocketRoomUser();
                 simpleUser.setUserId(userId);
@@ -123,14 +129,23 @@ public class RoomController {
             "/queue/room",
             new RoomResponse<>(RoomEventType.JOIN, success, roomHeader)
         );
+
+                    // 자기 자신의 정보
+        messagingTemplate.convertAndSend(
+            "/topic/room/" +roomHeader.getRoomId(),
+            new RoomResponse<SocketRoom>(RoomEventType.JOIN, true, roomInfo)
+        );
     }
 
-    @MessageMapping("/room/:roomId")
+    @MessageMapping("/room/info/**")
     public void getRoomInfo(StompHeaderAccessor accessor){
         String destination = accessor.getDestination();
+        String userId = accessor.getUser().getName();
 
-        if (destination != null && destination.startsWith("/room/")) {
-            String roomId = destination.substring("/room/".length());
+        System.out.println("방 정보 불러오기 path : " + destination);
+
+        if (destination != null && destination.startsWith("/app/room/info/")) {
+            String roomId = destination.substring("/app/room/info/".length());
             System.out.println("Room ID: " + roomId);
 
             // 이후 로직 처리
@@ -144,10 +159,15 @@ public class RoomController {
             coptRoom.setStartDate(room.getStartDate());
             coptRoom.setEndDate(room.getEndDate());
             coptRoom.setUserList(room.getUserList());
-    
-            messagingTemplate.convertAndSend(
-                "room/"+coptRoom.getRoomId(),
-                new RoomResponse<SocketRoom>(RoomEventType.CREATE, true, coptRoom)
+            coptRoom.setOwner(room.getOwner());
+            
+            System.out.println(coptRoom);
+
+            // 기존 방의 정보
+            messagingTemplate.convertAndSendToUser(
+                userId,
+                "/queue/room/"+coptRoom.getRoomId(),
+                new RoomResponse<SocketRoom>(RoomEventType.INIT, true, coptRoom)
             );
         }
     }
