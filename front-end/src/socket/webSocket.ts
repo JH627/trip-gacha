@@ -46,6 +46,10 @@ export interface CreateRoomRequest {
   endDate: string
 }
 
+export interface JoinRoomRequest {
+  password: string
+}
+
 export interface RoomHeader {
   roomId: string
   title: string

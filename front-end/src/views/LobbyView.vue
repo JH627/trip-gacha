@@ -75,7 +75,6 @@ const processRoomData = (body: string) => {
       }
 
       console.log('방 생성 성공 :' + response.data.title)
-      const auth = useAuthStore()
       socketStore.send('/app/room/join/' + response.data.roomId, accessToken.value, {
         password: '',
       })
@@ -165,6 +164,7 @@ const onSearch = () => {
 }
 
 import type { SelectProps } from 'ant-design-vue'
+import RoomPasswordModal from '@/components/room/RoomPasswordModal.vue'
 const options1 = ref<SelectProps['options']>([
   {
     value: 'title',
@@ -189,19 +189,32 @@ const goNext = () => {
 }
 
 const isOpen = ref<boolean>(false)
-
 const open = () => {
   isOpen.value = true
 }
-
 const close = () => {
   isOpen.value = false
+}
+
+const clickRoomId = ref('')
+const isPasswordModalOpen = ref<boolean>(false)
+const passwordModalOpen = (roomId: string) => {
+  clickRoomId.value = roomId
+  isPasswordModalOpen.value = true
+}
+const passwordModalClose = () => {
+  isPasswordModalOpen.value = false
 }
 </script>
 
 <template>
   <div id="container">
     <CreateRoomModal v-if="isOpen" @close-modal="close" />
+    <RoomPasswordModal
+      v-if="isPasswordModalOpen"
+      :room-id="clickRoomId"
+      @close-modal="passwordModalClose"
+    />
     <div id="lobyHeader">
       <div>로고</div>
       <button @click="open">방 생성</button>
@@ -227,7 +240,16 @@ const close = () => {
         <div id="searchRoomList">
           <div v-if="rooms.length === 0">검색 결과 없음</div>
           <div v-else class="room-list">
-            <div class="room-item" v-for="room in rooms" :key="room.roomId">
+            <div
+              class="room-item"
+              v-for="room in rooms"
+              :key="room.roomId"
+              @click="
+                () => {
+                  passwordModalOpen(room.roomId)
+                }
+              "
+            >
               <!-- 목적지 -->
               <div class="room-destination">
                 <a-typography-text strong>{{ room.destination }}</a-typography-text>

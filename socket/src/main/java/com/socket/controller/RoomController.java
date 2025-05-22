@@ -89,7 +89,11 @@ public class RoomController {
         System.out.println(userId);
 
         if (destination != null && destination.startsWith("/app/room/join/")) {
-            String roomId = destination.substring("/app/room/join/".length());
+            String[] parts = destination.split("/");
+            for(String part : parts){
+                System.out.println(part);
+            }
+            String roomId = parts[parts.length-1];
             System.out.println("Room ID: " + roomId);
 
             SocketRoom room = store.get(roomId);
