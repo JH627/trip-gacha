@@ -78,4 +78,11 @@ public class RoomSessionStore {
         return userList.removeIf(user -> user.getUserId().equals(userId));
     }
 
+    public boolean isRoomOwner(String roomId, String userId){
+        SocketRoom room = rooms.get(roomId);
+        if (room == null) return false;
+
+        return room.getOwner().getUserId().equals(userId);
+    }
+
 }

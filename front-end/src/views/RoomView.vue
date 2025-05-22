@@ -64,12 +64,15 @@ const removeUserById = (userId: string) => {
   userList.value = userList.value.filter((user) => user.userId !== userId)
 }
 // 채팅은 아직 미구현으로 하쟈..
+const leaveRoom = () => {
+  socketStore.send(`/app/room/leave/${roomId}`, authStore.accessToken || '', null)
+}
 </script>
 
 <template>
   <div>
     <div>
-      <button @click="">나가기</button>
+      <button @click="leaveRoom">나가기</button>
       <div>{{ title }}</div>
       <button>시작하기</button>
     </div>

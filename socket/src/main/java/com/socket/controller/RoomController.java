@@ -175,4 +175,59 @@ public class RoomController {
             );
         }
     }
+
+    @MessageMapping("/room/leave/**")
+    public void leaveRoom(StompHeaderAccessor accessor){
+        String destination = accessor.getDestination();
+        String userId = accessor.getUser().getName();
+
+        System.out.println(destination);
+        System.out.println(userId);
+
+        if (destination != null && destination.startsWith("/app/room/leave/")) {
+            String roomId = destination.substring("/app/room/leave/".length());
+            
+            System.out.println(roomId);
+
+            if(store.isRoomOwner(roomId, userId)){
+                store.remove(roomId);
+                messagingTemplate.convertAndSend(
+                    "/topic/room/" + roomId,
+                    new RoomResponse<>(RoomEventType.BOOM, true, null)
+                );
+                System.out.println("끝");
+                return;
+            }
+
+            //사용자만 쫒아내
+            messagingTemplate.convertAndSendToUser(
+                userId,
+                "/queue/room/" + roomId,
+                new RoomResponse<>(RoomEventType.BOOM, true, null)
+            );
+
+            SocketRoom originRoom = store.get(roomId);
+            SocketRoomUser roomUser = originRoom.getUserList().stream()
+                .filter(user -> user.getUserId().equals(userId))
+                .findFirst()
+                .orElse(null);
+
+            SocketRoom leaveUserRoom = new SocketRoom();
+
+            List<SocketRoomUser> leaveUserList = new ArrayList<>();
+            leaveUserList.add(roomUser);
+
+            leaveUserRoom.setUserList(leaveUserList);
+            store.removeUserFromRoom(roomId, userId);
+            messagingTemplate.convertAndSend(
+                "/topic/room/" + roomId,
+                new RoomResponse<>(RoomEventType.LEAVE, true, leaveUserRoom)
+            );
+            
+            messagingTemplate.convertAndSend(
+            "/topic/room",
+                        new RoomResponse<List<SocketRoomHeader>>( RoomEventType.INIT, true, store.getAll())
+            );
+        }
+    }
 }
