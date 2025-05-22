@@ -28,4 +28,28 @@
     <select id="selectByUserId" resultMap="userResultMap">
         SELECT * FROM users WHERE user_id = #{userId}
     </select>
+    
+    <select id="selectUserStatsByUserId" resultType="com.gacha.model.dto.user.UserStat">
+        SELECT 
+            DATEDIFF(NOW(), created_at) as joinDays,
+            (SELECT COUNT(*) FROM trip_schedule WHERE user_id = #{userId}) as scheduleCount,
+            (SELECT COUNT(*) FROM bookmarks WHERE user_id = #{userId}) as spotCount,
+            (SELECT COUNT(*) FROM boards WHERE uploader_id = #{userId} AND is_deleted = false) as postCount
+        FROM users 
+        WHERE user_id = #{userId}
+    </select>
+
+    <update id="update">
+        UPDATE users
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+            <if test="profileImg != null">
+                profile_img = #{profileImg},
+            </if>
+            updated_at = NOW()
+        </set>
+        WHERE user_id = #{userId}
+    </update>
 </mapper>

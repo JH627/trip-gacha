@@ -49,11 +49,18 @@ onMounted(async () => {
   })
 })
 
-// accessToken 변경 감지
+// accessToken, profile 변경 감지
 watch(
   () => authStore.accessToken,
   (newToken) => {
     isLoggedIn.value = !!newToken
+  },
+  { immediate: true },
+)
+watch(
+  () => authStore.profile,
+  (newProfile) => {
+    userInfo.value = newProfile
   },
   { immediate: true },
 )
