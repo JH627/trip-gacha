@@ -59,7 +59,7 @@ public class RoomController {
         messagingTemplate.convertAndSendToUser(
             sessionId,
             "/queue/room", // 유니캐스트용 endpoint
-            new RoomResponse<SocketRoom>(RoomEventType.CREATED, true ,roomSimpleInfo)
+            new RoomResponse<SocketRoom>(RoomEventType.CREATE, true ,roomSimpleInfo)
         );
 
         SocketRoomHeader roomHeader = new SocketRoomHeader(newRoom.getRoomId(), 
@@ -72,25 +72,33 @@ public class RoomController {
         // 모든 사용자
         messagingTemplate.convertAndSend(
             "/topic/room",
-            new RoomResponse<SocketRoomHeader>(RoomEventType.CREATE, true, roomHeader)
+            new RoomResponse<SocketRoomHeader>(RoomEventType.CREATED, true, roomHeader)
         );
     }
 
     // TODO : 비밀번호 확인하는 함수 구현
-    @MessageMapping("/room/join/:roomId")
+    @MessageMapping("/room/join/**")
     public void joinRoom(StompHeaderAccessor accessor, JoinRoomRequest request){
+
         String destination = accessor.getDestination();
         String userId = accessor.getUser().getName();
         boolean success = false;
         SocketRoomHeader roomHeader = new SocketRoomHeader();
 
-        if (destination != null && destination.startsWith("/room/join/")) {
-            String roomId = destination.substring("/room/join".length());
+        System.out.println(destination);
+        System.out.println(userId);
+
+        if (destination != null && destination.startsWith("/app/room/join/")) {
+            String roomId = destination.substring("/app/room/join/".length());
             System.out.println("Room ID: " + roomId);
 
             SocketRoom room = store.get(roomId);
 
-            if(room.getPassword().equals(request.getPassword())){
+            System.out.println(room.getOwner().getUserId().equals(userId));
+            System.out.println(room.getPassword().equals(request.getPassword()));
+
+            // 방장이거나 비밀번호가 일치하면
+            if(room.getOwner().getUserId().equals(userId) || room.getPassword().equals(request.getPassword())){
                 // 유저 리스트에 추가
                 SocketUserInfo user = lobbyStore.get(userId);
                 SocketRoomUser simpleUser = new SocketRoomUser();
@@ -135,7 +143,7 @@ public class RoomController {
     
             messagingTemplate.convertAndSend(
                 "room/"+coptRoom.getRoomId(),
-                new RoomResponse<SocketRoom>(RoomEventType.CREATE, coptRoom)
+                new RoomResponse<SocketRoom>(RoomEventType.CREATE, true, coptRoom)
             );
         }
     }

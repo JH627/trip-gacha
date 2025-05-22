@@ -54,7 +54,7 @@ public class LobbyController {
 
         messagingTemplate.convertAndSend(
             "/topic/room",
-            new RoomResponse<List<SocketRoomHeader>>( RoomEventType.INIT, roomStore.getAll())
+            new RoomResponse<List<SocketRoomHeader>>( RoomEventType.INIT, true, roomStore.getAll())
         );
     }
 

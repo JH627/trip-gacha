@@ -16,6 +16,7 @@ import { useRouter } from 'vue-router'
 import CreateRoomModal from '@/components/room/CreateRoomModal.vue'
 
 const socketStore = useSocketStore()
+const accessToken = ref('')
 
 const processLobbyData = (body: string) => {
   const response: LobbyResponse<SocketUserInfo | SocketUserInfo[]> = JSON.parse(body)
@@ -72,9 +73,13 @@ const processRoomData = (body: string) => {
       if (Array.isArray(response.data)) {
         return
       }
-      // TODO : roomId와 password를 받아야 함
-      // 그걸로 바로 join 요청을 보내야 함
-      //router.push(`/trip/room/${response.data.roomId}`)
+
+      console.log('방 생성 성공 :' + response.data.title)
+      const auth = useAuthStore()
+      socketStore.send('/app/room/join/' + response.data.roomId, accessToken.value, {
+        password: '',
+      })
+
       return
     case RoomEventType.CREATED:
       if (Array.isArray(response.data)) {
@@ -89,6 +94,7 @@ const processRoomData = (body: string) => {
       }
 
       if (response.success) {
+        console.log('방 이동 : ' + response.data.roomId)
         // 구독하고 이동하기
         router.push(`/trip/room/${response.data.roomId}`)
       }
@@ -104,6 +110,7 @@ watch(
     console.log('lobbyView')
     if (connected) {
       const authStore = useAuthStore()
+      accessToken.value = authStore.accessToken || ''
       const profile = await authStore.getProfile()
       const newUser: SocketUserInfo = {
         socketId: '',
@@ -117,7 +124,7 @@ watch(
       socketStore.subscribe('/topic/room', processRoomData)
       socketStore.subscribeError()
 
-      socketStore.send('/app/lobby/join', authStore.accessToken || '', newUser)
+      socketStore.send('/app/lobby/join', accessToken.value, newUser)
     }
   },
 )
