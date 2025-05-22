@@ -42,6 +42,7 @@ export enum RoomEventType {
   INIT = 'INIT',
   LEAVE = 'LEAVE',
   JOIN = 'JOIN',
+  BOOM = 'BOOM',
 }
 
 export interface CreateRoomRequest {

@@ -9,9 +9,10 @@ import {
 import { useAuthStore } from '@/stores/auth'
 import { useSocketStore } from '@/stores/socket'
 import { onMounted, ref, type Ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 // roomId를 url에서 빼옴
 const route = useRoute()
+const router = useRouter()
 const roomId = route.params.roomId
 // roomId를 통해 해당 방 정보 (제목, 여행지, 시작일, 종료일) 불러옴
 // roomId : [사람 리스트
@@ -27,7 +28,15 @@ const processRoomRequest = (body: string) => {
     case RoomEventType.JOIN:
       ownerId.value = response.data.owner.userId
       userList.value = response.data.userList
+      return
     case RoomEventType.LEAVE:
+      // 입력받은 유저 정보를 userList에서 삭제함
+      const leaveUser = response.data.userList[0]
+      removeUserById(leaveUser.userId)
+      return
+    case RoomEventType.BOOM:
+      // lobby로 보냄 (이미 서버에서 방 정보를 삭제해서 나가게만 하면 된다)
+      router.push('/trip/lobby')
       return
     default:
       return
@@ -45,6 +54,9 @@ onMounted(() => {
 const ownerId = ref('')
 // 사람 리스트를 출력함
 const userList: Ref<SocketRoomUser[]> = ref([])
+const removeUserById = (userId: string) => {
+  userList.value = userList.value.filter((user) => user.userId !== userId)
+}
 // 채팅은 아직 미구현으로 하쟈..
 </script>
 

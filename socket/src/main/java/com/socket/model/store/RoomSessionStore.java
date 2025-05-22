@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Component;
 import com.socket.model.dto.room.SocketRoom;
 import com.socket.model.dto.room.SocketRoomHeader;
+import com.socket.model.dto.room.SocketRoomUser;
 
 @Component
 public class RoomSessionStore {
@@ -42,4 +43,31 @@ public class RoomSessionStore {
 
         return roomHeaders;
     }
+
+    public String findUsersRoomId(String userId) {
+        for (SocketRoom room : rooms.values()) {
+            for(SocketRoomUser user : room.getUserList()){
+                if(user.getUserId().equals(userId)){
+                    return room.getRoomId();
+                }
+            }
+        }
+
+        return "";
+    }
+
+    public List<String> removeRoomsByOwnerUserId(String ownerUserId) {
+    List<String> removedRoomIds = new ArrayList<>();
+
+    rooms.entrySet().removeIf(entry -> {
+        SocketRoom room = entry.getValue();
+        if (room.getOwner() != null && ownerUserId.equals(room.getOwner().getUserId())) {
+            removedRoomIds.add(room.getRoomId());
+            return true;
+        }
+        return false;
+    });
+
+    return removedRoomIds;
+}
 }
