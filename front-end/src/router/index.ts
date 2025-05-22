@@ -9,6 +9,8 @@ import BoardDetailView from '@/views/board/BoardDetailView.vue'
 import BoardWriteView from '@/views/board/BoardWriteView.vue'
 import MyPageView from '@/views/user/MyPageView.vue'
 import SpotListView from '@/views/spot/SpotListView.vue'
+import ScheduleListView from '@/views/schedule/ScheduleListView.vue'
+import ScheduleDetailView from '@/views/schedule/ScheduleDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,6 +60,17 @@ const router = createRouter({
           path: 'spot',
           name: 'spot',
           component: SpotListView,
+        },
+        {
+          path: 'schedule',
+          name: 'schedule',
+          component: ScheduleListView,
+        },
+        {
+          path: 'schedule/:scheduleId',
+          name: 'scheduleDetail',
+          component: ScheduleDetailView,
+          props: true,
         },
       ],
     },
