@@ -80,7 +80,7 @@ export const useSocketStore = defineStore('socket', () => {
 
   const subscribeError = () => {
     stompClient.value?.subscribe('/user/queue/errors', (message) => {
-      alert('WebSocket 인증 실패: ' + message.body)
+      alert('소켓 에러: ' + message.body)
     })
   }
 

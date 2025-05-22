@@ -79,7 +79,7 @@ const router = createRouter({
           component: () => import('../views/LobbyView.vue'),
         },
         {
-          path: 'room',
+          path: 'room/:roomId',
           name: 'room',
           component: () => import('../views/RoomView.vue'),
         },

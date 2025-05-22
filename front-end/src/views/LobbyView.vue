@@ -59,7 +59,7 @@ const processRoomData = (body: string) => {
         return
       }
 
-      const roomHeaderList = response.data
+      const roomHeaderList: RoomHeader[] = response.data
 
       if (roomHeaderList.length === 0) {
         return
@@ -72,8 +72,26 @@ const processRoomData = (body: string) => {
       if (Array.isArray(response.data)) {
         return
       }
-      const roomHeader = response.data
+      // TODO : roomId와 password를 받아야 함
+      // 그걸로 바로 join 요청을 보내야 함
+      //router.push(`/trip/room/${response.data.roomId}`)
+      return
+    case RoomEventType.CREATED:
+      if (Array.isArray(response.data)) {
+        return
+      }
+      const roomHeader: RoomHeader = response.data as RoomHeader
       addRoom(roomHeader)
+      return
+    case RoomEventType.JOIN:
+      if (Array.isArray(response.data)) {
+        return
+      }
+
+      if (response.success) {
+        // 구독하고 이동하기
+        router.push(`/trip/room/${response.data.roomId}`)
+      }
       return
     default:
       return
@@ -95,6 +113,7 @@ watch(
       }
       socketStore.subscribe('/user/queue/lobby', processLobbyData)
       socketStore.subscribe('/topic/lobby', processLobbyData)
+      socketStore.subscribe('/user/queue/room', processRoomData)
       socketStore.subscribe('/topic/room', processRoomData)
       socketStore.subscribeError()
 

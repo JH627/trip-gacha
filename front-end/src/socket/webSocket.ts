@@ -32,8 +32,10 @@ export interface LobbyResponse<T> {
 
 export enum RoomEventType {
   CREATE = 'CREATE',
+  CREATED = 'CREATED',
   INIT = 'INIT',
   LEAVE = 'LEAVE',
+  JOIN = 'JOIN',
 }
 
 export interface CreateRoomRequest {
@@ -55,5 +57,6 @@ export interface RoomHeader {
 
 export interface RoomResponse<T> {
   type: RoomEventType
+  success: boolean
   data: T
 }

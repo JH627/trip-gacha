@@ -22,6 +22,10 @@ public class RoomSessionStore {
         return rooms.remove(roomId);
     }
 
+    public SocketRoom get(String roomId){
+        return rooms.get(roomId);
+    }
+
     public List<SocketRoomHeader> getAll() {
         List<SocketRoom> roomList = new ArrayList<>(rooms.values());
         List<SocketRoomHeader> roomHeaders = new ArrayList<>();

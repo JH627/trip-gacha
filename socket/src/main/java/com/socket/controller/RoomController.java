@@ -13,6 +13,7 @@ import com.socket.model.dto.lobby.LobbyResponse;
 import com.socket.model.dto.lobby.LobyEventType;
 import com.socket.model.dto.lobby.SocketUserInfo;
 import com.socket.model.dto.room.CreateRoomRequest;
+import com.socket.model.dto.room.JoinRoomRequest;
 import com.socket.model.dto.room.RoomEventType;
 import com.socket.model.dto.room.RoomResponse;
 import com.socket.model.dto.room.SocketRoom;
@@ -31,7 +32,7 @@ public class RoomController {
     private final LobbySessionStore lobbyStore;
 
     @MessageMapping("/room/create")
-    public void enterLoby(StompHeaderAccessor accessor, CreateRoomRequest roomInfo) {
+    public void createRoom(StompHeaderAccessor accessor, CreateRoomRequest roomInfo) {
         String sessionId = accessor.getUser().getName();
 
         SocketUserInfo ownerInfo = lobbyStore.get(sessionId);
@@ -51,11 +52,14 @@ public class RoomController {
 
         store.add(newRoom.getRoomId(), newRoom);
 
+        SocketRoom roomSimpleInfo = new SocketRoom();
+        roomSimpleInfo.setRoomId(newRoom.getRoomId());
+
         // 자기 자신
         messagingTemplate.convertAndSendToUser(
             sessionId,
-            "/queue/lobby", // 유니캐스트용 endpoint
-            newRoom.getRoomId()
+            "/queue/room", // 유니캐스트용 endpoint
+            new RoomResponse<SocketRoom>(RoomEventType.CREATED, true ,roomSimpleInfo)
         );
 
         SocketRoomHeader roomHeader = new SocketRoomHeader(newRoom.getRoomId(), 
@@ -68,7 +72,71 @@ public class RoomController {
         // 모든 사용자
         messagingTemplate.convertAndSend(
             "/topic/room",
-            new RoomResponse<SocketRoomHeader>(RoomEventType.CREATE, roomHeader)
+            new RoomResponse<SocketRoomHeader>(RoomEventType.CREATE, true, roomHeader)
         );
+    }
+
+    // TODO : 비밀번호 확인하는 함수 구현
+    @MessageMapping("/room/join/:roomId")
+    public void joinRoom(StompHeaderAccessor accessor, JoinRoomRequest request){
+        String destination = accessor.getDestination();
+        String userId = accessor.getUser().getName();
+        boolean success = false;
+        SocketRoomHeader roomHeader = new SocketRoomHeader();
+
+        if (destination != null && destination.startsWith("/room/join/")) {
+            String roomId = destination.substring("/room/join".length());
+            System.out.println("Room ID: " + roomId);
+
+            SocketRoom room = store.get(roomId);
+
+            if(room.getPassword().equals(request.getPassword())){
+                // 유저 리스트에 추가
+                SocketUserInfo user = lobbyStore.get(userId);
+                SocketRoomUser simpleUser = new SocketRoomUser();
+                simpleUser.setUserId(userId);
+                simpleUser.setNickname(user.getNickname());
+                simpleUser.setImg(user.getImg());
+
+                room.getUserList().add(simpleUser);
+
+                roomHeader.setRoomId(roomId);
+
+                success = true;
+            }
+        }
+
+        messagingTemplate.convertAndSendToUser(
+            userId,
+            "/queue/room",
+            new RoomResponse<>(RoomEventType.JOIN, success, roomHeader)
+        );
+    }
+
+    @MessageMapping("/room/:roomId")
+    public void getRoomInfo(StompHeaderAccessor accessor){
+        String destination = accessor.getDestination();
+
+        if (destination != null && destination.startsWith("/room/")) {
+            String roomId = destination.substring("/room/".length());
+            System.out.println("Room ID: " + roomId);
+
+            // 이후 로직 처리
+            SocketRoom room = store.get(roomId);
+
+            SocketRoom coptRoom = new SocketRoom();
+            
+            coptRoom.setRoomId(room.getRoomId());
+            coptRoom.setTitle(room.getTitle());
+            coptRoom.setDestination(room.getDestination());
+            coptRoom.setStartDate(room.getStartDate());
+            coptRoom.setEndDate(room.getEndDate());
+            coptRoom.setUserList(room.getUserList());
+    
+            messagingTemplate.convertAndSend(
+                "room/"+coptRoom.getRoomId(),
+                new RoomResponse<SocketRoom>(RoomEventType.CREATE, coptRoom)
+            );
+        }
     }
 }
