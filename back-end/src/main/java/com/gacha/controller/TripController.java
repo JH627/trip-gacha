@@ -2,6 +2,7 @@ package com.gacha.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -105,6 +106,19 @@ public class TripController {
 	public Response<?> registSchedule(@LoginUser Integer userId, @Valid @RequestBody ScheduleRegistFormRequest form) {
 		tripService.registSchedule(userId, form);
 		return Response.onSuccess();
+	}
+	
+	
+	@Operation(summary = "여행 일정 리스트 조회", description = "내 여행 일정 리스트를 반환한다.")
+	@GetMapping(path = "/schedule")
+	public Response<?> getScheduleList(@LoginUser Integer userId) {
+		return Response.onSuccess(tripService.getScheduleList(userId));
+	}
+	
+	@Operation(summary = "여행 일정 상세", description = "여행 일정을 상세하게 알려준다.")
+	@GetMapping(path = "/schedule/{scheduleId}")
+	public Response<?> getScheduleDetail(@LoginUser Integer userId, @PathVariable(required = true) Integer scheduleId) {
+		return Response.onSuccess(tripService.getScheduleDetail(userId, scheduleId));
 	}
 	
 }

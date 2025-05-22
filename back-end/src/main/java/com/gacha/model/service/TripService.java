@@ -6,6 +6,8 @@ import com.gacha.model.dto.enums.SpotCategory;
 import com.gacha.model.dto.enums.SpotSearchCondition;
 import com.gacha.model.dto.trip.BookmarkSpotRequest;
 import com.gacha.model.dto.trip.DestinationInfo;
+import com.gacha.model.dto.trip.ScheduleDetail;
+import com.gacha.model.dto.trip.ScheduleInfo;
 import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
 import com.gacha.model.dto.trip.SpotInfo;
 import com.gacha.model.dto.trip.SpotRegistFormRequest;
@@ -68,4 +70,22 @@ public interface TripService {
 	 * @param form 여행 일정 정보(목적지ID, 제목, 시작일, 종료일, 일정 아이템들)
 	 */
 	void registSchedule(Integer userId, ScheduleRegistFormRequest form);
+	
+	/**
+	 * 여행 일정 리스트 조회
+	 * 
+	 * @param userId 사용자ID
+	 * @return 내가 등록한 여행일정 리스트(일정 이름, 목적지 이름, 시작일, 종료일, 목적지 대표 이미지, 일정 생성일)
+	 */
+	List<ScheduleInfo> getScheduleList(Integer userId);
+
+
+	/**
+	 * 여행 일정 상세 조회
+	 * 
+	 * @param userId 사용자ID
+	 * @param scheduleId 일정ID
+	 * @return 여행 일정 상세(일정이름, 시작일, 종료일, 일정 생성일, N일차(관광지 정보, 순서))
+	 */
+	ScheduleDetail getScheduleDetail(Integer userId, Integer scheduleId);
 }

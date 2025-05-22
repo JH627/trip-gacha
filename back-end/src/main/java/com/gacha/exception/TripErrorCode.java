@@ -19,6 +19,7 @@ public enum TripErrorCode implements BaseErrorCode {
 	
 	// 일정 관련 예외
 	SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "404", "여행 일정을 찾을 수 없습니다."),
+	SCHEDULE_FORBIDDEN(HttpStatus.FORBIDDEN, "403", "접근이 허용되지 않은 여행 일정입니다."),
 	
 	// 목적지 관련 예외
 	DESTINATION_NOT_FOUND(HttpStatus.NOT_FOUND, "404", "목적지를 찾을 수 없습니다.");
