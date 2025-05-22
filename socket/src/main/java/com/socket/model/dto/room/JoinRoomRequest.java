@@ -1,13 +1,14 @@
-package com.socket.model.dto.lobby;
+package com.socket.model.dto.room;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LobbyResponse<T> {
-    private LobyEventType type;
-    private T data;
+@ToString
+public class JoinRoomRequest {
+    private String password;
 }

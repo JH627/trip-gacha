@@ -22,6 +22,10 @@ public class LobbySessionStore {
         return users.remove(sessionId);
     }
 
+    public SocketUserInfo get(String sessoinId){
+        return users.get(sessoinId);
+    }
+
     public List<SocketUserInfo> getAll() {
         return new ArrayList<>(users.values());
     }
