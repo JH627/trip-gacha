@@ -16,6 +16,8 @@ import com.gacha.model.dto.enums.SpotCategory;
 import com.gacha.model.dto.enums.SpotSearchCondition;
 import com.gacha.model.dto.trip.BookmarkSpotRequest;
 import com.gacha.model.dto.trip.DestinationInfo;
+import com.gacha.model.dto.trip.ScheduleDetail;
+import com.gacha.model.dto.trip.ScheduleInfo;
 import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
 import com.gacha.model.dto.trip.SpotInfo;
 import com.gacha.model.dto.trip.SpotRegistFormRequest;
@@ -136,4 +138,24 @@ public class TripServiceImpl implements TripService {
 			throw e;
 		}
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ScheduleInfo> getScheduleList(Integer userId) {
+		return tripScheduleDao.selectAllScheduleByUserId(userId);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ScheduleDetail getScheduleDetail(Integer userId, Integer scheduleId) {
+		// 만약 내가 조회하거나 공유가 설정되어있다면 나를 제외한 사용자도 정보를 가져올 수 있음
+		// 그렇지 않은 경우는 접근 불가
+		if (!tripScheduleDao.checkIsShared(userId, scheduleId)) {
+			throw new TripException(TripErrorCode.SCHEDULE_FORBIDDEN);
+		}
+		
+		return tripScheduleDao.selectScheduleByUserId(userId, scheduleId);
+	}
+	
+	
 }

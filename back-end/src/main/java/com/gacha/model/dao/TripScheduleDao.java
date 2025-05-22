@@ -3,6 +3,8 @@ package com.gacha.model.dao;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.gacha.model.dto.trip.ScheduleDetail;
+import com.gacha.model.dto.trip.ScheduleInfo;
 import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
 
 import java.util.List;
@@ -15,4 +17,10 @@ public interface TripScheduleDao {
 
     void insertScheduleItems(@Param("items") List<ScheduleRegistFormRequest.ScheduleItem> items,
                              @Param("scheduleId") Integer scheduleId);
+
+	List<ScheduleInfo> selectAllScheduleByUserId(Integer userId);
+
+	boolean checkIsShared(Integer userId, Integer scheduleId);
+
+	ScheduleDetail selectScheduleByUserId(Integer userId, Integer scheduleId);
 } 
