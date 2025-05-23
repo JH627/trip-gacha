@@ -13,6 +13,7 @@ import SpotListView from '@/views/spot/SpotListView.vue'
 import ScheduleListView from '@/views/schedule/ScheduleListView.vue'
 import ScheduleDetailView from '@/views/schedule/ScheduleDetailView.vue'
 import GameView from '@/views/GameView.vue'
+import RouletteView from '@/components/game/Roulette.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

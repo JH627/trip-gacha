@@ -2,6 +2,9 @@
   <div class="game-selection">
     <h3>게임 선택</h3>
     <button @click="$emit('selectGame', 'FastClick')">FastClick</button>
+    <button @click="$emit('selectGame', 'Roulette')">룰렛</button>
+    <button @click="$emit('selectGame', 'CoinToss')">코인토스</button>
+    <button @click="$emit('selectGame', 'Crocodilia')">악어 입 벌리기</button>
     <button @click="$emit('selectGame', 'OtherGame')">다른 게임</button>
   </div>
 </template>

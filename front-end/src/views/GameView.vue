@@ -22,6 +22,9 @@ import { ref, computed } from 'vue'
 import ReuseableModal from '@/components/ReuseableModal.vue'
 import GameSelection from '@/components/game/GameSelection.vue'
 import FastClick from '@/components/game/FastClick.vue'
+import Roulette from '@/components/game/Roulette.vue'
+import CoinToss from '@/components/game/CoinToss.vue'
+import Crocodilia from '@/components/game/Crocodilia.vue'
 //import OtherGame from '@/components/game/OtherGame.vue' // 예시
 
 const isOpen = ref(false)
@@ -38,6 +41,16 @@ const currentGameComponent = computed(() => {
   if (selectedGame.value === 'FastClick') {
     return FastClick
   }
+  if (selectedGame.value === 'Roulette') {
+    return Roulette
+  }
+  if (selectedGame.value === 'CoinToss') {
+    return CoinToss
+  }
+  if (selectedGame.value === 'Crocodilia') {
+    return Crocodilia
+  }
+
   //   if (selectedGame.value === 'OtherGame') {
   //     return OtherGame
   //   }
