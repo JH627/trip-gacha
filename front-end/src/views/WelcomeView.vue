@@ -48,7 +48,7 @@ function closeDetailModal() {
 
 // 여행지 상세 모달 - 여행 시작 버튼
 function handleStartTrip() {
-  router.push('/trip')
+  router.push('/trip/lobby')
 }
 </script>
 
@@ -62,7 +62,12 @@ function handleStartTrip() {
     </div>
     <!-- 여행 시작 버튼 -->
     <div class="start-trip-btn-wrapper">
-      <a-button type="primary" size="large" class="start-trip-btn" @click="router.push('/trip')">
+      <a-button
+        type="primary"
+        size="large"
+        class="start-trip-btn"
+        @click="router.push('/trip/lobby')"
+      >
         <RocketOutlined style="margin-right: 8px; font-size: 1.3em" />
         여행 시작하기
       </a-button>
