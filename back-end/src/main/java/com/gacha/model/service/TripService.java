@@ -11,6 +11,7 @@ import com.gacha.model.dto.trip.ScheduleInfo;
 import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
 import com.gacha.model.dto.trip.SpotInfo;
 import com.gacha.model.dto.trip.SpotRegistFormRequest;
+import com.gacha.model.dto.trip.SpotListResponse;
 
 public interface TripService {
 	
@@ -49,9 +50,9 @@ public interface TripService {
 	 * @param category 카테고리
 	 * @param sort 정렬기준
 	 * @param page 페이지
-	 * @return 관광지 리스트
+	 * @return 관광지 리스트와 전체 개수를 포함한 응답
 	 */
-	List<SpotInfo> getSpotList(Integer userId, Integer destinationId, String keyword, 
+	SpotListResponse getSpotList(Integer userId, Integer destinationId, String keyword, 
 			SpotCategory category, SpotSearchCondition sort, Integer page);
 
 

@@ -48,3 +48,23 @@ export interface ScheduleDetail {
   createAt: string
   scheduleDetailItems: ScheduleDetailItem[]
 }
+
+// 관광지 카테고리 타입
+export const SPOT_CATEGORIES = [
+  { value: 'ALLSPOT', label: '모든 관광지' },
+  { value: 'ATTRACTION', label: '명소' },
+  { value: 'RESTAURANT', label: '식당' },
+  { value: 'CAFE', label: '카페' },
+  { value: 'MARKED', label: '찜 목록' },
+] as const
+
+export type SpotCategory = 'ATTRACTION' | 'RESTAURANT' | 'CAFE' | 'MARKED' | 'ALLSPOT'
+
+// 관광지 검색 파라미터 타입
+export interface SpotParams {
+  category: SpotCategory
+  sort: 'LIKE' | 'STARS' | 'NAME'
+  page: number
+  destinationId?: number
+  keyword?: string
+}
