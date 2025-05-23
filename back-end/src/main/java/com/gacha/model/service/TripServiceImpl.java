@@ -22,6 +22,7 @@ import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
 import com.gacha.model.dto.trip.SpotInfo;
 import com.gacha.model.dto.trip.SpotRegistFormRequest;
 import com.gacha.util.ImageUtil;
+import com.gacha.model.dto.trip.SpotListResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,15 +68,31 @@ public class TripServiceImpl implements TripService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<SpotInfo> getSpotList(Integer userId, Integer destinationId, String keyword, 
+	public SpotListResponse getSpotList(Integer userId, Integer destinationId, String keyword, 
 			SpotCategory category, SpotSearchCondition sort, Integer page) {		
+		List<SpotInfo> spots;
+		int pageSize = 12;
+		int offset = page * pageSize;
+		
 		// 찜 목록
 		if (category == SpotCategory.MARKED) {
-			return spotDao.selectBookmarkedSpots(userId, destinationId, keyword, sort.name(), page);
+			spots = spotDao.selectBookmarkedSpots(userId, destinationId, keyword, sort.name(), offset, pageSize);
+		}
+		// 전체 관광지
+		else if (category == SpotCategory.ALLSPOT) {
+			spots = spotDao.selectAllSpots(userId, destinationId, keyword, sort.name(), offset, pageSize);
+		}
+		// 카테고리별 목록
+		else {
+			spots = spotDao.selectByDesinationIdAndCategory(userId, destinationId, category.name(), keyword, sort.name(), offset, pageSize);
 		}
 		
-		// 카테고리별 목록
-		return spotDao.selectByDesinationIdAndCategory(userId, destinationId, category.name(), keyword, sort.name(), page);
+		int total = spotDao.getTotalCount();
+		
+		return SpotListResponse.builder()
+				.spots(spots)
+				.total(total)
+				.build();
 	}
 
 	@Override

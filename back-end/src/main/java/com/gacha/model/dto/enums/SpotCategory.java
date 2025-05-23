@@ -11,7 +11,8 @@ public enum SpotCategory {
     ATTRACTION("명소"),
     RESTAURANT("식당"),
     CAFE("카페"),
-    MARKED("찜 목록");
+    MARKED("찜 목록"),
+    ALLSPOT("모든 관광지");
 
 	private final String description;
 }

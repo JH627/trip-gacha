@@ -51,7 +51,7 @@
     </delete>
 
 	<select id="selectByDesinationIdAndCategory" resultMap="spotResultMap">
-	    SELECT s.*, 
+	    SELECT SQL_CALC_FOUND_ROWS s.*, 
 	           d.name as destination_name,
 	           c.name as category_name,
 	           CASE WHEN b.bookmark_id IS NOT NULL THEN true ELSE false END as is_bookmarked
@@ -80,14 +80,12 @@
 	            ORDER BY s.stars DESC
 	        </otherwise>
 	    </choose>
-	    <if test="page != null">
-	        LIMIT #{page}, 10
-	    </if>
+	    LIMIT #{offset}, #{pageSize}
 	</select>
 
 
     <select id="selectBookmarkedSpots" resultMap="spotResultMap">
-        SELECT s.*, 
+        SELECT SQL_CALC_FOUND_ROWS s.*, 
                d.name as destination_name,
                c.name as category_name,
                true as is_bookmarked
@@ -115,9 +113,43 @@
                 ORDER BY s.stars DESC
             </otherwise>
         </choose>
-        <if test="page != null">
-            LIMIT #{page}, 10
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectAllSpots" resultMap="spotResultMap">
+        SELECT SQL_CALC_FOUND_ROWS s.*, 
+               d.name as destination_name,
+               c.name as category_name,
+               CASE WHEN b.bookmark_id IS NOT NULL THEN true ELSE false END as is_bookmarked
+        FROM spots s
+        LEFT JOIN destinations d ON s.destination_id = d.destination_id
+        JOIN spot_categories c ON s.category_id = c.category_id
+        LEFT JOIN bookmarks b ON s.spot_id = b.spot_id AND b.user_id = #{userId}
+        WHERE c.name != 'ACCOMMODATION'
+        <if test="destinationId != null">
+            AND s.destination_id = #{destinationId}
         </if>
+        <if test="keyword != null and keyword != ''">
+            AND (s.name LIKE CONCAT('%', #{keyword}, '%')
+            OR s.address LIKE CONCAT('%', #{keyword}, '%')
+            OR s.content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <choose>
+            <when test="sort == 'LIKE'">
+                ORDER BY s.likes DESC
+            </when>
+            <when test="sort == 'NAME'">
+                ORDER BY s.name ASC
+            </when>
+            <otherwise>
+                ORDER BY s.stars DESC
+            </otherwise>
+        </choose>
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="getTotalCount" resultType="int">
+        SELECT FOUND_ROWS()
     </select>
 
     <insert id="insertSpot">
