@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Form, Input, Select, Button, message } from 'ant-design-vue'
+import { ArrowLeftOutlined } from '@ant-design/icons-vue'
 import { authApi } from '@/api/axios'
 
-const emit = defineEmits(['submit-success'])
+const emit = defineEmits(['submit-success', 'back'])
 
 const formRef = ref()
 const formState = ref({
@@ -33,6 +34,13 @@ const handleSubmit = async () => {
 
 <template>
   <div class="write-container">
+    <div class="back-button-container">
+      <Button @click="emit('back')" type="link" class="back-button">
+        <template #icon><ArrowLeftOutlined /></template>
+        목록으로 돌아가기
+      </Button>
+    </div>
+    <h2 class="write-title">게시글 작성</h2>
     <Form ref="formRef" :model="formState" layout="vertical">
       <Form.Item
         name="category"
@@ -62,11 +70,14 @@ const handleSubmit = async () => {
           v-model:value="formState.content"
           placeholder="내용을 입력하세요"
           :rows="10"
+          :maxlength="1000"
+          show-count
         />
       </Form.Item>
 
-      <Form.Item>
-        <Button type="primary" @click="handleSubmit"> 작성하기 </Button>
+      <Form.Item class="form-actions">
+        <Button type="primary" @click="handleSubmit">작성하기</Button>
+        <Button @click="emit('back')">취소</Button>
       </Form.Item>
     </Form>
   </div>
@@ -74,11 +85,75 @@ const handleSubmit = async () => {
 
 <style scoped>
 .write-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 24px;
-  background-color: #fff;
+  width: 100%;
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.back-button-container {
+  margin-bottom: 16px;
+}
+
+.back-button {
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s;
+  padding: 8px 16px;
+}
+
+.back-button:hover {
+  color: #1890ff;
+  background-color: rgba(24, 144, 255, 0.1);
+  border-radius: 4px;
+}
+
+.write-title {
+  margin-bottom: 24px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #222;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+:deep(.ant-form-item-label) {
+  font-weight: 500;
+  color: #222;
+}
+
+:deep(.ant-input),
+:deep(.ant-input-textarea),
+:deep(.ant-select-selector) {
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: #d9d9d9;
+}
+
+:deep(.ant-input:hover),
+:deep(.ant-input-textarea:hover),
+:deep(.ant-select-selector:hover) {
+  border-color: #40a9ff;
+}
+
+:deep(.ant-btn) {
+  border-radius: 4px;
+  height: 36px;
+  padding: 0 16px;
+  font-weight: 500;
+}
+
+:deep(.ant-form-item) {
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .write-container {
+    padding: 16px;
+  }
 }
 </style>
