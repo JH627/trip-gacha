@@ -2,6 +2,19 @@ import SockJS from 'sockjs-client'
 import { Client, type Message, over } from 'stompjs'
 import { useAuthStore } from '@/stores/auth'
 
+export enum PlanProgress {
+  SELECT_ACCOMMODATION = 'SELECT_ACCOMMODATION',
+  SELECT_TOURIST_SPOTS = 'SELECT_TOURIST_SPOTS',
+  FINALIZE_DESTINATIONS = 'FINALIZE_DESTINATIONS',
+  REVIEW_AND_EDIT = 'REVIEW_AND_EDIT',
+  COMPLETE = 'COMPLETE',
+}
+
+export interface JoinPlan {
+  planId: string
+  process: PlanProgress
+}
+
 export interface RoomInfo {
   roomId: string
   title: string

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   RoomEventType,
+  type JoinPlan,
   type RoomInfo,
   type RoomResponse,
   type SocketRoomUser,
@@ -31,28 +32,32 @@ const removeUserById = (userId: string) => {
 }
 
 const processRoomRequest = (body: string) => {
-  const response: RoomResponse<RoomInfo> = JSON.parse(body)
+  const response: RoomResponse<RoomInfo | JoinPlan> = JSON.parse(body)
+  let data
 
   switch (response.type) {
+    case RoomEventType.PLAN:
+      data = response.data as JoinPlan
+      router.push(`/trip/plan/${data.planId}`)
+      return
     case RoomEventType.INIT:
     // 들어왔을 때, 계획 짜는 중이면 해당 페이지로 바로 이동 (구독도 알아서)
     case RoomEventType.JOIN:
-      ownerId.value = response.data.owner.userId
-      userList.value = response.data.userList
-      title.value = response.data.title
+      data = response.data as RoomInfo
+      ownerId.value = data.owner.userId
+      userList.value = data.userList
+      title.value = data.title
       return
     case RoomEventType.LEAVE:
       // 입력받은 유저 정보를 userList에서 삭제함
-      const leaveUser = response.data.userList[0]
+      data = response.data as RoomInfo
+      const leaveUser = data.userList[0]
       removeUserById(leaveUser.userId)
       return
     case RoomEventType.BOOM:
       // lobby로 보냄 (이미 서버에서 방 정보를 삭제해서 나가게만 하면 된다)
       window.location.href = '/trip/lobby'
       return
-    case RoomEventType.PLAN:
-    // 받은 planId로 구독 2개
-    // router.push로 이동
     default:
       return
   }
@@ -90,7 +95,7 @@ const startPlan = () => {
     <div class="room-header">
       <button class="room-button leave-button" @click="leaveRoom">나가기</button>
       <div class="room-title">{{ title }}</div>
-      <button class="room-button start-button">시작하기</button>
+      <button class="room-button start-button" @click="startPlan">시작하기</button>
     </div>
 
     <div class="user-list">
