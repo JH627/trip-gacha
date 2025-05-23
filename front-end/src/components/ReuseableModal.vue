@@ -8,10 +8,8 @@
       :maskClosable="false"
       @cancel="$emit('close')"
       :width="modalWidth"
-      :wrapClassName="'custom-modal-wrapper'"
       :bodyStyle="{
-        padding: '1rem',
-        height: 'calc(100vh - 100px)',
+        height: modalHeight,
         overflow: 'hidden',
       }"
     >
@@ -33,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 
 const props = defineProps({
   visible: {
@@ -56,13 +54,35 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
-// 화면 크기에 따라 모달 너비 조정
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+const windowHeight = ref(typeof window !== 'undefined' ? window.innerHeight : 768)
+
+onMounted(() => {
+  const handleResize = () => {
+    windowWidth.value = window.innerWidth
+    windowHeight.value = window.innerHeight
+  }
+  window.addEventListener('resize', handleResize)
+  handleResize()
+
+  onUnmounted(() => {
+    window.removeEventListener('resize', handleResize)
+  })
+})
+
+// 모달 너비 계산 (최대 너비 691.2px, 768이하일 땐 90%)
 const modalWidth = computed(() => {
-  // 모바일 화면에서는 90%로 설정
-  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+  if (windowWidth.value <= 768) {
     return '90%'
   }
-  return props.width
+  return '691.2px'
+})
+
+// 모달 높이 계산 (최대 700px, 화면 높이 - 100px 이하)
+const modalHeight = computed(() => {
+  const maxHeight = 700
+  const availableHeight = windowHeight.value - 100
+  return `${Math.min(availableHeight, maxHeight)}px`
 })
 </script>
 
@@ -93,10 +113,5 @@ const modalWidth = computed(() => {
   justify-content: flex-end;
   gap: 8px;
   margin-top: 1rem;
-}
-
-::v-deep(.custom-modal-wrapper .ant-modal-content) {
-  padding-top: 20px;
-  padding-bottom: 20px;
 }
 </style>

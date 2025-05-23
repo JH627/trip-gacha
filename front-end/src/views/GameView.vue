@@ -1,18 +1,20 @@
 <template>
-  <button @click="open">모달 열기</button>
-  <ReuseableModal
-    v-if="isOpen"
-    :visible="true"
-    modalTitle="게임 선택"
-    @close-modal="close"
-    @close="close"
-  >
-    <component
-      :is="currentGameComponent"
-      @selectGame="handleSelectGame"
-      @goBackToSelect="goBackToGameSelection"
-    />
-  </ReuseableModal>
+  <div>
+    <button @click="open">모달 열기</button>
+    <ReuseableModal
+      v-if="isOpen"
+      :visible="true"
+      modalTitle="게임 선택"
+      @close-modal="close"
+      @close="close"
+    >
+      <component
+        :is="currentGameComponent"
+        @selectGame="handleSelectGame"
+        @goBackToSelect="goBackToGameSelection"
+      />
+    </ReuseableModal>
+  </div>
 </template>
 
 <script setup lang="ts">
