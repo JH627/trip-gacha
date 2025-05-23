@@ -3,6 +3,7 @@ import { authApi } from '@/api/axios'
 import type { ScheduleDetail } from '@/types/trip'
 import { onMounted, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { Tabs } from 'ant-design-vue'
 
 const route = useRoute()
 const scheduleId = route.params.scheduleId
@@ -22,6 +23,14 @@ const selectedDaySpots = computed(() => {
     .sort((a, b) => a.order - b.order)
 })
 
+const getDateForDay = (day: number) => {
+  if (!schedule.value?.startDate) return ''
+  const startDate = new Date(schedule.value.startDate)
+  const date = new Date(startDate)
+  date.setDate(startDate.getDate() + day - 1)
+  return date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })
+}
+
 onMounted(async () => {
   try {
     const response = await authApi.get(`/trip/schedule/${scheduleId}`)
@@ -38,54 +47,41 @@ onMounted(async () => {
 <template>
   <div class="main-container">
     <div v-if="schedule" class="schedule-detail">
-      <h1 class="title">{{ schedule.title }}</h1>
-      <div class="schedule-info">
-        <div class="schedule-content">
-          <div class="info-item">
-            <h3>여행 기간</h3>
-            <p>{{ schedule.startDate }} ~ {{ schedule.endDate }}</p>
-          </div>
+      <div class="title-container">
+        <h1 class="title">{{ schedule.title }}</h1>
+        <span class="period">{{ schedule.startDate }} ~ {{ schedule.endDate }}</span>
+      </div>
 
-          <!-- 날짜 선택 -->
-          <div class="day-selector">
-            <button
-              v-for="day in availableDays"
-              :key="day"
-              :class="['day-button', { active: selectedDay === day }]"
-              @click="selectedDay = day"
-            >
-              {{}}
-              {{ day }}일차
-            </button>
-          </div>
+      <!-- 날짜 선택 -->
+      <Tabs v-model:activeKey="selectedDay" class="day-tabs">
+        <Tabs.TabPane v-for="day in availableDays" :key="day" :tab="`${day}일차`" />
+      </Tabs>
 
-          <!-- 여행 일정과 지도 -->
-          <div class="schedule-route">
-            <!-- 여행 일정 -->
-            <div class="schedule-route-item spots-list">
-              <div class="schedule-route-item-title">
-                <h3>방문 장소</h3>
-              </div>
-              <div class="spots-container">
-                <div v-for="item in selectedDaySpots" :key="item.spotInfo.spotId" class="spot-item">
-                  <img :src="item.spotInfo.img" :alt="item.spotInfo.name" class="spot-image" />
-                  <div class="spot-info">
-                    <h4>{{ item.spotInfo.name }}</h4>
-                    <p>{{ item.spotInfo.content }}</p>
-                    <p class="spot-address">{{ item.spotInfo.address }}</p>
-                    <p class="spot-time">운영시간: {{ item.spotInfo.workTime }}</p>
-                  </div>
-                </div>
+      <!-- 여행 일정과 지도 -->
+      <div class="schedule-route">
+        <!-- 여행 일정 -->
+        <div class="schedule-route-item spots-list">
+          <div class="schedule-route-item-title">
+            <h3>방문 장소</h3>
+          </div>
+          <div class="spots-container">
+            <div v-for="item in selectedDaySpots" :key="item.spotInfo.spotId" class="spot-item">
+              <img :src="item.spotInfo.img" :alt="item.spotInfo.name" class="spot-image" />
+              <div class="spot-info">
+                <h4>{{ item.spotInfo.name }}</h4>
+                <p>{{ item.spotInfo.content }}</p>
+                <p class="spot-address">{{ item.spotInfo.address }}</p>
+                <p class="spot-time">운영시간: {{ item.spotInfo.workTime }}</p>
               </div>
             </div>
-            <!-- 지도 -->
-            <div class="schedule-route-item map-container">
-              <div class="schedule-route-item-title">
-                <h3>지도</h3>
-              </div>
-              <div class="map-placeholder">지도가 표시될 영역</div>
-            </div>
           </div>
+        </div>
+        <!-- 지도 -->
+        <div class="schedule-route-item map-container">
+          <div class="schedule-route-item-title">
+            <h3>지도</h3>
+          </div>
+          <div class="map-placeholder">지도가 표시될 영역</div>
         </div>
       </div>
     </div>
@@ -102,11 +98,23 @@ onMounted(async () => {
   min-height: calc(100vh - 64px);
 }
 
+.title-container {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
 .title {
   font-size: 2.5rem;
   font-weight: 800;
-  margin-bottom: 32px;
   color: #1a1a1a;
+  margin: 0;
+}
+
+.period {
+  font-size: 1rem;
+  color: #666;
 }
 
 .schedule-detail {
@@ -116,66 +124,20 @@ onMounted(async () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.schedule-info {
-  display: flex;
-  gap: 32px;
-}
-
-.schedule-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.info-item {
-  padding: 16px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-}
-
-.info-item h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #4a4a4a;
-  margin-bottom: 8px;
-}
-
-.info-item p {
-  font-size: 1rem;
-  color: #1a1a1a;
-}
-
-.loading {
-  text-align: center;
-  padding: 48px;
-  font-size: 1.2rem;
-  color: #666;
-}
-
-.day-selector {
-  display: flex;
-  gap: 12px;
+.day-tabs {
   margin-bottom: 24px;
 }
 
-.day-button {
-  padding: 8px 16px;
-  border: 1px solid #e0e0e0;
-  border-radius: 20px;
-  background: white;
-  cursor: pointer;
-  transition: all 0.2s;
+:deep(.ant-tabs-tab) {
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  white-space: pre-line;
+  text-align: center;
+  line-height: 1.4;
 }
 
-.day-button:hover {
-  background: #f5f5f5;
-}
-
-.day-button.active {
-  background: #1a73e8;
-  color: white;
-  border-color: #1a73e8;
+:deep(.ant-tabs-tab-active) {
+  color: #1890ff;
 }
 
 .schedule-route {
@@ -184,38 +146,51 @@ onMounted(async () => {
   flex-direction: row;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 24px;
 }
 
 .schedule-route-item {
   width: 48%;
   background: #f8f9fa;
   border-radius: 12px;
-  padding: 20px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .schedule-route-item-title {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.schedule-route-item-title h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
 }
 
 .spots-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .spot-item {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   background: white;
-  padding: 16px;
-  border-radius: 8px;
+  padding: 20px;
+  border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.spot-item:hover {
+  transform: translateY(-2px);
 }
 
 .spot-image {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   object-fit: cover;
   border-radius: 8px;
 }
@@ -225,20 +200,22 @@ onMounted(async () => {
 }
 
 .spot-info h4 {
-  margin: 0 0 8px 0;
-  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  font-size: 1.2rem;
   color: #1a1a1a;
+  font-weight: 600;
 }
 
 .spot-info p {
-  margin: 4px 0;
+  margin: 6px 0;
   color: #666;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .spot-address {
   color: #888;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .map-container {
@@ -254,6 +231,13 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #666;
+}
+
+.loading {
+  text-align: center;
+  padding: 48px;
+  font-size: 1.2rem;
   color: #666;
 }
 </style>
