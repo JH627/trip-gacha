@@ -37,12 +37,13 @@ export interface LobbyResponse<T> {
 }
 
 export enum RoomEventType {
-  CREATE = 'CREATE',
-  CREATED = 'CREATED',
-  INIT = 'INIT',
-  LEAVE = 'LEAVE',
-  JOIN = 'JOIN',
-  BOOM = 'BOOM',
+  CREATE = 'CREATE', // 내가 방을 만듬
+  CREATED = 'CREATED', // 다른 사람이 방을 만듬
+  INIT = 'INIT', // 처음들어와서 초기값을 받음
+  LEAVE = 'LEAVE', // 누군가 떠남
+  JOIN = 'JOIN', // 누군가 합류함
+  BOOM = 'BOOM', // 방이 터짐 or 방을 나감
+  PLAN = 'PLAN', // 계획 세우기 시작
 }
 
 export interface CreateRoomRequest {

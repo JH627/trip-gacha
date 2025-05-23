@@ -35,6 +35,7 @@ const processRoomRequest = (body: string) => {
 
   switch (response.type) {
     case RoomEventType.INIT:
+    // 들어왔을 때, 계획 짜는 중이면 해당 페이지로 바로 이동 (구독도 알아서)
     case RoomEventType.JOIN:
       ownerId.value = response.data.owner.userId
       userList.value = response.data.userList
@@ -49,6 +50,9 @@ const processRoomRequest = (body: string) => {
       // lobby로 보냄 (이미 서버에서 방 정보를 삭제해서 나가게만 하면 된다)
       window.location.href = '/trip/lobby'
       return
+    case RoomEventType.PLAN:
+    // 받은 planId로 구독 2개
+    // router.push로 이동
     default:
       return
   }
@@ -66,9 +70,18 @@ onMounted(() => {
   }
 })
 
-// 채팅은 아직 미구현으로 하쟈..
 const leaveRoom = () => {
   socketStore.send(`/app/room/leave/${roomId}`, authStore.accessToken || '', null)
+}
+
+interface StartPlanRequest {
+  roomId: string
+}
+
+const startPlan = () => {
+  socketStore.send(`/app/plan/start`, authStore.accessToken || '', {
+    roomId: roomId,
+  } as StartPlanRequest)
 }
 </script>
 
