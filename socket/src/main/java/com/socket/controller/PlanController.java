@@ -12,6 +12,8 @@ import com.socket.model.dto.plan.PlanProgress;
 import com.socket.model.dto.plan.StartPlanRequest;
 import com.socket.model.dto.room.RoomEventType;
 import com.socket.model.dto.room.RoomResponse;
+import com.socket.model.dto.room.SocketRoom;
+import com.socket.model.dto.room.SocketRoomUser;
 import com.socket.model.store.LobbySessionStore;
 import com.socket.model.store.PlanSessionStore;
 import com.socket.model.store.RoomSessionStore;
@@ -45,8 +47,9 @@ public class PlanController {
         
         // Plan store에 추가 (UUID로 플랜 id 정의)
         String planId = UUID.randomUUID().toString();
-        
-        planStore.addPlan(planId, userId);
+        SocketRoom room = roomStore.get(roomId);
+
+        planStore.addPlan(planId, userId, room.getUserList());
 
         JoinPlanDto joinplan = new JoinPlanDto(planId, PlanProgress.SELECT_ACCOMMODATION);
 
@@ -56,4 +59,78 @@ public class PlanController {
             new RoomResponse<JoinPlanDto>(RoomEventType.PLAN, true, joinplan)
         );
     }
+
+    @MessageMapping("/plan/join/**")
+    // roomId랑 planId를 줘야함 ㅇㅇ
+    public void joinPlan(StompHeaderAccessor accessor){
+        String destination = accessor.getDestination();
+        String userId = accessor.getUser().getName();
+
+        if (destination != null && destination.startsWith("/app/plan/join/")) {
+            String planId = destination.substring("/app/plan/join/".length());
+            System.out.println("Plan ID: " + planId);
+
+            // plan에 있는 유저들 중에서 내 아이디와 일치하는 유저가 없으면 스타트 멤버가 아님
+            if(!planStore.isUserInPlan(planId, userId)){
+                return;
+            }
+
+            // 현재 상태를 반환해!
+            messagingTemplate.convertAndSend(
+                "/topic/plan/" + planId,
+                planStore.getPlanProgress(planId)
+            );
+        }
+    }
+
+    @MessageMapping("/plan/move/**")
+    public void movePlanPage(StompHeaderAccessor accessor, boolean goNext){
+        String destination = accessor.getDestination();
+        String userId = accessor.getUser().getName();
+
+        if (destination != null && destination.startsWith("/app/plan/move/")) {
+            String planId = destination.substring("/app/plan/move/".length());
+            System.out.println("Plan ID: " + planId);
+
+            // 그 오우너가 아니면 앙대여
+            if(!planStore.isPlanOwner(planId, userId)){
+                // 권한이 없습니다 전송 ( 팀원한테만 )
+                messagingTemplate.convertAndSendToUser(
+                    userId,
+                    "/queue/plan",
+                    "페이지 이동 권한이 없습니다."
+                );
+                return;
+            }
+
+            boolean result = false;
+
+            if(goNext){
+                result = planStore.goNextProgress(planId);
+            } else {
+                result = planStore.goPrevProgress(planId);
+            }
+
+            // goNext인데 result가 실패했다? -> 다음으로 가는데 실패한거임 -> 그럼 마지막임
+            // goPrev읻네 실패? -> 이전으로 간거임
+
+            if(!result){
+                // 앞입니다 or 뒤입니다 전송 ( 방장한테만 )
+                messagingTemplate.convertAndSendToUser(
+                    userId,
+                    "/queue/plan",
+                    goNext ? "처음 단계 입니다." : "마지막 단계 입니다."
+                );
+                return;
+            }
+
+            // 이동 성공 ( 다 같이 이동 )
+            messagingTemplate.convertAndSend(
+                "/topic/plan/" + planId,
+                planStore.getPlanProgress(planId)
+            );
+        }
+    }
+
+    //@MessageMapping("/plan/current/**")
 }

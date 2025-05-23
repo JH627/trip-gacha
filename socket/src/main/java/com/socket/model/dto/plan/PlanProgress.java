@@ -14,6 +14,26 @@ public enum PlanProgress {
     }
 
     public int getProgress() {
-        return progress;
+        return progress * 20;
+    }
+
+    public PlanProgress next() {
+        int ordinal = this.ordinal();
+        PlanProgress[] values = PlanProgress.values();
+        if (ordinal < values.length - 1) {
+            return values[ordinal + 1];
+        } else {
+            return this; // 마지막 단계면 그대로 반환
+        }
+    }
+
+    public PlanProgress prev() {
+        int ordinal = this.ordinal();
+        PlanProgress[] values = PlanProgress.values();
+        if (ordinal > 0) {
+            return values[ordinal - 1];
+        } else {
+            return this; // 첫 단계면 그대로 반환
+        }
     }
 }
