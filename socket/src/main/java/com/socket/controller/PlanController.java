@@ -64,11 +64,11 @@ public class PlanController {
     // roomId랑 planId를 줘야함 ㅇㅇ
     public void joinPlan(StompHeaderAccessor accessor){
         String destination = accessor.getDestination();
+        System.out.println(destination);
         String userId = accessor.getUser().getName();
 
         if (destination != null && destination.startsWith("/app/plan/join/")) {
             String planId = destination.substring("/app/plan/join/".length());
-            System.out.println("Plan ID: " + planId);
 
             // plan에 있는 유저들 중에서 내 아이디와 일치하는 유저가 없으면 스타트 멤버가 아님
             if(!planStore.isUserInPlan(planId, userId)){
@@ -90,7 +90,6 @@ public class PlanController {
 
         if (destination != null && destination.startsWith("/app/plan/move/")) {
             String planId = destination.substring("/app/plan/move/".length());
-            System.out.println("Plan ID: " + planId);
 
             // 그 오우너가 아니면 앙대여
             if(!planStore.isPlanOwner(planId, userId)){
@@ -105,24 +104,25 @@ public class PlanController {
 
             boolean result = false;
 
+            System.out.println("현재 위치 :" + planStore.getPlanProgress(planId));
+
             if(goNext){
                 result = planStore.goNextProgress(planId);
             } else {
                 result = planStore.goPrevProgress(planId);
             }
-
-            // goNext인데 result가 실패했다? -> 다음으로 가는데 실패한거임 -> 그럼 마지막임
-            // goPrev읻네 실패? -> 이전으로 간거임
-
+            
             if(!result){
                 // 앞입니다 or 뒤입니다 전송 ( 방장한테만 )
                 messagingTemplate.convertAndSendToUser(
                     userId,
                     "/queue/plan",
-                    goNext ? "처음 단계 입니다." : "마지막 단계 입니다."
+                    goNext ? "마지막 단계 입니다." : "처음 단계 입니다."
                 );
                 return;
             }
+
+            System.out.println("이동 위치 :" + planStore.getPlanProgress(planId));
 
             // 이동 성공 ( 다 같이 이동 )
             messagingTemplate.convertAndSend(
