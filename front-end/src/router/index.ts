@@ -75,7 +75,7 @@ const router = createRouter({
           props: true,
         },
         {
-          path: 'game/fast-click',
+          path: 'game',
           name: 'GameView',
           component: GameView,
         },
