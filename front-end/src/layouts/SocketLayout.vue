@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
 .socket-layout {
   min-height: 100vh;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   background-color: #f5f5f5;
   padding: 1rem;

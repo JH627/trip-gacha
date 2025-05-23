@@ -13,9 +13,19 @@ import { useAuthStore } from '@/stores/auth'
 import { useSocketStore } from '@/stores/socket'
 import { useRouter } from 'vue-router'
 import CreateRoomModal from '@/components/room/CreateRoomModal.vue'
+import {
+  UserIcon,
+  PlusCircleIcon,
+  SearchIcon,
+  MapPinIcon,
+  UsersIcon,
+  CalendarIcon,
+} from 'lucide-vue-next'
 
 const socketStore = useSocketStore()
+const router = useRouter()
 const accessToken = ref('')
+const authStore = useAuthStore()
 
 const processLobbyData = (body: string) => {
   const response: LobbyResponse<SocketUserInfo | SocketUserInfo[]> = JSON.parse(body)
@@ -107,7 +117,6 @@ watch(
   async (connected) => {
     console.log('lobbyView')
     if (connected) {
-      const authStore = useAuthStore()
       accessToken.value = authStore.accessToken || ''
       const profile = await authStore.getProfile()
       const newUser: SocketUserInfo = {
@@ -156,7 +165,7 @@ const removeUser = (socketId: string) => {
 }
 
 const keyword = ref('')
-const searchOption = ref('')
+const searchOption = ref('title')
 
 const onSearch = () => {
   console.log(`${keyword} 검색하기`)
@@ -180,8 +189,6 @@ const focusOn = () => {
 const customHandleChange = (value: string) => {
   console.log(`selected ${value}`)
 }
-
-const router = useRouter()
 
 const goNext = () => {
   router.push('/trip/room')
@@ -207,37 +214,53 @@ const passwordModalClose = () => {
 </script>
 
 <template>
-  <div id="container">
+  <div class="container">
     <CreateRoomModal v-if="isOpen" @close-modal="close" />
     <RoomPasswordModal
       v-if="isPasswordModalOpen"
       :room-id="clickRoomId"
       @close-modal="passwordModalClose"
     />
-    <div id="lobyHeader">
-      <div>로고</div>
-      <button @click="open">방 생성</button>
+    <div class="lobby-header">
+      <div class="logo">
+        <h1>여행 로비</h1>
+      </div>
+      <button class="create-room-btn" @click="open">
+        <PlusCircleIcon :size="18" />
+        <span>방 생성</span>
+      </button>
     </div>
-    <div id="lobyBody">
-      <div id="lobyList">
-        <div id="searchBar">
+    <div class="lobby-body">
+      <div class="lobby-list">
+        <div class="search-bar">
           <a-select
             ref="select"
             v-model:value="searchOption"
-            style="width: 120px"
+            class="search-select"
             :options="options1"
             @focus="focusOn"
             @change="customHandleChange"
           ></a-select>
           <a-input-search
             v-model:value="keyword"
-            placeholder="input search text"
-            style="width: 100%"
+            placeholder="검색어를 입력하세요"
+            class="search-input"
             @search="onSearch"
-          />
+          >
+            <template #enterButton>
+              <button class="search-button">
+                <SearchIcon :size="16" />
+              </button>
+            </template>
+          </a-input-search>
         </div>
-        <div id="searchRoomList">
-          <div v-if="rooms.length === 0">검색 결과 없음</div>
+        <div class="search-room-list">
+          <div v-if="rooms.length === 0" class="no-results">
+            <div class="no-results-content">
+              <SearchIcon :size="48" class="no-results-icon" />
+              <p>검색 결과가 없습니다</p>
+            </div>
+          </div>
           <div v-else class="room-list">
             <div
               class="room-item"
@@ -251,34 +274,40 @@ const passwordModalClose = () => {
             >
               <!-- 목적지 -->
               <div class="room-destination">
-                <a-typography-text strong>{{ room.destination }}</a-typography-text>
+                <MapPinIcon :size="16" class="room-icon" />
+                <span>{{ room.destination }}</span>
               </div>
 
               <!-- 제목 및 날짜 -->
               <div class="room-info">
-                <a-typography-title :level="5" class="room-title">{{
-                  room.title
-                }}</a-typography-title>
-                <a-typography-text type="secondary" class="room-dates">
-                  {{ room.startDate }} ~ {{ room.endDate }}
-                </a-typography-text>
+                <h3 class="room-title">{{ room.title }}</h3>
+                <div class="room-dates">
+                  <CalendarIcon :size="14" class="room-icon" />
+                  <span>{{ room.startDate }} ~ {{ room.endDate }}</span>
+                </div>
               </div>
 
-              <!-- 인원 수 -->
+              <!-- 인�� 수 -->
               <div class="room-users">
-                <a-typography-text>{{ room.userCount }} / 8</a-typography-text>
+                <UsersIcon :size="16" class="room-icon" />
+                <span>{{ room.userCount }} / 8</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div id="lobySideBar">
-        <div>접속 중인 유저</div>
-        <div v-if="users.length === 0">검색 결과 없음</div>
-        <div v-else>
-          <div id="userInfo" v-for="user in users" :key="user.socketId">
-            <img :src="user.img" />
-            <div>{{ user.nickname }}</div>
+      <div class="lobby-sidebar">
+        <div class="sidebar-header">
+          <UserIcon :size="18" />
+          <h3>접속 중인 유저</h3>
+        </div>
+        <div v-if="users.length === 0" class="no-users">
+          <p>접속 중인 유저가 없습니다</p>
+        </div>
+        <div v-else class="user-list">
+          <div class="user-info" v-for="user in users" :key="user.socketId">
+            <img :src="user.img" alt="프로필 이미지" class="user-avatar" />
+            <div class="user-name">{{ user.nickname }}</div>
           </div>
         </div>
       </div>
@@ -287,110 +316,153 @@ const passwordModalClose = () => {
 </template>
 
 <style scoped>
-img {
-  width: 20px;
-  height: 20px;
-  border-radius: 100%;
-}
-
-#userInfo {
-  display: flex;
-}
-
-#searchRoomList {
+.container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
   width: 100%;
-  height: 80vh;
-  background-color: darkgray;
-  border-radius: 10px;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #f5f7fa;
+  gap: 20px;
 }
 
-#lobySideBar {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  justify-content: flex-start;
-  align-items: center;
-  flex: 1;
-  height: 80vh;
-  background-color: darkgray;
-  border-radius: 10px;
-}
-
-#lobyList {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 2;
-  height: 80vh;
-}
-
-#lobyBody {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  gap: 2%;
-}
-
-#searchBar {
-  max-width: 600px;
-  min-width: 400px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#lobyHeader {
+.lobby-header {
   display: flex;
   justify-content: space-between;
-  padding-left: 10px;
-  padding-right: 10px;
+  align-items: center;
+  padding: 0 10px 15px 10px;
+  border-bottom: 1px solid #e1e5eb;
+}
+
+.logo h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.create-room-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.create-room-btn:hover {
+  background-color: #4338ca;
+}
+
+.lobby-body {
+  display: flex;
+  gap: 20px;
+  height: calc(100% - 80px);
+}
+
+.lobby-list {
+  display: flex;
+  flex-direction: column;
+  flex: 3;
+  gap: 15px;
+  height: 100%;
+}
+
+.search-bar {
+  display: flex;
+  gap: 10px;
   width: 100%;
 }
 
-#container {
+.search-select {
+  width: 120px !important;
+  border-radius: 8px;
+}
+
+.search-input {
+  flex: 1;
+  border-radius: 8px;
+}
+
+.search-button {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #1677ff;
+  border: none;
+  color: white;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+}
+
+.search-room-list {
+  flex: 1;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.no-results {
+  display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
   height: 100%;
-  gap: 20px;
+}
+
+.no-results-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #9ca3af;
+}
+
+.no-results-icon {
+  margin-bottom: 16px;
+  color: #d1d5db;
 }
 
 .room-list {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  width: 100%;
   height: 100%;
-  padding: 20px;
-  box-sizing: border-box;
-  gap: 20px;
+  padding: 15px;
+  gap: 12px;
+  overflow-y: auto;
 }
 
 .room-item {
   display: flex;
-  width: 100%;
-  flex-direction: row;
   align-items: center;
-  padding: 5px 0;
-  background-color: lightcyan;
-  border: 1px solid black;
-  border-radius: 5px;
+  padding: 15px;
+  background-color: #f9fafb;
+  border-radius: 10px;
+  border-left: 4px solid #4f46e5;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.room-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .room-destination {
   flex: 1;
   display: flex;
-  justify-content: center;
-  padding-left: 12px;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #4f46e5;
 }
 
 .room-info {
@@ -401,20 +473,119 @@ img {
 }
 
 .room-title {
-  margin: 0;
+  margin: 0 0 5px 0;
+  font-size: 16px;
   font-weight: 600;
+  color: #111827;
 }
 
 .room-dates {
-  font-size: 12px;
-  color: #999;
-  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #6b7280;
 }
 
 .room-users {
   flex: 1;
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding-right: 12px;
+  gap: 5px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.room-icon {
+  flex-shrink: 0;
+}
+
+.lobby-sidebar {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.no-users {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #9ca3af;
+}
+
+.user-list {
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.user-info:hover {
+  background-color: #f9fafb;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #374151;
+}
+
+/* 스크롤바 스타일링 */
+.room-list::-webkit-scrollbar,
+.user-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.room-list::-webkit-scrollbar-track,
+.user-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.room-list::-webkit-scrollbar-thumb,
+.user-list::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+}
+
+.room-list::-webkit-scrollbar-thumb:hover,
+.user-list::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
 </style>
