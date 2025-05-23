@@ -10,7 +10,7 @@ onMounted(async () => {
   await authApi
     .get('/trip/spot?category=MARKED')
     .then((res) => {
-      wishList.value = res.data.result
+      wishList.value = res.data.result.spots.slice(0, 6)
     })
     .catch((err) => {
       console.log(err)
