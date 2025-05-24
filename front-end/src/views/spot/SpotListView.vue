@@ -46,7 +46,7 @@ const fetchDestinations = async () => {
       id: dest.destinationId,
       name: dest.name,
       description: dest.description || '',
-      img: dest.img
+      img: dest.img,
     }))
   } catch (error) {
     console.error('목적지 목록 조회 실패:', error)
