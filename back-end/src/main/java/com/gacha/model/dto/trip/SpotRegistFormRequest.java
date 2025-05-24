@@ -36,4 +36,8 @@ public class SpotRegistFormRequest {
     private String content;
 	@Nullable
     private MultipartFile img;
+    @Nullable
+    private Double latitude;
+    @Nullable
+    private Double longitude;
 }

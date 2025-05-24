@@ -46,6 +46,9 @@ public interface SpotDao {
     // 찜하기 상태 확인
     boolean isBookmarked(@Param("userId") Integer userId, @Param("spotId") Integer spotId);
 
+    // 관광지 존재 여부 확인
+    boolean existsSpot(@Param("spotId") Integer spotId);
+
     // 찜하기 추가
     void addBookmark(@Param("userId") Integer userId, @Param("spotId") Integer spotId);
 
