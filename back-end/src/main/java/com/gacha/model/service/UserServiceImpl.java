@@ -4,6 +4,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gacha.exception.UserErrorCode;
+import com.gacha.exception.UserException;
 import com.gacha.model.dao.ImageDao;
 import com.gacha.model.dao.UserDao;
 import com.gacha.model.dto.enums.ImageCategory;
@@ -30,20 +32,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean regist(RegistRequest registRequest) {
+    public void regist(RegistRequest registRequest) {
         String email = registRequest.getEmail();
         String hashingPassword = PasswordUtil.hash(registRequest.getPassword());
         String nickname = registRequest.getNickname();
         String profileImg = null;
 
-        if (registRequest.getProfileImg() == null) {
-            System.out.println("볐음");
-        }
-
         if (registRequest.getProfileImg() != null) {
+        	log.info("사진 업로드를 진행합니다.");
             profileImg = imageUtil.upload(registRequest.getProfileImg(), ImageCategory.profile);
-
-            System.out.println(profileImg);
         }
 
         UserDto user = UserDto.builder()
@@ -66,20 +63,17 @@ public class UserServiceImpl implements UserService {
                 imageDao.insert(img);
             }
         } catch (DuplicateKeyException e) {
-            System.out.println("중복된 사용자 이메일");
-            return false;
+        	throw new UserException(UserErrorCode.DUPLICATE_EMAIL);
         }
-
-        return true;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public FullUserInfo searchUserInfo(String userId) {
-        UserDto userDto = userDao.selectByUserId(Integer.parseInt(userId));
+    public FullUserInfo searchUserInfo(Integer userId) {
+        UserDto userDto = userDao.selectByUserId(userId);
 
         if (userDto == null) {
-            return null;
+            throw new UserException(UserErrorCode.NOT_FOUND);
         }
 
         return new FullUserInfo(userDto.getEmail(), userDto.getNickname(), userDto.getProfileImg());
@@ -98,6 +92,7 @@ public class UserServiceImpl implements UserService {
         String profileImg = null;
 
         if (updateRequest.getProfileImg() != null) {
+        	log.info("사진 업로드를 진행합니다.");
             profileImg = imageUtil.upload(updateRequest.getProfileImg(), ImageCategory.profile);
         }
 

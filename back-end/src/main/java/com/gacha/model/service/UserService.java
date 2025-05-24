@@ -6,9 +6,20 @@ import com.gacha.model.dto.user.UpdateRequest;
 import com.gacha.model.dto.user.UserStat;
 
 public interface UserService {
-	boolean regist(RegistRequest registRequest);
+	/**
+	 * 회원가입
+	 * 
+	 * @param registRequest 회원가입정보
+	 */
+	void regist(RegistRequest registRequest);
 
-	FullUserInfo searchUserInfo(String userId);
+	/**
+	 * 유저의 필수 정보 반환
+	 * 
+	 * @param userId 사용자ID
+	 * @return 유저 정보(이메일, 닉네임, 프로필 이미지 링크)
+	 */
+	FullUserInfo searchUserInfo(Integer userId);
 	
 	/**
 	 * 유저의 부가 정보 반환
