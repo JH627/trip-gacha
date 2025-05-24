@@ -1,11 +1,10 @@
 package com.gacha.model.service;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +25,7 @@ public class MailServiceImpl implements MailService {
 
     private final JavaMailSender emailSender;
 
-    private Map<String, String> emailCodeMap = new HashMap<>();
+    private Map<String, String> emailCodeMap = new ConcurrentHashMap<>();
 
     @Override
     public void sendSimpleMessage(String to) {
