@@ -35,11 +35,14 @@ interface SocketRoomUser {
 <script lang="ts" setup>
 import { useAuthStore } from '@/stores/auth'
 import { useSocketStore } from '@/stores/socket'
-import { defineProps, onMounted, ref, type Ref } from 'vue'
+import { computed, defineProps, onMounted, ref, type Ref } from 'vue'
 import type { SocketUserInfo } from '@/socket/webSocket'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const planId = computed(() => route.params.planId as string)
 
 const props = defineProps<{
-  planId: string
   gameType: string
 }>()
 
@@ -56,7 +59,9 @@ const processMessage = (body: string) => {
 onMounted(() => {
   socketStore.subscribe(`/user/queue/user-list`, processMessage)
 
-  socketStore.send(`/plan/user-list`, authStore.accessToken || ``, props.planId)
+  console.log('props.planId:', planId.value)
+
+  socketStore.send(`/app/plan/user-list`, authStore.accessToken || ``, planId.value)
 })
 </script>
 

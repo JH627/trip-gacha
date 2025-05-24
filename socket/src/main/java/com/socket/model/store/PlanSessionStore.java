@@ -1,10 +1,12 @@
 package com.socket.model.store;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -75,7 +77,6 @@ public class PlanSessionStore {
             planningUserMapMap.put(planId, planningUserMap);
         }
 
-        // userId, userInfo를 넣으면됨
         planningUserMapMap.get(planId).put(userInfo.getUserId(), userInfo);
     }
 
@@ -89,5 +90,13 @@ public class PlanSessionStore {
 
     public boolean isPlanOwner(String planId, String userId){
         return planMap.get(planId).getOwnerId().equals(userId);
+    }
+
+    public List<SocketRoomUser> getPlanUserList(String planId){
+        if(planningUserMapMap.get(planId)==null){
+            return null;
+        }
+
+        return new ArrayList<>(planningUserMapMap.get(planId).values());
     }
 }

@@ -11,7 +11,6 @@
       :is="props.isSocket ? socketGameComponent : currentGameComponent"
       @selectGame="selectGame"
       @goBackToSelect="goBack"
-      :planId="planId"
       :gameType="selectedGame"
     />
   </ReuseableModal>
@@ -28,10 +27,6 @@ import Crocodilia from '@/components/game/origin/Crocodilia.vue'
 import { Game } from './Game'
 import SelectPlayers from './socket/SelectPlayers.vue'
 import SocketFastClick from './socket/SocketFastClick.vue'
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
-const planId = route.params.planId
 
 const props = defineProps<{
   isOpen: boolean

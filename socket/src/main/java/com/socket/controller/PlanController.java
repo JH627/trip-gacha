@@ -1,6 +1,9 @@
 package com.socket.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -13,6 +16,7 @@ import com.socket.model.dto.plan.StartPlanRequest;
 import com.socket.model.dto.room.RoomEventType;
 import com.socket.model.dto.room.RoomResponse;
 import com.socket.model.dto.room.SocketRoom;
+import com.socket.model.dto.room.SocketRoomUser;
 import com.socket.model.store.PlanSessionStore;
 import com.socket.model.store.RoomSessionStore;
 
@@ -132,5 +136,34 @@ public class PlanController {
         }
     }
 
-    //@MessageMapping("/plan/current/**")
+    @MessageMapping("/plan/user-list")
+    public void sendPlanUserList(StompHeaderAccessor accessor, String planId){
+        String userId = accessor.getUser().getName();
+        planId = planId.replace("\"", "");
+
+        if (planId != "" && !planId.isBlank()) {
+            List<SocketRoomUser> planUserList = planStore.getPlanUserList(planId);
+            
+            if(planUserList==null){
+                messagingTemplate.convertAndSendToUser(
+                    userId,
+                    "/queue/user-list",
+                    new ArrayList<>()
+                );
+
+                return;
+            }
+
+            List<SocketRoomUser> filteredList = planUserList.stream()
+                .filter(user -> !user.getUserId().equals(userId))
+                .collect(Collectors.toList());
+
+            // 이동 성공 ( 다 같이 이동 )
+            messagingTemplate.convertAndSendToUser(
+                userId,
+                "/queue/user-list",
+                filteredList
+            );
+        }
+    }
 }
