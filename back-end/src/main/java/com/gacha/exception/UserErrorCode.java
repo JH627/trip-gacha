@@ -12,7 +12,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum UserErrorCode implements BaseErrorCode {
 	
-	NOT_FOUND(HttpStatus.NOT_FOUND, "404", "사용자를 찾을 수 없습니다.");
+	NOT_FOUND(HttpStatus.NOT_FOUND, "404", "사용자를 찾을 수 없습니다."),
+	DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "400", "이미 가입한 이메일입니다.");
 	
     private final HttpStatus status;
     private final String code;
