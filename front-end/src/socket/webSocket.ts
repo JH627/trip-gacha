@@ -10,6 +10,14 @@ export enum PlanProgress {
   COMPLETE = 'COMPLETE',
 }
 
+export const progressTextMap: Record<PlanProgress, string> = {
+  [PlanProgress.SELECT_ACCOMMODATION]: '숙소 선택 중',
+  [PlanProgress.SELECT_TOURIST_SPOTS]: '관광지 선택 중',
+  [PlanProgress.FINALIZE_DESTINATIONS]: '여행지 확정 중',
+  [PlanProgress.REVIEW_AND_EDIT]: '검토 및 수정 중',
+  [PlanProgress.COMPLETE]: '여행 계획 완성',
+}
+
 export interface JoinPlan {
   planId: string
   process: PlanProgress
