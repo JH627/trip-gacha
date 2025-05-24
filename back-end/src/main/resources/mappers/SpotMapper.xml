@@ -17,6 +17,8 @@
         <result property="phone" column="phone"/>
         <result property="workTime" column="work_time"/>
         <result property="marked" column="is_bookmarked"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
     </resultMap>
 
 	<select id="selectAll" resultMap="spotResultMap">
@@ -37,6 +39,13 @@
         SELECT EXISTS (
             SELECT 1 FROM bookmarks 
             WHERE user_id = #{userId} AND spot_id = #{spotId}
+        )
+    </select>
+
+    <select id="existsSpot" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM spots 
+            WHERE spot_id = #{spotId}
         )
     </select>
 
@@ -161,7 +170,11 @@
             address,
             likes,
             stars,
-            category_id
+            category_id,
+            phone,
+            work_time,
+            latitude,
+            longitude
         )
         VALUES (
             #{destinationId},
@@ -171,7 +184,11 @@
             #{address},
             0,
             0,
-            (SELECT category_id FROM categories WHERE name = #{category})
+            (SELECT category_id FROM categories WHERE name = #{category}),
+            #{phone},
+            #{workTime},
+            #{latitude},
+            #{longitude}
         )
     </insert>
 </mapper>
