@@ -47,7 +47,7 @@ const saveProfile = async () => {
       },
     })
 
-    await authStore.getProfile()
+    await authStore.getProfile(true)
     message.success('프로필이 수정되었습니다')
     isEditing.value = false
   } catch (error) {
