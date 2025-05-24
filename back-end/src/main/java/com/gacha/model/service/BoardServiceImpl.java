@@ -100,20 +100,42 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public void like(Integer boardId, Integer userId) {
-        try{
-            boardDao.like(boardId, userId);
-        }catch(DuplicateKeyException e){
-            boardDao.deleteLike(boardId, userId);
+        try {
+            // 이미 좋아요를 눌렀는지 확인
+            boolean isLiked = boardDao.isLiked(boardId, userId);
+            if (isLiked) {
+                // 이미 좋아요를 눌렀다면 좋아요 취소
+                boardDao.deleteLike(boardId, userId);
+            } else {
+                // 좋아요를 누르지 않았다면 좋아요 추가
+                boardDao.like(boardId, userId);
+                // 싫어요가 있다면 삭제
+                boardDao.deleteDislike(boardId, userId);
+            }
+        } catch(DuplicateKeyException e) {
+            log.error("좋아요 처리 중 중복 키 예외 발생: {}", e.getMessage());
+            throw new BoardException(BoardErrorCode.DUPLICATED_LIKE);
         }
     }
 
     @Override
     @Transactional
     public void dislike(Integer boardId, Integer userId) {
-        try{
-            boardDao.dislike(boardId, userId);
-        }catch(DuplicateKeyException e){
-            boardDao.deleteDislike(boardId, userId);
+        try {
+            // 이미 싫어요를 눌렀는지 확인
+            boolean isDisliked = boardDao.isDisliked(boardId, userId);
+            if (isDisliked) {
+                // 이미 싫어요를 눌렀다면 싫어요 취소
+                boardDao.deleteDislike(boardId, userId);
+            } else {
+                // 싫어요를 누르지 않았다면 싫어요 추가
+                boardDao.dislike(boardId, userId);
+                // 좋아요가 있다면 삭제
+                boardDao.deleteLike(boardId, userId);
+            }
+        } catch(DuplicateKeyException e) {
+            log.error("싫어요 처리 중 중복 키 예외 발생: {}", e.getMessage());
+            throw new BoardException(BoardErrorCode.DUPLICATED_DISLIKE);
         }
     }
 
