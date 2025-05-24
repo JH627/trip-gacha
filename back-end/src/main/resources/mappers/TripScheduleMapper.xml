@@ -81,7 +81,9 @@
             sc.name as category,
             s.phone,
             s.work_time as workTime,
-            CASE WHEN b.bookmark_id IS NOT NULL THEN true ELSE false END as marked
+            CASE WHEN b.bookmark_id IS NOT NULL THEN true ELSE false END as marked,
+            s.latitude,
+            s.longitude
         FROM trip_schedule ts
         LEFT JOIN trip_schedule_items tsi ON ts.trip_route_id = tsi.trip_schedule_id
         LEFT JOIN spots s ON tsi.spot_id = s.spot_id
@@ -114,6 +116,8 @@
                 <result property="phone" column="phone"/>
                 <result property="workTime" column="workTime"/>
                 <result property="marked" column="marked"/>
+                <result property="latitude" column="latitude"/>
+                <result property="longitude" column="longitude"/>
             </association>
         </collection>
     </resultMap>

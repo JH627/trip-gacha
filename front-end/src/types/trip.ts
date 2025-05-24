@@ -31,6 +31,8 @@ export interface SpotInfo {
   phone: string
   workTime: string
   marked: boolean
+  latitude: number
+  longitude: number
 }
 
 // 여행 일정 상세 정보
