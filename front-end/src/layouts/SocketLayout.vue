@@ -36,7 +36,7 @@ const closeModal = () => {
     <div class="game-button" @click="openModal">
       <img class="game-icon" :src="WhiteGloves" />
     </div>
-    <GameModal :is-open="isOpen" :is-socket="false" @close="closeModal" />
+    <GameModal :is-open="isOpen" :is-socket="true" @close="closeModal" />
   </div>
 </template>
 

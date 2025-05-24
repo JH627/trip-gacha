@@ -1,56 +1,63 @@
+<!--
+1. props로 planId, 게임 타입을 받는다.
+2. onMounted일 때, 'user/queue/game' 을 구독 -> plan에 있는 UserList를 불러오는 요청 -> send.'/plan/user-list'
+3. 소켓 서버에서 실제 리스트(나를 제외) 반환 받음
+
+리스트 타입은 
+interface SocketRoomUser {
+  userId: string
+  nickname: string
+  img: string
+} 의 리스트임
+
+4. 나를 제외한 실제 리스트를 카드 형태로 출력 -> 이 때, 클릭하면 선택 상태가 됨 (다중 선택 가능)
+참고로 출력하는 컨테이너는 아래 templete를 따르면 됨
+
+5. 밑의 초대 버튼 클릭 시, /game/invite 요청 + { planId, 선택한 유저 아이디 리스트, 게임 타입} -> 이걸 받는 건 Modal에서할거니 요청만 보내면 됨
+6. players-select-complete 이벤트 일으키기
+-->
 <template>
   <div class="game-selection">
     <div class="game-grid">
       <div
-        v-for="game in games"
-        :key="game.value"
+        v-for="player in playerList"
+        :key="player.socketId"
         class="game-card"
-        @click="$emit('selectGame', game.value.toString())"
+        @click="$emit('selectGame')"
       >
-        <div class="game-icon">
-          <component :is="game.icon" :size="32" />
-        </div>
-        <span class="game-name">{{ game.label }}</span>
+        <img class="profile-img" :src="player.img" />
+        <span class="game-name">{{ player.nickname }}</span>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { defineEmits } from 'vue'
-import { MousePointerClick, RotateCcw, Coins, Zap, Gamepad2 } from 'lucide-vue-next'
-import { Game } from './Game'
+<script lang="ts" setup>
+import { useAuthStore } from '@/stores/auth'
+import { useSocketStore } from '@/stores/socket'
+import { defineProps, onMounted, ref, type Ref } from 'vue'
+import type { SocketUserInfo } from '@/socket/webSocket'
 
-defineEmits(['selectGame'])
+const props = defineProps<{
+  planId: string
+  gameType: string
+}>()
 
-// 게임 추가하면 여기에 넣기
-const games = [
-  {
-    value: Game.FAST_CLICK,
-    label: 'FastClick',
-    icon: MousePointerClick,
-  },
-  {
-    value: Game.ROULETTE,
-    label: '룰렛',
-    icon: RotateCcw,
-  },
-  {
-    value: Game.COIN_TOSS,
-    label: '코인토스',
-    icon: Coins,
-  },
-  {
-    value: Game.CROCODILIA,
-    label: '악어 입 벌리기',
-    icon: Zap,
-  },
-  {
-    value: 'OTHER_GAME',
-    label: '다른 게임',
-    icon: Gamepad2,
-  },
-]
+const authStore = useAuthStore()
+const socketStore = useSocketStore()
+
+const playerList: Ref<SocketUserInfo[]> = ref([])
+
+const processMessage = (body: string) => {
+  const response: SocketUserInfo[] = JSON.parse(body)
+  playerList.value = response
+}
+
+onMounted(() => {
+  socketStore.subscribe(`/user/queue/user-list`, processMessage)
+
+  socketStore.send(`/plan/user-list`, authStore.accessToken || ``, props.planId)
+})
 </script>
 
 <style scoped>
@@ -99,7 +106,7 @@ const games = [
   transform: translateY(-2px);
 }
 
-.game-icon {
+.player-img {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,7 +114,6 @@ const games = [
   height: 50px;
   background-color: #f3f4f6;
   border-radius: 50%;
-  color: #4f46e5;
   transition: all 0.3s ease;
 }
 

@@ -5,12 +5,14 @@
     :modalTitle="selectedGame === '' || selectedGame === null ? '게임 선택' : selectedGame"
     @close="handleClose"
     @close-modal="handleClose"
+    @players-select-complete="playerSelectComplete"
   >
     <component
-      v-if="isSocket === false"
-      :is="currentGameComponent"
+      :is="props.isSocket ? socketGameComponent : currentGameComponent"
       @selectGame="selectGame"
       @goBackToSelect="goBack"
+      :planId="planId"
+      :gameType="selectedGame"
     />
   </ReuseableModal>
 </template>
@@ -19,10 +21,17 @@
 import { computed, ref, watch } from 'vue'
 import ReuseableModal from '@/components/ReuseableModal.vue'
 import GameSelection from '@/components/game/GameSelection.vue'
-import FastClick from '@/components/game/FastClick.vue'
-import Roulette from '@/components/game/Roulette.vue'
-import CoinToss from '@/components/game/CoinToss.vue'
-import Crocodilia from '@/components/game/Crocodilia.vue'
+import FastClick from '@/components/game/origin/FastClick.vue'
+import Roulette from '@/components/game/origin/Roulette.vue'
+import CoinToss from '@/components/game/origin/CoinToss.vue'
+import Crocodilia from '@/components/game/origin/Crocodilia.vue'
+import { Game } from './Game'
+import SelectPlayers from './socket/SelectPlayers.vue'
+import SocketFastClick from './socket/SocketFastClick.vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const planId = route.params.planId
 
 const props = defineProps<{
   isOpen: boolean
@@ -37,30 +46,36 @@ const selectedGame = ref<string | null>(null)
 
 const currentGameComponent = computed(() => {
   if (!selectedGame.value) return GameSelection
+
   switch (selectedGame.value) {
-    case 'FastClick':
+    case Game.FAST_CLICK:
       return FastClick
-    case 'Roulette':
+    case Game.ROULETTE:
       return Roulette
-    case 'CoinToss':
+    case Game.COIN_TOSS:
       return CoinToss
-    case 'Crocodilia':
+    case Game.CROCODILIA:
       return Crocodilia
     default:
       return GameSelection
   }
 })
 
-const currentSocketGameComponent = computed(() => {
+const hasSelectedPlayers = ref(false)
+
+const socketGameComponent = computed(() => {
   if (!selectedGame.value) return GameSelection
+
+  if (!hasSelectedPlayers.value) return SelectPlayers
+
   switch (selectedGame.value) {
-    case 'FastClick':
-      return FastClick
-    case 'Roulette':
+    case Game.FAST_CLICK:
+      return SocketFastClick
+    case Game.ROULETTE:
       return Roulette
-    case 'CoinToss':
+    case Game.COIN_TOSS:
       return CoinToss
-    case 'Crocodilia':
+    case Game.CROCODILIA:
       return Crocodilia
     default:
       return GameSelection
@@ -78,5 +93,9 @@ const goBack = () => {
 const handleClose = () => {
   emit('close')
   selectedGame.value = null // 초기화
+}
+
+const playerSelectComplete = () => {
+  hasSelectedPlayers.value = true
 }
 </script>
