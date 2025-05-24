@@ -183,12 +183,13 @@ const close = () => {
 
 <style scoped>
 .game-container {
-  height: 100vh;
+  height: 100%; /* 기존 100vh → 모달 영역 기준으로 꽉 차게 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
+  overflow: hidden;
 }
 .bg-green {
   background-color: #22c55e;

@@ -10,7 +10,10 @@
       :width="modalWidth"
       :bodyStyle="{
         height: modalHeight,
+        padding: '0',
         overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
       }"
     >
       <div class="modal-header" v-if="$slots.header || modalTitle">
@@ -99,13 +102,10 @@ const modalHeight = computed(() => {
 }
 
 .modal-content {
+  flex: 1;
+  overflow: hidden; /* 전체 콘텐츠가 모달 안에서 잘리지 않도록 */
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  width: 100%;
-  max-height: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
 }
 
 .modal-footer {

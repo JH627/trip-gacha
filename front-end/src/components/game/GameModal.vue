@@ -2,11 +2,16 @@
   <ReuseableModal
     v-if="isOpen"
     :visible="true"
-    modalTitle="게임 선택"
+    :modalTitle="selectedGame === '' || selectedGame === null ? '게임 선택' : selectedGame"
     @close="handleClose"
     @close-modal="handleClose"
   >
-    <component :is="currentGameComponent" @selectGame="selectGame" @goBackToSelect="goBack" />
+    <component
+      v-if="isSocket === false"
+      :is="currentGameComponent"
+      @selectGame="selectGame"
+      @goBackToSelect="goBack"
+    />
   </ReuseableModal>
 </template>
 
@@ -21,6 +26,7 @@ import Crocodilia from '@/components/game/Crocodilia.vue'
 
 const props = defineProps<{
   isOpen: boolean
+  isSocket: boolean
 }>()
 
 const emit = defineEmits<{
@@ -30,6 +36,22 @@ const emit = defineEmits<{
 const selectedGame = ref<string | null>(null)
 
 const currentGameComponent = computed(() => {
+  if (!selectedGame.value) return GameSelection
+  switch (selectedGame.value) {
+    case 'FastClick':
+      return FastClick
+    case 'Roulette':
+      return Roulette
+    case 'CoinToss':
+      return CoinToss
+    case 'Crocodilia':
+      return Crocodilia
+    default:
+      return GameSelection
+  }
+})
+
+const currentSocketGameComponent = computed(() => {
   if (!selectedGame.value) return GameSelection
   switch (selectedGame.value) {
     case 'FastClick':

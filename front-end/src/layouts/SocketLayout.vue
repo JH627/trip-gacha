@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onBeforeMount } from 'vue'
+import { onBeforeUnmount, onBeforeMount, ref } from 'vue'
 import { useSocketStore } from '@/stores/socket'
 import { useAuthStore } from '@/stores/auth'
 //import Gloves from '@/assets/gloves.png' -> 버튼 색 밝아지면 검은 아이콘
 import WhiteGloves from '@/assets/gloves-white.png'
+import GameModal from '@/components/game/GameModal.vue'
 
 const socketStore = useSocketStore()
 const authStore = useAuthStore()
@@ -16,14 +17,26 @@ onBeforeMount(async () => {
 onBeforeUnmount(() => {
   socketStore.disconnect()
 })
+
+const isOpen = ref(false)
+
+const openModal = () => {
+  console.log('open!')
+  isOpen.value = true
+}
+
+const closeModal = () => {
+  isOpen.value = false
+}
 </script>
 
 <template>
   <div class="socket-layout">
     <router-view />
-    <div class="game-button">
+    <div class="game-button" @click="openModal">
       <img class="game-icon" :src="WhiteGloves" />
     </div>
+    <GameModal :is-open="isOpen" :is-socket="false" @close="closeModal" />
   </div>
 </template>
 
@@ -67,5 +80,6 @@ onBeforeUnmount(() => {
   width: 36px;
   height: 36px;
   color: white;
+  pointer-events: none;
 }
 </style>
