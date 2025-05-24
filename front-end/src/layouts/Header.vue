@@ -75,6 +75,7 @@ watch(
         <router-link to="/trip/lobby" class="board-link">여행 시작</router-link>
         <router-link to="/spot" class="board-link">관광지 둘러보기</router-link>
         <router-link to="/board" class="board-link">게시판</router-link>
+        <router-link to="/game" class="board-link">게임</router-link>
       </div>
       <div>
         <!-- 로그인 상태 확인: 로그인 시 -->
@@ -116,7 +117,7 @@ watch(
   <a-drawer placement="right" :visible="drawerVisible" @close="closeDrawer" class="mobile-drawer">
     <!-- 모바일 메뉴 컨테이너 -->
     <div class="drawer-content">
-      <div class="drawer-menu-item" @click="handleMenuClick('/trip')">여행 시작</div>
+      <div class="drawer-menu-item" @click="handleMenuClick('/trip/lobby')">여행 시작</div>
       <div class="drawer-menu-item" @click="handleMenuClick('/spot')">관광지 둘러보기</div>
       <div class="drawer-menu-item" @click="handleMenuClick('/board')">게시판</div>
       <div class="drawer-menu-item" @click="handleMenuClick('/mypage')">마이페이지</div>

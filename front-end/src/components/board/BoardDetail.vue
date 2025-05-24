@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Typography, Modal, message } from 'ant-design-vue'
+import { Typography, Modal, message, Button } from 'ant-design-vue'
 import { authApi } from '@/api/axios'
-import { Comment, BoardDetail } from '@/types/board'
+import type { Comment, BoardDetail } from '@/types/board'
 import BoardHeader from './BoardHeader.vue'
 import BoardContent from './BoardContent.vue'
 import BoardActions from './BoardActions.vue'
 import CommentList from './CommentList.vue'
 import CommentForm from './CommentForm.vue'
 import BoardEdit from './BoardEdit.vue'
+import { ArrowLeftOutlined } from '@ant-design/icons-vue'
 
 const props = defineProps<{
   boardId: number
@@ -158,38 +159,137 @@ onMounted(() => {
     <BoardEdit :board-id="boardId" @back="isEditing = false" @update="handleUpdate" />
   </div>
   <div v-else class="detail-container" v-if="board">
-    <BoardHeader :board="board" />
-    <BoardContent :board="board" @update="handleUpdate" />
-    <BoardActions
-      :board="board"
-      @like="handleLike"
-      @dislike="handleDislike"
-      @report="handleReport"
-      @edit="handleEdit"
-      @delete="handleDelete"
-    />
+    <div class="back-button-container">
+      <Button @click="emit('back')" type="link" class="back-button">
+        <template #icon><ArrowLeftOutlined /></template>
+        목록으로 돌아가기
+      </Button>
+    </div>
+    <div class="content-wrapper">
+      <div class="board-card">
+        <BoardHeader :board="board" />
+        <div class="divider"></div>
+        <BoardContent :board="board" @update="handleUpdate" />
+        <div class="divider"></div>
+        <BoardActions
+          :board="board"
+          @like="handleLike"
+          @dislike="handleDislike"
+          @report="handleReport"
+          @edit="handleEdit"
+          @delete="handleDelete"
+        />
+      </div>
 
-    <div class="comments-section">
-      <Title :level="3">댓글</Title>
-      <CommentForm @submit="handleCommentSubmit" />
-      <CommentList :comments="comments" @delete="handleCommentDelete" />
+      <div class="comments-section">
+        <div class="comments-header">
+          <Title :level="3" class="comments-title">댓글</Title>
+          <span class="comment-count">{{ comments.length }}개의 댓글</span>
+        </div>
+        <CommentForm @submit="handleCommentSubmit" />
+        <CommentList :comments="comments" @delete="handleCommentDelete" />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .detail-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 32px;
-  background-color: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.back-button-container {
+  margin-bottom: 16px;
+}
+
+.back-button {
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s;
+  padding: 8px 16px;
+}
+
+.back-button:hover {
+  color: #1890ff;
+  background-color: rgba(24, 144, 255, 0.1);
+  border-radius: 4px;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.board-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+  transition: box-shadow 0.2s;
+}
+
+.board-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.divider {
+  height: 1px;
+  background-color: #f0f0f0;
+  margin: 16px 0;
 }
 
 .comments-section {
-  margin-top: 40px;
-  padding-top: 32px;
-  border-top: 2px solid #f0f0f0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+}
+
+.comments-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.comments-title {
+  margin: 0 !important;
+  font-size: 16px;
+  font-weight: bold;
+  color: #222;
+}
+
+.comment-count {
+  font-size: 13px;
+  color: #888;
+}
+
+:deep(.ant-typography) {
+  color: #222;
+}
+
+:deep(.ant-btn-link) {
+  height: auto;
+  padding: 4px 8px;
+}
+
+:deep(.ant-btn-link:hover) {
+  background-color: rgba(24, 144, 255, 0.1);
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .detail-container {
+    padding: 16px;
+  }
+
+  .board-card,
+  .comments-section {
+    padding: 12px;
+  }
 }
 </style>

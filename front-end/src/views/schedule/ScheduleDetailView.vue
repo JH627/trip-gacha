@@ -3,12 +3,19 @@ import { authApi } from '@/api/axios'
 import type { ScheduleDetail } from '@/types/trip'
 import { onMounted, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Tabs } from 'ant-design-vue'
+import { Tabs, Modal } from 'ant-design-vue'
+import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps'
+
+const defaultCoordinate = {
+  lat: 33.450701,
+  lng: 126.570667,
+}
 
 const route = useRoute()
 const scheduleId = route.params.scheduleId
 const schedule = ref<ScheduleDetail | null>(null)
 const selectedDay = ref(1)
+const isModalVisible = ref(false)
 
 const availableDays = computed(() => {
   if (!schedule.value) return []
@@ -23,12 +30,23 @@ const selectedDaySpots = computed(() => {
     .sort((a, b) => a.order - b.order)
 })
 
-const getDateForDay = (day: number) => {
-  if (!schedule.value?.startDate) return ''
-  const startDate = new Date(schedule.value.startDate)
-  const date = new Date(startDate)
-  date.setDate(startDate.getDate() + day - 1)
-  return date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })
+const showModal = () => {
+  isModalVisible.value = true
+}
+
+const closeModal = () => {
+  isModalVisible.value = false
+}
+
+const mapOptions = {
+  scrollwheel: true,
+  disableDoubleClickZoom: false,
+  disableDoubleTapZoom: false,
+  disableTwoFingerTapZoom: false,
+  draggable: true,
+  keyboardShortcuts: true,
+  zoomable: true,
+  center: defaultCoordinate,
 }
 
 onMounted(async () => {
@@ -63,6 +81,7 @@ onMounted(async () => {
         <div class="schedule-route-item spots-list">
           <div class="schedule-route-item-title">
             <h3>방문 장소</h3>
+            <button class="mobile-map-button" @click="showModal">지도 보기</button>
           </div>
           <div class="spots-container">
             <div v-for="item in selectedDaySpots" :key="item.spotInfo.spotId" class="spot-item">
@@ -77,15 +96,51 @@ onMounted(async () => {
           </div>
         </div>
         <!-- 지도 -->
-        <div class="schedule-route-item map-container">
+        <div class="schedule-route-item map-container desktop-only">
           <div class="schedule-route-item-title">
             <h3>지도</h3>
           </div>
-          <div class="map-placeholder">지도가 표시될 영역</div>
+          <div class="map-wrapper">
+            <KakaoMap
+              :lat="defaultCoordinate.lat"
+              :lng="defaultCoordinate.lng"
+              :draggable="true"
+              :zoom="3"
+              :options="mapOptions"
+              class="kakao-map"
+            >
+              <KakaoMapMarker :lat="defaultCoordinate.lat" :lng="defaultCoordinate.lng" />
+            </KakaoMap>
+          </div>
         </div>
       </div>
     </div>
     <div v-else class="loading">로딩 중...</div>
+
+    <!-- 모바일용 지도 Modal -->
+    <Modal
+      v-model:visible="isModalVisible"
+      title="지도"
+      :footer="null"
+      :width="'100%'"
+      :style="{ top: 0, padding: 0 }"
+      :bodyStyle="{ padding: 0, height: '100vh' }"
+      class="map-modal"
+      @cancel="closeModal"
+    >
+      <div class="modal-map-wrapper">
+        <KakaoMap
+          :lat="defaultCoordinate.lat"
+          :lng="defaultCoordinate.lng"
+          :draggable="true"
+          :zoom="3"
+          :options="mapOptions"
+          class="modal-kakao-map"
+        >
+          <KakaoMapMarker :lat="defaultCoordinate.lat" :lng="defaultCoordinate.lng" />
+        </KakaoMap>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -143,26 +198,28 @@ onMounted(async () => {
 .schedule-route {
   width: 100%;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
   flex-wrap: wrap;
-  gap: 24px;
+  flex-direction: row;
+  gap: 32px;
+  margin-top: 24px;
 }
 
 .schedule-route-item {
-  width: 48%;
-  background: #f8f9fa;
+  width: 100%;
+  background: white;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .schedule-route-item-title {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .schedule-route-item-title h3 {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 600;
   color: #1a1a1a;
   margin: 0;
@@ -172,54 +229,113 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.spots-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.spots-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.spots-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.spots-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .spot-item {
   display: flex;
   gap: 20px;
   background: white;
-  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
+  border: 1px solid #f0f0f0;
 }
 
 .spot-item:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #e6e6e6;
 }
 
 .spot-image {
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
   object-fit: cover;
   border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .spot-info {
+  margin-top: 20px;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .spot-info h4 {
-  margin: 0 0 12px 0;
-  font-size: 1.2rem;
+  margin: 0;
+  font-size: 1.3rem;
   color: #1a1a1a;
   font-weight: 600;
 }
 
 .spot-info p {
-  margin: 6px 0;
+  margin: 0;
   color: #666;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .spot-address {
   color: #888;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.spot-time {
+  color: #666;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.map-wrapper {
+  width: 100%;
+  height: 500px;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kakao-map {
+  width: 100%;
+  height: 100%;
 }
 
 .map-container {
-  min-height: 500px;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .map-placeholder {
@@ -239,5 +355,86 @@ onMounted(async () => {
   padding: 48px;
   font-size: 1.2rem;
   color: #666;
+}
+
+@media (min-width: 1024px) {
+  .schedule-route {
+    flex-direction: row;
+  }
+
+  .schedule-route-item {
+    width: calc(50% - 16px);
+  }
+}
+
+.mobile-map-button {
+  display: none;
+  padding: 8px 16px;
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.mobile-map-button:hover {
+  background-color: #40a9ff;
+}
+
+@media (max-width: 1023px) {
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-map-button {
+    display: block;
+  }
+
+  .schedule-route-item-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.map-modal :deep(.ant-modal) {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  top: 0;
+  height: 100vh;
+}
+
+.map-modal :deep(.ant-modal-content) {
+  height: 100vh;
+  border-radius: 0;
+  padding: 0;
+}
+
+.map-modal :deep(.ant-modal-header) {
+  margin: 0;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.map-modal :deep(.ant-modal-body) {
+  padding: 0;
+  height: calc(100vh - 55px);
+}
+
+.modal-map-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.modal-kakao-map {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 </style>
