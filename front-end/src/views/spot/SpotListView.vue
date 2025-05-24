@@ -42,7 +42,12 @@ const pageSize = 12
 const fetchDestinations = async () => {
   try {
     const { data } = await authApi.get('/trip/destination')
-    destinations.value = data.result
+    destinations.value = data.result.map((dest: any) => ({
+      id: dest.destinationId,
+      name: dest.name,
+      description: dest.description || '',
+      img: dest.img
+    }))
   } catch (error) {
     console.error('목적지 목록 조회 실패:', error)
   }
@@ -58,7 +63,7 @@ const fetchSpots = async () => {
     }
 
     // 목적지 선택 시 목적지 ID 추가
-    if (selectedDestination.value) {
+    if (selectedDestination.value !== null) {
       params.destinationId = selectedDestination.value
     }
     if (search.value) {
