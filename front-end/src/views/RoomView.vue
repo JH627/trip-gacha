@@ -41,7 +41,17 @@ const processRoomRequest = (body: string) => {
       router.push(`/trip/plan/${data.planId}`)
       return
     case RoomEventType.INIT:
-    // 들어왔을 때, 계획 짜는 중이면 해당 페이지로 바로 이동 (구독도 알아서)
+      // 들어왔을 때, 계획 짜는 중이면 해당 페이지로 바로 이동 (구독도 알아서)
+      data = response.data as RoomInfo
+
+      console.log('초기화')
+      console.log(data)
+
+      if (data.planning) {
+        // 바로 계획 페이지로 이동하게 요청보내기 ( roomId == planId라서 roomId 보내도 댐 ㅇㅇ)
+        router.push(`/trip/plan/${data.roomId}`)
+        return
+      }
     case RoomEventType.JOIN:
       data = response.data as RoomInfo
       ownerId.value = data.owner.userId

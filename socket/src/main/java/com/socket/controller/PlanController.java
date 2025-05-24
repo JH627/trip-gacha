@@ -13,8 +13,6 @@ import com.socket.model.dto.plan.StartPlanRequest;
 import com.socket.model.dto.room.RoomEventType;
 import com.socket.model.dto.room.RoomResponse;
 import com.socket.model.dto.room.SocketRoom;
-import com.socket.model.dto.room.SocketRoomUser;
-import com.socket.model.store.LobbySessionStore;
 import com.socket.model.store.PlanSessionStore;
 import com.socket.model.store.RoomSessionStore;
 
@@ -25,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 public class PlanController {
     private final SimpMessagingTemplate messagingTemplate;
     private final PlanSessionStore planStore;
-    private final LobbySessionStore lobbyStore;
     private final RoomSessionStore roomStore;
 
     @MessageMapping("/plan/start")
@@ -43,10 +40,11 @@ public class PlanController {
             return;
         }
 
-        // TODO : 방 정보 중, 상태를 planning으로 바꿈 -> 중간에 들어오거나 튕긴 사람들을 재접속 시킬거임
+        // 방 정보 중, 상태를 planning으로 바꿈 -> 중간에 들어오거나 튕긴 사람들을 재접속 시킬거임
+        roomStore.changePlanState(roomId);
         
         // Plan store에 추가 (UUID로 플랜 id 정의)
-        String planId = UUID.randomUUID().toString();
+        String planId = roomId;
         SocketRoom room = roomStore.get(roomId);
 
         planStore.addPlan(planId, userId, room.getUserList());
@@ -74,6 +72,8 @@ public class PlanController {
             if(!planStore.isUserInPlan(planId, userId)){
                 return;
             }
+
+            System.out.println(roomStore.get(planId));
 
             // 현재 상태를 반환해!
             messagingTemplate.convertAndSend(

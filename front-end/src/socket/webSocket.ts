@@ -22,6 +22,7 @@ export interface RoomInfo {
   endDate: string
   destination: string
   owner: SocketRoomUser
+  planning: boolean
   userList: SocketRoomUser[]
 }
 

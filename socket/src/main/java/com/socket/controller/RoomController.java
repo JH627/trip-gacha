@@ -1,6 +1,5 @@
 package com.socket.controller;
 
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -11,8 +10,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
-import com.socket.model.dto.lobby.LobbyResponse;
-import com.socket.model.dto.lobby.LobyEventType;
 import com.socket.model.dto.lobby.SocketUserInfo;
 import com.socket.model.dto.room.CreateRoomRequest;
 import com.socket.model.dto.room.JoinRoomRequest;
@@ -50,6 +47,7 @@ public class RoomController {
                                             roomInfo.getEndDate(),
                                             roomInfo.getDestination(),
                                             owner,
+                                            false,
                                             new ArrayList<>());
 
         store.add(newRoom.getRoomId(), newRoom);
@@ -164,6 +162,7 @@ public class RoomController {
             coptRoom.setEndDate(room.getEndDate());
             coptRoom.setUserList(room.getUserList());
             coptRoom.setOwner(room.getOwner());
+            coptRoom.setPlanning(room.isPlanning());
             
             System.out.println(coptRoom);
 
