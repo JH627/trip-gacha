@@ -1,4 +1,5 @@
 export enum Game {
+  DEFAULT = 'DEFAULT',
   FAST_CLICK = 'FAST_CLICK',
   ROULETTE = 'ROULETTE',
   COIN_TOSS = 'COIN_TOSS',

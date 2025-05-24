@@ -14,6 +14,8 @@ interface SocketRoomUser {
 참고로 출력하는 컨테이너는 아래 templete를 따르면 됨
 
 5. 밑의 초대 버튼 클릭 시, /game/invite 요청 + { planId, 선택한 유저 아이디 리스트, 게임 타입} -> 이걸 받는 건 Modal에서할거니 요청만 보내면 됨
+응답 받은 사람들은 각자, 모달 isOpen 강제 개방 + selected뭐시기 강제 정함 + 게임 실행 초기화면 진입
+
 6. players-select-complete 이벤트 일으키기
 -->
 <template>
@@ -21,13 +23,19 @@ interface SocketRoomUser {
     <div class="game-grid">
       <div
         v-for="player in playerList"
-        :key="player.socketId"
+        :key="player.userId"
         class="game-card"
-        @click="$emit('selectGame')"
+        :class="{ selected: selectedUserIds.includes(player.userId) }"
+        @click="togglePlayerSelection(player.userId)"
       >
         <img class="profile-img" :src="player.img" />
         <span class="game-name">{{ player.nickname }}</span>
       </div>
+    </div>
+    <div class="invite-button-wrapper">
+      <button class="invite-button" @click="invitePlayers" :disabled="selectedUserIds.length === 0">
+        초대하기 ({{ selectedUserIds.length }}명)
+      </button>
     </div>
   </div>
 </template>
@@ -36,7 +44,7 @@ interface SocketRoomUser {
 import { useAuthStore } from '@/stores/auth'
 import { useSocketStore } from '@/stores/socket'
 import { computed, defineProps, onMounted, ref, type Ref } from 'vue'
-import type { SocketUserInfo } from '@/socket/webSocket'
+import type { SocketRoomUser, SocketUserInfo } from '@/socket/webSocket'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -46,14 +54,44 @@ const props = defineProps<{
   gameType: string
 }>()
 
+const emit = defineEmits<{
+  (e: 'players-select-complete'): void
+}>()
+
 const authStore = useAuthStore()
 const socketStore = useSocketStore()
 
-const playerList: Ref<SocketUserInfo[]> = ref([])
+const playerList: Ref<SocketRoomUser[]> = ref([])
+const selectedUserIds = ref<string[]>([])
 
 const processMessage = (body: string) => {
-  const response: SocketUserInfo[] = JSON.parse(body)
+  const response: SocketRoomUser[] = JSON.parse(body)
   playerList.value = response
+}
+
+const togglePlayerSelection = (userId: string) => {
+  console.log('선태 유저 : ' + userId)
+
+  const index = selectedUserIds.value.indexOf(userId)
+  if (index === -1) {
+    selectedUserIds.value.push(userId)
+  } else {
+    selectedUserIds.value.splice(index, 1)
+  }
+
+  console.log(selectedUserIds.value)
+}
+
+const invitePlayers = () => {
+  console.log(selectedUserIds.value)
+
+  socketStore.send(`/app/game/invite`, authStore.accessToken || '', {
+    planId: planId.value,
+    userIds: selectedUserIds.value,
+    gameType: props.gameType,
+  })
+
+  emit('players-select-complete')
 }
 
 onMounted(() => {
@@ -68,14 +106,6 @@ onMounted(() => {
 <style scoped>
 .game-selection {
   padding: 20px;
-}
-
-.title {
-  text-align: center;
-  margin-bottom: 24px;
-  font-size: 24px;
-  font-weight: 700;
-  color: #333;
 }
 
 .game-grid {
@@ -101,30 +131,16 @@ onMounted(() => {
   gap: 12px;
 }
 
-.game-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+.game-card.selected {
   border-color: #4f46e5;
+  background-color: #eef2ff;
 }
 
-.game-card:active {
-  transform: translateY(-2px);
-}
-
-.player-img {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.profile-img {
   width: 50px;
   height: 50px;
-  background-color: #f3f4f6;
   border-radius: 50%;
-  transition: all 0.3s ease;
-}
-
-.game-card:hover .game-icon {
-  background-color: #4f46e5;
-  color: white;
+  object-fit: cover;
 }
 
 .game-name {
@@ -134,46 +150,25 @@ onMounted(() => {
   text-align: center;
 }
 
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .game-card {
-    width: 120px;
-    height: 100px;
-  }
-
-  .game-icon {
-    width: 40px;
-    height: 40px;
-  }
-
-  .game-icon svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .game-name {
-    font-size: 12px;
-  }
+.invite-button-wrapper {
+  margin-top: 20px;
+  text-align: center;
 }
 
-@media (max-width: 480px) {
-  .game-grid {
-    gap: 12px;
-  }
+.invite-button {
+  padding: 10px 20px;
+  background-color: #4f46e5;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
-  .game-card {
-    width: 100px;
-    height: 90px;
-  }
-
-  .game-icon {
-    width: 35px;
-    height: 35px;
-  }
-
-  .game-icon svg {
-    width: 20px;
-    height: 20px;
-  }
+.invite-button:disabled {
+  background-color: #a5b4fc;
+  cursor: not-allowed;
 }
 </style>

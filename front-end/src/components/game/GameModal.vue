@@ -5,13 +5,13 @@
     :modalTitle="selectedGame === '' || selectedGame === null ? '게임 선택' : selectedGame"
     @close="handleClose"
     @close-modal="handleClose"
-    @players-select-complete="playerSelectComplete"
   >
     <component
       :is="props.isSocket ? socketGameComponent : currentGameComponent"
       @selectGame="selectGame"
       @goBackToSelect="goBack"
       :gameType="selectedGame"
+      @players-select-complete="playerSelectComplete"
     />
   </ReuseableModal>
 </template>
@@ -31,6 +31,7 @@ import SocketFastClick from './socket/SocketFastClick.vue'
 const props = defineProps<{
   isOpen: boolean
   isSocket: boolean
+  invitedGameType: Game
 }>()
 
 const emit = defineEmits<{
@@ -59,6 +60,13 @@ const currentGameComponent = computed(() => {
 const hasSelectedPlayers = ref(false)
 
 const socketGameComponent = computed(() => {
+  console.log('glglg : ' + props.invitedGameType)
+
+  if (props.invitedGameType != Game.DEFAULT) {
+    hasSelectedPlayers.value = true
+    selectGame(props.invitedGameType)
+  }
+
   if (!selectedGame.value) return GameSelection
 
   if (!hasSelectedPlayers.value) return SelectPlayers
