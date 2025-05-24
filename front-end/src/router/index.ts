@@ -103,6 +103,11 @@ const router = createRouter({
           name: 'room',
           component: () => import('../views/RoomView.vue'),
         },
+        {
+          path: 'plan/:planId',
+          name: 'plan',
+          component: () => import('../views/PlanView.vue'),
+        },
       ],
     },
   ],
