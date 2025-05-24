@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SpotInfo } from '@/types/trip'
+import defaultImg from '@/assets/no_img.png'
 
 const props = defineProps<{
   spot: SpotInfo
@@ -14,7 +15,7 @@ const emit = defineEmits<{
 <template>
   <div class="spot-card">
     <div class="img-container">
-      <img class="spot-img" :src="spot.img" />
+      <img class="spot-img" :src="spot.img || defaultImg" />
       <div class="spot-stars">★ {{ spot.stars?.toFixed(1) ?? '0.0' }}</div>
     </div>
     <div class="spot-info">
