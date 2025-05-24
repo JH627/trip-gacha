@@ -6,5 +6,6 @@ public enum RoomEventType {
     JOIN, // 입장
     INIT, // 처음 접근함
     LEAVE, // 떠남
-    BOOM // 방이 터짐
+    BOOM, // 방이 터짐
+    PLAN // 여행 짜기 시작
 }

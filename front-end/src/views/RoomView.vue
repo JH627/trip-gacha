@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   RoomEventType,
+  type JoinPlan,
   type RoomInfo,
   type RoomResponse,
   type SocketRoomUser,
@@ -31,18 +32,36 @@ const removeUserById = (userId: string) => {
 }
 
 const processRoomRequest = (body: string) => {
-  const response: RoomResponse<RoomInfo> = JSON.parse(body)
+  const response: RoomResponse<RoomInfo | JoinPlan> = JSON.parse(body)
+  let data
 
   switch (response.type) {
+    case RoomEventType.PLAN:
+      data = response.data as JoinPlan
+      router.push(`/trip/plan/${data.planId}`)
+      return
     case RoomEventType.INIT:
+      // 들어왔을 때, 계획 짜는 중이면 해당 페이지로 바로 이동 (구독도 알아서)
+      data = response.data as RoomInfo
+
+      console.log('초기화')
+      console.log(data)
+
+      if (data.planning) {
+        // 바로 계획 페이지로 이동하게 요청보내기 ( roomId == planId라서 roomId 보내도 댐 ㅇㅇ)
+        router.push(`/trip/plan/${data.roomId}`)
+        return
+      }
     case RoomEventType.JOIN:
-      ownerId.value = response.data.owner.userId
-      userList.value = response.data.userList
-      title.value = response.data.title
+      data = response.data as RoomInfo
+      ownerId.value = data.owner.userId
+      userList.value = data.userList
+      title.value = data.title
       return
     case RoomEventType.LEAVE:
       // 입력받은 유저 정보를 userList에서 삭제함
-      const leaveUser = response.data.userList[0]
+      data = response.data as RoomInfo
+      const leaveUser = data.userList[0]
       removeUserById(leaveUser.userId)
       return
     case RoomEventType.BOOM:
@@ -66,9 +85,18 @@ onMounted(() => {
   }
 })
 
-// 채팅은 아직 미구현으로 하쟈..
 const leaveRoom = () => {
   socketStore.send(`/app/room/leave/${roomId}`, authStore.accessToken || '', null)
+}
+
+interface StartPlanRequest {
+  roomId: string
+}
+
+const startPlan = () => {
+  socketStore.send(`/app/plan/start`, authStore.accessToken || '', {
+    roomId: roomId,
+  } as StartPlanRequest)
 }
 </script>
 
@@ -77,7 +105,7 @@ const leaveRoom = () => {
     <div class="room-header">
       <button class="room-button leave-button" @click="leaveRoom">나가기</button>
       <div class="room-title">{{ title }}</div>
-      <button class="room-button start-button">시작하기</button>
+      <button class="room-button start-button" @click="startPlan">시작하기</button>
     </div>
 
     <div class="user-list">

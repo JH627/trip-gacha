@@ -85,4 +85,11 @@ public class RoomSessionStore {
         return room.getOwner().getUserId().equals(userId);
     }
 
+    public void changePlanState(String roomId){
+        SocketRoom room = rooms.get(roomId);
+        room.setPlanning(true);
+
+        rooms.put(roomId, room);
+    }
+
 }

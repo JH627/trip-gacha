@@ -20,5 +20,6 @@ public class SocketRoom {
     private String endDate;
     private String destination;
     private SocketRoomUser owner;
+    private boolean isPlanning;
     private List<SocketRoomUser> userList;
 }
