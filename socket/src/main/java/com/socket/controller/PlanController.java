@@ -240,4 +240,21 @@ public class PlanController {
             );
         }
     }
+
+    @MessageMapping("/plan/get-cart/**")
+    public void getSpotCart(StompHeaderAccessor accessor){
+        String destination = accessor.getDestination();
+
+        if (destination != null && destination.startsWith("/app/plan/get-cart/")) {
+            String planId = destination.substring("/app/plan/get-cart/".length());
+            System.out.println(planId);
+
+            List<SpotDto> cart = planStore.getSelectedSpotList(planId);
+
+            messagingTemplate.convertAndSend(
+                "/topic/plan/cart/" + planId,
+                cart
+            );
+        }
+    }
 }

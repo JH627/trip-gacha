@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -124,5 +123,13 @@ public class PlanSessionStore {
             return Collections.emptyList();
         }
         return new ArrayList<>(spotMap.keySet());
+    }
+
+    public List<SpotDto> getSelectedSpotList(String planId){
+        Map<Integer, SpotDto> spotMap = selectedSpotMapMap.get(planId);
+        if (spotMap == null) {
+            return Collections.emptyList();
+        }
+        return new ArrayList<>(spotMap.values());
     }
 }

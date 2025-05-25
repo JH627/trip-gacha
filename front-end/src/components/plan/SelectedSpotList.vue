@@ -41,6 +41,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { Home, MapPin, UtensilsCrossed, Coffee } from 'lucide-vue-next'
+import { useAuthStore } from '@/stores/auth'
+import { useSocketStore } from '@/stores/socket'
+import { useRoute } from 'vue-router'
 
 interface SpotInfo {
   spotId: number
@@ -184,10 +187,22 @@ const showDetail = (spot: SpotInfo) => {
   emit('spot-detail', spot)
 }
 
+const socketStore = useSocketStore()
+const authStore = useAuthStore()
+const route = useRoute()
+const planId = computed(() => route.params.planId as string)
+
+const processSelectedSpotList = (body: string) => {
+  //selectedSpots.value = testData
+  const response: SpotInfo[] = JSON.parse(body)
+  selectedSpots.value = response
+}
+
 // 컴포넌트 마운트 시 테스트 데이터 설정
 onMounted(() => {
-  // 실제로는 여기서 서버 데이터를 받아올 예정
-  selectedSpots.value = testData
+  socketStore.subscribe(`/topic/plan/cart/${planId.value}`, processSelectedSpotList)
+
+  socketStore.send(`/app/plan/get-cart/${planId.value}`, authStore.accessToken || '', null)
 })
 </script>
 
