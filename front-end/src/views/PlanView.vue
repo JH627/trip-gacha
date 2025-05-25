@@ -90,6 +90,7 @@ const openModal = () => {
 
 const closeModal = () => {
   isOpen.value = false
+  invitedGameType.value = Game.DEFAULT
 }
 </script>
 

@@ -91,11 +91,13 @@ const selectGame = (gameName: string) => {
 
 const goBack = () => {
   selectedGame.value = null
+  hasSelectedPlayers.value = false
 }
 
 const handleClose = () => {
   emit('close')
   selectedGame.value = null // 초기화
+  hasSelectedPlayers.value = false
 }
 
 const playerSelectComplete = () => {
