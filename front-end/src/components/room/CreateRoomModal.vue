@@ -17,10 +17,15 @@
           <a-input v-model:value="form.title" placeholder="방 제목을 입력하세요" />
         </a-form-item>
         <a-form-item label="비밀번호">
-          <a-input v-model:value="form.password" type="text" placeholder="비밀번호 (선택)" />
+          <a-input v-model:value="form.password" type="text" placeholder="비밀번호를 입력하세요" />
         </a-form-item>
         <a-form-item label="목적지">
-          <a-input v-model:value="form.destination" placeholder="여행 목적지를 입력하세요" />
+          <a-select
+            v-model:value="form.destination"
+            placeholder="여행 목적지를 골라주세요"
+            :options="destinationOptions"
+            option-label-prop="label"
+          />
         </a-form-item>
         <a-form-item label="여행 기간">
           <a-range-picker v-model:value="form.dateRange" style="width: 100%" :format="dateFormat" />
@@ -35,17 +40,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits } from 'vue'
+import { ref, defineEmits, onMounted } from 'vue'
 import type { Dayjs } from 'dayjs'
 import type { CreateRoomRequest } from '@/socket/webSocket'
 import { useAuthStore } from '@/stores/auth'
 import { useSocketStore } from '@/stores/socket'
 import { useRouter } from 'vue-router'
+import { authApi } from '@/api/axios'
 
 const emit = defineEmits(['close-modal'])
 
 const socketStore = useSocketStore()
 const authStore = useAuthStore()
+
+const destinationOptions = ref<{ label: string; value: string }[]>([])
+
+onMounted(async () => {
+  const destinations = await authApi.get('/trip/destination')
+
+  const realOptions = destinations.data.result.map((d: any) => ({
+    label: d.name,
+    value: d.destinationId,
+  }))
+
+  destinationOptions.value = [
+    { label: '여행지를 골라주세요', value: '', disabled: true },
+    ...realOptions,
+  ]
+})
 
 const form = ref<{
   title: string
