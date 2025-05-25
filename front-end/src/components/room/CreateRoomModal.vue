@@ -47,37 +47,31 @@ import { useAuthStore } from '@/stores/auth'
 import { useSocketStore } from '@/stores/socket'
 import { useRouter } from 'vue-router'
 import { authApi } from '@/api/axios'
+import { useDestinationStore } from '@/stores/destination'
 
 const emit = defineEmits(['close-modal'])
 
 const socketStore = useSocketStore()
 const authStore = useAuthStore()
+const destinationStore = useDestinationStore()
 
-const destinationOptions = ref<{ label: string; value: string }[]>([])
+const destinationOptions = ref<{ label: string; value: number }[]>([])
 
 onMounted(async () => {
-  const destinations = await authApi.get('/trip/destination')
-
-  const realOptions = destinations.data.result.map((d: any) => ({
-    label: d.name,
-    value: d.destinationId,
-  }))
-
-  destinationOptions.value = [
-    { label: '여행지를 골라주세요', value: '', disabled: true },
-    ...realOptions,
-  ]
+  await destinationStore.init()
+  destinationOptions.value = destinationStore.destinationOptions
+  form.value.destination = destinationStore.selectedDestinationID
 })
 
 const form = ref<{
   title: string
   password: string
-  destination: string
+  destination: number
   dateRange: [Dayjs, Dayjs] | []
 }>({
   title: '',
   password: '',
-  destination: '',
+  destination: 0,
   dateRange: [],
 })
 

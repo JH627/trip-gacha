@@ -26,6 +26,7 @@ const socketStore = useSocketStore()
 const router = useRouter()
 const accessToken = ref('')
 const authStore = useAuthStore()
+const destinationStore = useDestinationStore()
 
 const processLobbyData = (body: string) => {
   const response: LobbyResponse<SocketUserInfo | SocketUserInfo[]> = JSON.parse(body)
@@ -173,6 +174,7 @@ const onSearch = () => {
 
 import type { SelectProps } from 'ant-design-vue'
 import RoomPasswordModal from '@/components/room/RoomPasswordModal.vue'
+import { useDestinationStore } from '@/stores/destination'
 const options1 = ref<SelectProps['options']>([
   {
     value: 'title',
@@ -190,17 +192,20 @@ const customHandleChange = (value: string) => {
   console.log(`selected ${value}`)
 }
 
-const goNext = () => {
-  router.push('/trip/room')
-}
-
 const isOpen = ref<boolean>(false)
 const open = () => {
   isOpen.value = true
 }
 const close = () => {
+  destinationStore.selectedDestinationID = 0
   isOpen.value = false
 }
+
+onMounted(() => {
+  if (destinationStore.selectedDestinationID !== 0) {
+    open()
+  }
+})
 
 const clickRoomId = ref('')
 const isPasswordModalOpen = ref<boolean>(false)
