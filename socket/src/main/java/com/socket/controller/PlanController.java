@@ -2,7 +2,6 @@ package com.socket.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -10,7 +9,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
-import com.socket.model.dto.plan.JoinPlanDto;
+import com.socket.model.dto.plan.StartPlanDto;
 import com.socket.model.dto.plan.PlanProgress;
 import com.socket.model.dto.plan.StartPlanRequest;
 import com.socket.model.dto.room.RoomEventType;
@@ -51,14 +50,14 @@ public class PlanController {
         String planId = roomId;
         SocketRoom room = roomStore.get(roomId);
 
-        planStore.addPlan(planId, userId, room.getUserList());
+        planStore.addPlan(planId, userId, room.getDestination(), room.getUserList());
 
-        JoinPlanDto joinplan = new JoinPlanDto(planId, PlanProgress.SELECT_ACCOMMODATION);
+        StartPlanDto startPlan = new StartPlanDto(planId, PlanProgress.SELECT_ACCOMMODATION);
 
         // room의 모두에게 넘어가라고 해! + { planId, progress } 반환
         messagingTemplate.convertAndSend(
             "/topic/room/" + roomId,
-            new RoomResponse<JoinPlanDto>(RoomEventType.PLAN, true, joinplan)
+            new RoomResponse<StartPlanDto>(RoomEventType.PLAN, true, startPlan)
         );
     }
 
@@ -163,6 +162,33 @@ public class PlanController {
                 userId,
                 "/queue/user-list",
                 filteredList
+            );
+        }
+    }
+
+    @MessageMapping("/plan/destination")
+    public void sendDestinationId(StompHeaderAccessor accessor, String planId){
+        String userId = accessor.getUser().getName();
+        planId = planId.replace("\"", "");
+
+        if (planId != "" && !planId.isBlank()) {
+            Integer destinationId = planStore.getPlanDestinationId(planId);
+            
+            if(destinationId==null){
+                messagingTemplate.convertAndSendToUser(
+                    userId,
+                    "/queue/destination",
+                    0
+                );
+
+                return;
+            }
+
+            // 이동 성공 ( 다 같이 이동 )
+            messagingTemplate.convertAndSendToUser(
+                userId,
+                "/queue/destination",
+                destinationId
             );
         }
     }

@@ -10,6 +10,7 @@ import AiChatModal from '@/components/welcome/AiChatModal.vue'
 import type { Destination } from '@/types/trip'
 import { WechatOutlined } from '@ant-design/icons-vue'
 import SpotDetailModal from '@/components/welcome/SpotDetailModal.vue'
+import { useDestinationStore } from '@/stores/destination'
 
 // 추천 여행지
 const destinations = ref<Destination[]>([])
@@ -17,13 +18,11 @@ const router = useRouter()
 const selectedDestination = ref<Destination | null>(null)
 const detailModalOpen = ref(false)
 
+const destinationStore = useDestinationStore()
+
 onMounted(async () => {
-  try {
-    const response = await defaultApi.get('/trip/destination')
-    destinations.value = response.data.result
-  } catch (error) {
-    console.log(error)
-  }
+  await destinationStore.init()
+  destinations.value = destinationStore.destinations
 })
 
 // AI 채팅 모달
@@ -47,7 +46,9 @@ function closeDetailModal() {
 }
 
 // 여행지 상세 모달 - 여행 시작 버튼
-function handleStartTrip() {
+function handleStartTrip(destination: Destination) {
+  console.log('여행 가자' + destination.destinationId)
+  destinationStore.selectDestination(destination.destinationId)
   router.push('/trip/lobby')
 }
 </script>

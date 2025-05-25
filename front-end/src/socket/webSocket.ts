@@ -70,7 +70,7 @@ export enum RoomEventType {
 
 export interface CreateRoomRequest {
   title: string
-  destination: string
+  destination: number
   password: string
   startDate: string
   endDate: string

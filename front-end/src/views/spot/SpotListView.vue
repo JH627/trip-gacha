@@ -145,7 +145,11 @@ watch([search, selectedCategory, selectedDestination, sort], () => {
         <div class="destination-select">
           <select v-model="selectedDestination">
             <option :value="null">전체 지역</option>
-            <option v-for="dest in destinations" :key="dest.id" :value="dest.id">
+            <option
+              v-for="dest in destinations"
+              :key="dest.destinationId"
+              :value="dest.destinationId"
+            >
               {{ dest.name }}
             </option>
           </select>
