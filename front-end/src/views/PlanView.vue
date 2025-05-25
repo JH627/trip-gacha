@@ -29,6 +29,22 @@
         </button>
       </div>
 
+      <!-- 태그 선택 섹션 (관광지 선택 단계에서만 표시) -->
+      <div v-if="currentProgress === PlanProgress.SELECT_TOURIST_SPOTS" class="tag-section">
+        <div class="tag-container">
+          <button
+            v-for="tag in categoryTags"
+            :key="tag.value"
+            class="tag-button"
+            :class="{ active: selectedCategory === tag.value }"
+            @click="selectCategory(tag.value)"
+          >
+            <component :is="tag.icon" :size="16" />
+            {{ tag.label }}
+          </button>
+        </div>
+      </div>
+
       <!-- 진행 상태에 따른 컴포넌트 렌더링 -->
       <AccommodationList
         v-if="currentProgress === PlanProgress.SELECT_ACCOMMODATION"
@@ -39,23 +55,15 @@
         @item-selected="handleItemSelected"
       />
 
-      <!-- <TouristSpotList 
+      <TouristSpotList
         v-else-if="currentProgress === PlanProgress.SELECT_TOURIST_SPOTS"
         :destination-id="destinationId"
         :plan-id="planId"
         :keyword="keyword"
         :sort-order="sortOrder"
+        :category="selectedCategory"
         @item-selected="handleItemSelected"
-      /> -->
-
-      <!-- <RestaurantList 
-        v-else-if="currentProgress === PlanProgress.SELECT_RESTAURANTS"
-        :destination-id="destinationId"
-        :plan-id="planId"
-        :keyword="keyword"
-        :sort-order="sortOrder"
-        @item-selected="handleItemSelected"
-      /> -->
+      />
 
       <!-- 기타 진행 상태들... -->
       <div v-else class="placeholder">
@@ -84,13 +92,12 @@ import { useRoute } from 'vue-router'
 import WhiteGloves from '@/assets/gloves-white.png'
 import GameModal from '@/components/game/GameModal.vue'
 import { Game } from '@/components/game/Game'
-import { SortAsc, SortDesc } from 'lucide-vue-next'
+import { SortAsc, SortDesc, MapPin, UtensilsCrossed, Coffee, Heart } from 'lucide-vue-next'
 
 // 컴포넌트 import
 import AccommodationList from '@/components/plan/AccommodationList.vue'
+import TouristSpotList from '@/components/plan/TouristSpotList.vue'
 import { useSpotStore } from '@/stores/spot'
-// import TouristSpotList from '@/components/plan/TouristSpotList.vue'
-// import RestaurantList from '@/components/plan/RestaurantList.vue'
 
 const route = useRoute()
 const planId = computed(() => route.params.planId as string)
@@ -105,6 +112,15 @@ const invitedGameType: Ref<Game> = ref(Game.DEFAULT)
 const keyword = ref('')
 const sortOrder = ref<'asc' | 'desc'>('desc')
 const destinationId = ref(0)
+const selectedCategory = ref<string>('ATTRACTION')
+
+// 카테고리 태그 정의
+const categoryTags = [
+  { label: '관광지', value: 'ATTRACTION', icon: MapPin },
+  { label: '음식점', value: 'RESTAURANT', icon: UtensilsCrossed },
+  { label: '카페', value: 'CAFE', icon: Coffee },
+  { label: '찜', value: 'MARKED', icon: Heart },
+]
 
 const processMessage = (message: string) => {
   alert(message)
@@ -189,6 +205,12 @@ const handleSearch = () => {
 const toggleSort = () => {
   sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
   // 정렬 변경 이벤트는 자식 컴포넌트에서 watch로 감지
+}
+
+// 카테고리 선택 핸들러
+const selectCategory = (category: string) => {
+  selectedCategory.value = category
+  console.log('선택된 카테고리:', category)
 }
 
 // 자식 컴포넌트에서 아이템 선택 시 호출
@@ -332,6 +354,48 @@ const handleItemSelected = (item: any) => {
   background-color: #e9ecef;
 }
 
+/* 태그 섹션 스타일 */
+.tag-section {
+  margin-bottom: 20px;
+}
+
+.tag-container {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tag-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.tag-button:hover {
+  background-color: #e9ecef;
+  border-color: #d1d5db;
+}
+
+.tag-button.active {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+  color: white;
+}
+
+.tag-button.active:hover {
+  background-color: #4338ca;
+  border-color: #4338ca;
+}
+
 .placeholder {
   flex: 1;
   display: flex;
@@ -384,6 +448,10 @@ const handleItemSelected = (item: any) => {
   .sort-button {
     align-self: flex-end;
     width: fit-content;
+  }
+
+  .tag-container {
+    justify-content: center;
   }
 }
 </style>
