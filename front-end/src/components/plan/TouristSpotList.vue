@@ -1,54 +1,92 @@
 <template>
   <div class="list-container">
-    <div v-for="item in spotData" :key="item.spotId" class="list-item">
-      <!-- 사진 div (30%) -->
-      <div class="image-section">
-        <img :src="item.img" :alt="item.name" class="spot-image" />
-        <button class="detail-button" @click="showDetail(item)">자세히보기</button>
-      </div>
-
-      <!-- 설명 div (70%) -->
-      <div class="description-section">
-        <!-- 관광지이름과 등록버튼 -->
-        <div class="name-register-row">
-          <h3 class="spot-name">{{ item.name }}</h3>
-          <button
-            class="register-button"
-            :class="{ registered: isRegistered(item.spotId) }"
-            @click="toggleRegister(item)"
-          >
-            {{ isRegistered(item.spotId) ? '등록됨' : '등록' }}
-          </button>
-        </div>
-
-        <!-- 설명 -->
-        <div class="content-section">
-          <p class="spot-content">{{ truncateContent(item.content) }}</p>
-          <div class="spot-info">
-            <span class="address">{{ item.address }}</span>
-            <span class="work-time" v-html="item.workTime"></span>
-            <span class="phone">{{ item.phone }}</span>
-          </div>
-        </div>
-
-        <!-- 별점과 좋아요 -->
-        <div class="stats-row">
-          <div class="stars">
-            <Star v-for="n in 5" :key="n" :class="{ filled: n <= item.stars }" :size="16" />
-            <span class="star-count">{{ item.stars }}</span>
-          </div>
-          <div class="likes">
-            <Heart :class="{ liked: item.likes > 0 }" :size="16" />
-            <span class="like-count">{{ item.likes }}</span>
-          </div>
-        </div>
-      </div>
+    <!-- 로딩 상태 -->
+    <div v-if="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>데이터를 불러오는 중...</p>
     </div>
 
-    <!-- 데이터가 없을 때 -->
-    <div v-if="spotData.length === 0" class="no-data">
-      <SearchX :size="48" class="no-data-icon" />
-      <p>검색 결과가 없습니다</p>
+    <!-- 데이터 리스트 -->
+    <div v-else>
+      <div v-for="item in spotData" :key="item.spotId" class="list-item">
+        <!-- 사진 div (30%) -->
+        <div class="image-section">
+          <img :src="item.img" :alt="item.name" class="spot-image" />
+          <button class="detail-button" @click="showDetail(item)">자세히보기</button>
+        </div>
+
+        <!-- 설명 div (70%) -->
+        <div class="description-section">
+          <!-- 관광지이름과 등록버튼 -->
+          <div class="name-register-row">
+            <h3 class="spot-name">{{ item.name }}</h3>
+            <button
+              class="register-button"
+              :class="{ registered: isRegistered(item.spotId) }"
+              @click="toggleRegister(item)"
+            >
+              {{ isRegistered(item.spotId) ? '등록됨' : '등록' }}
+            </button>
+          </div>
+
+          <!-- 설명 -->
+          <div class="content-section">
+            <p class="spot-content">{{ truncateContent(item.content) }}</p>
+            <div class="spot-info">
+              <span class="address">{{ item.address }}</span>
+              <span class="work-time" v-html="item.workTime"></span>
+              <span class="phone">{{ item.phone }}</span>
+            </div>
+          </div>
+
+          <!-- 별점과 좋아요 -->
+          <div class="stats-row">
+            <div class="stars">
+              <Star v-for="n in 5" :key="n" :class="{ filled: n <= item.stars }" :size="16" />
+              <span class="star-count">{{ item.stars }}</span>
+            </div>
+            <div class="likes">
+              <Heart :class="{ liked: item.likes > 0 }" :size="16" />
+              <span class="like-count">{{ item.likes }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 데이터가 없을 때 -->
+      <div v-if="spotData.length === 0 && !isLoading" class="no-data">
+        <SearchX :size="48" class="no-data-icon" />
+        <p>검색 결과가 없습니다</p>
+      </div>
+    </div>
+  </div>
+  <!-- 페이지네이션 -->
+  <div v-if="totalPages > 1" class="pagination-container">
+    <div class="pagination-info"></div>
+    <div class="pagination-controls">
+      <button class="pagination-button" :disabled="currentPage === 0" @click="prevPage">
+        이전
+      </button>
+
+      <div class="page-numbers">
+        <button
+          v-for="page in getVisiblePages()"
+          :key="page"
+          class="page-number"
+          :class="{ active: currentPage === page - 1 }"
+          @click="goToPage(page - 1)"
+        >
+          {{ page }}
+        </button>
+      </div>
+
+      <button
+        class="pagination-button"
+        :disabled="currentPage === totalPages - 1"
+        @click="nextPage"
+      >
+        다음
+      </button>
     </div>
   </div>
 </template>
@@ -75,37 +113,90 @@ const emit = defineEmits(['item-selected'])
 const spotData = ref<any[]>([])
 const spotStore = useSpotStore()
 
+// 페이지네이션 상태
+const currentPage = ref(0)
+const totalPages = ref(0)
+const totalElements = ref(0)
+const isLoading = ref(false)
+
 const selectedSpotIds = computed(() => spotStore.getSpotIdsArray())
 
 const isRegistered = (spotId: number) => {
   return selectedSpotIds.value.includes(spotId)
 }
 
+// 보이는 페이지 번호 계산
+const getVisiblePages = () => {
+  const maxVisible = 5
+  const start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2) + 1)
+  const end = Math.min(totalPages.value, start + maxVisible - 1)
+
+  const pages = []
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+  return pages
+}
+
 // API 호출 함수
 const fetchSpotData = async () => {
   if (props.destinationId === 0) return
 
+  isLoading.value = true
   try {
     const params: SpotParams = {
-      category: props.category as SpotCategory, // props에서 받은 category 사용
+      category: props.category as SpotCategory,
       sort: props.sortOrder === 'asc' ? 'NAME' : 'STARS',
-      page: 0,
+      page: currentPage.value,
       destinationId: props.destinationId,
       keyword: props.keyword,
     }
 
     const { data } = await authApi.get('/trip/spot', { params })
     spotData.value = data.result.spots || []
+    totalPages.value = data.result.total || 0
+    totalElements.value = data.result.totalElements || 0
     console.log(`${props.category} 조회 결과:`, data)
   } catch (error) {
     console.error(`${props.category} 조회 실패:`, error)
+  } finally {
+    isLoading.value = false
   }
 }
 
-// props 변경 감지 (category 추가)
+// 페이지네이션 핸들러
+const goToPage = (page: number) => {
+  if (page >= 0 && page < totalPages.value) {
+    currentPage.value = page
+    fetchSpotData()
+  }
+}
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value - 1) {
+    currentPage.value++
+    fetchSpotData()
+  }
+}
+
+const prevPage = () => {
+  if (currentPage.value > 0) {
+    currentPage.value--
+    fetchSpotData()
+  }
+}
+
+const resetPagination = () => {
+  currentPage.value = 0
+}
+
+// props 변경 감지 (페이지네이션 리셋 포함)
 watch(
   [() => props.destinationId, () => props.keyword, () => props.sortOrder, () => props.category],
-  fetchSpotData,
+  () => {
+    resetPagination()
+    fetchSpotData()
+  },
 )
 
 onMounted(() => {
@@ -141,8 +232,37 @@ const truncateContent = (content: string) => {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding-right: 5px;
+}
+
+/* 로딩 스타일 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #4f46e5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .list-item {
@@ -305,6 +425,81 @@ const truncateContent = (content: string) => {
   color: #d1d5db;
 }
 
+/* 페이지네이션 스타일 */
+.pagination-container {
+  margin-top: 20px;
+  padding: 15px 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.pagination-info {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination-button {
+  padding: 8px 16px;
+  background-color: #f8f9fa;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 5px;
+}
+
+.page-number {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s;
+}
+
+.page-number:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.page-number.active {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+  color: white;
+}
+
 /* 스크롤바 스타일링 */
 .list-container::-webkit-scrollbar {
   width: 6px;
@@ -333,6 +528,15 @@ const truncateContent = (content: string) => {
   .image-section,
   .description-section {
     width: 100%;
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .page-numbers {
+    order: -1;
   }
 }
 </style>
