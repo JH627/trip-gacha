@@ -88,6 +88,7 @@ import { SortAsc, SortDesc } from 'lucide-vue-next'
 
 // 컴포넌트 import
 import AccommodationList from '@/components/plan/AccommodationList.vue'
+import { useSpotStore } from '@/stores/spot'
 // import TouristSpotList from '@/components/plan/TouristSpotList.vue'
 // import RestaurantList from '@/components/plan/RestaurantList.vue'
 
@@ -127,11 +128,29 @@ const processDestinationId = (body: string) => {
   destinationId.value = JSON.parse(body)
 }
 
+const spotStore = useSpotStore()
+
+const processSpotIdMessage = (body: string) => {
+  const response: { type: string; spotIds: number[] } = JSON.parse(body)
+
+  console.log(response.spotIds)
+
+  switch (response.type) {
+    case 'add':
+      spotStore.addSpotIds(response.spotIds)
+      break
+    case 'remove':
+      spotStore.removeSpotIds(response.spotIds)
+      break
+  }
+}
+
 onMounted(() => {
   try {
     socketStore.subscribe(`/user/queue/game`, processGameMessage)
     socketStore.subscribe(`/user/queue/plan`, processMessage)
     socketStore.subscribe(`/topic/plan/${planId.value}`, processJoinMessage)
+    socketStore.subscribe(`/topic/plan/spot/${planId.value}`, processSpotIdMessage)
     socketStore.subscribe(`/user/queue/destination`, processDestinationId)
 
     socketStore.send(`/app/plan/join/${planId.value}`, authStore.accessToken || '', null)
@@ -174,8 +193,17 @@ const toggleSort = () => {
 
 // 자식 컴포넌트에서 아이템 선택 시 호출
 const handleItemSelected = (item: any) => {
-  console.log('선택된 아이템:', item)
-  // 선택된 아이템 처리 로직
+  let requestUrl = ''
+  switch (item.type) {
+    case 'register':
+      requestUrl = 'add-cart/'
+      break
+    case 'remove':
+      requestUrl = 'remove-cart/'
+      break
+  }
+
+  socketStore.send('/app/plan/' + requestUrl + planId.value, authStore.accessToken || '', item.item)
 }
 </script>
 
