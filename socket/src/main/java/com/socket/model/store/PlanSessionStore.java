@@ -84,8 +84,15 @@ public class PlanSessionStore {
     public void addSpot(String planId, SpotDto spotInfo){
         selectedSpotMapMap.get(planId).put(spotInfo.getSpotId(), spotInfo);
 
-        System.out.println("현재 장바구니 개수 : " + selectedSpotMapMap.get(planId).size());
+        System.out.println("추가 후 장바구니 개수 : " + selectedSpotMapMap.get(planId).size());
     }
+
+    public void removeSpot(String planId, SpotDto spotInfo){
+        selectedSpotMapMap.get(planId).remove(spotInfo.getSpotId());
+
+        System.out.println("삭제 후 장바구니 개수 : " + selectedSpotMapMap.get(planId).size());
+    }
+
 
     public boolean isUserInPlan(String planId, String userId){
         return planningUserMapMap.get(planId).containsKey(userId);

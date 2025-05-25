@@ -221,4 +221,23 @@ public class PlanController {
             );
         }
     }
+
+    @MessageMapping("/plan/remove-cart/**")
+    public void removeToSpotCart(StompHeaderAccessor accessor, SpotDto spotInfo){
+        String destination = accessor.getDestination();
+
+        if (destination != null && destination.startsWith("/app/plan/remove-cart/")) {
+            String planId = destination.substring("/app/plan/remove-cart/".length());
+            System.out.println(planId);
+            planStore.removeSpot(planId, spotInfo);
+            // 모두에게 이번에 추가한 Id 전달 (리스트에 담아서 전달)
+
+            SpotResponse response = new SpotResponse("remove", new ArrayList<>(Arrays.asList(spotInfo.getSpotId())));
+
+            messagingTemplate.convertAndSend(
+                "/topic/plan/spot/" + planId,
+                response
+            );
+        }
+    }
 }
