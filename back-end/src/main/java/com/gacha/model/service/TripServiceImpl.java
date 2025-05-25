@@ -171,5 +171,18 @@ public class TripServiceImpl implements TripService {
 		return tripScheduleDao.selectScheduleByUserId(userId, scheduleId);
 	}
 	
-	
+	@Override
+	@Transactional
+	public ScheduleDetail toggleScheduleShare(Integer userId, Integer scheduleId) {
+		// 자신의 일정인지 확인
+		if (!tripScheduleDao.isOwner(userId, scheduleId)) {
+			throw new TripException(TripErrorCode.SCHEDULE_FORBIDDEN);
+		}
+		
+		// 공유 상태 토글
+		tripScheduleDao.toggleShareStatus(scheduleId);
+		
+		// 변경된 일정 정보 반환
+		return tripScheduleDao.selectScheduleByUserId(userId, scheduleId);
+	}
 }
