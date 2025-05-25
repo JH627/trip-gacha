@@ -70,8 +70,8 @@ export const useAuthStore = defineStore(
       profile.value = userProfile
     }
 
-    const getProfile = async (): Promise<Profile | null> => {
-      if (profile.value) {
+    const getProfile = async (forceRefresh = false): Promise<Profile | null> => {
+      if (profile.value && !forceRefresh) {
         return profile.value
       }
 

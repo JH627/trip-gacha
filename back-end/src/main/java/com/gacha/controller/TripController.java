@@ -56,7 +56,7 @@ public class TripController {
 			+ "검색 키워드에 따른 선택한 목적지 내 정렬된 숙소 리스트를 반환한다.<br/>"
 			+ "키워드가 없는 경우 선택한 목적지 내 모든 숙소 리스트를 반환한다.<br/>"
 			+ "정렬 기준이 없는 경우 평점 기준으로 기본 정렬된다.<br/>"
-			+ "정렬 ENUM => LIKE → 좋아요순 / STARS → 평점순 / NAME → 숙소 이름순")
+			+ "정렬 ENUM => STARS → 평점순 / NAME → 숙소 이름순")
 	@GetMapping("/accommodation")
 	public Response<?> getAccommodationList(
 			@LoginUser Integer userId,
@@ -73,8 +73,8 @@ public class TripController {
 			+ "키워드가 없는 경우 선택한 목적지 내 모든 관광지 리스트를 반환한다.<br/>"
 			+ "정렬 기준이 없는 경우 평점 기준으로 기본 정렬된다.<br/>"
 			+ "관광지 카테고리가 없는 경우 명소를 기본으로 설정한다<br />"
-			+ "관광지 카테고리 ENUM => ATTRACTION -> 명소 / RESTAUTRANT -> 식당 / CAFE -> 카페 / MARKED -> 찜 목록"
-			+ "정렬 ENUM => LIKE → 좋아요순 / STARS → 평점순 / NAME → 관광지 이름순")
+			+ "관광지 카테고리 ENUM => ATTRACTION -> 명소 / RESTAUTRANT -> 식당 / CAFE -> 카페 / MARKED -> 찜 목록 / ALLSPOT -> 모든 관광지"
+			+ "정렬 ENUM => STARS → 평점순 / NAME → 관광지 이름순")
 	@GetMapping("/spot")
 	public Response<?> getSpotList(
 			@LoginUser Integer userId,

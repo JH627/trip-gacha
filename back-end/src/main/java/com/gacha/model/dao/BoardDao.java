@@ -48,6 +48,12 @@ public interface BoardDao {
 
     void deleteDislike(Integer boardId, Integer userId);
 
+    // 좋아요 상태 확인
+    boolean isLiked(Integer boardId, Integer userId);
+
+    // 싫어요 상태 확인
+    boolean isDisliked(Integer boardId, Integer userId);
+
     List<CommentDetail> selectCommentsById(GetCommentsRequest getCommentsRequest, Integer userId);
 
     void insertComment(AddCommentRequest addCommentRequest, Integer userId);

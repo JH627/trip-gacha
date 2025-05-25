@@ -20,9 +20,11 @@ public class SpotInfo {
     private String img;
     private String address;
     private Integer likes;
-    private Integer stars;
+    private Double stars;
     private String category;
     private String phone;
     private String workTime;
     private Boolean marked;
+    private Double latitude;
+    private Double longitude;
 }

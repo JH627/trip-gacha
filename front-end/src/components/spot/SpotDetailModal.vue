@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SpotInfo } from '@/types/trip'
+import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps'
 
 const props = defineProps<{
   spot: SpotInfo | null
@@ -12,6 +13,11 @@ const emit = defineEmits<{
 
 const closeModal = () => {
   emit('close')
+}
+
+const mapOptions = {
+  center: { lat: 33.450701, lng: 126.570667 },
+  level: 3
 }
 </script>
 
@@ -46,6 +52,22 @@ const closeModal = () => {
           <div class="info-section">
             <h3>상세 설명</h3>
             <p class="description">{{ spot.content }}</p>
+          </div>
+          <div class="info-section">
+            <h3>위치</h3>
+            <div class="map-container">
+              <KakaoMap
+                :lat="spot.latitude"
+                :lng="spot.longitude"
+                :options="mapOptions"
+                class="kakao-map"
+              >
+                <KakaoMapMarker
+                  :lat="spot.latitude"
+                  :lng="spot.longitude"
+                />
+              </KakaoMap>
+            </div>
           </div>
         </div>
       </div>
@@ -177,6 +199,19 @@ const closeModal = () => {
   white-space: pre-line;
 }
 
+.map-container {
+  width: 100%;
+  height: 300px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.kakao-map {
+  width: 100%;
+  height: 100%;
+}
+
 @media (max-width: 600px) {
   .modal-content {
     width: 95%;
@@ -198,6 +233,10 @@ const closeModal = () => {
 
   .label {
     width: auto;
+  }
+
+  .map-container {
+    height: 200px;
   }
 }
 </style>

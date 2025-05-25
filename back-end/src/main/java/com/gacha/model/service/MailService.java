@@ -1,18 +1,19 @@
 package com.gacha.model.service;
 
-import java.io.UnsupportedEncodingException;
-
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-
 public interface MailService {
-    MimeMessage creatMessage(String to) throws MessagingException, UnsupportedEncodingException;
+	
+    /**
+     * 이메일로 인증코드를 발송합니다.
+     * 
+     * @param to 보낼 이메일
+     */
+    void sendSimpleMessage(String to);
 
-    // 랜덤 인증코드 생성
-    String createKey();
-
-    // 메일 발송
-    void sendSimpleMessage(String to) throws Exception;
-
-    boolean verifyCode(String email, String code);
+    /**
+     * 인증코드를 확인합니다.
+     * 
+     * @param email 이메일
+     * @param code 인증코드
+     */
+    void verifyCode(String email, String code);
 }

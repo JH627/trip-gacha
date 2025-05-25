@@ -52,8 +52,17 @@ const handleLike = async () => {
     await authApi.post('/board/like', null, {
       params: { boardId: props.boardId },
     })
-    await fetchBoardDetail()
-    message.success('좋아요가 반영되었습니다.')
+    if (board.value) {
+      // 좋아요 상태 토글
+      board.value.isLiked = !board.value.isLiked
+      // 좋아요 개수 업데이트
+      board.value.likeCount += board.value.isLiked ? 1 : -1
+      // 싫어요가 눌려있었다면 해제
+      if (board.value.isDisliked) {
+        board.value.isDisliked = false
+      }
+    }
+    message.success(board.value?.isLiked ? '좋아요가 반영되었습니다.' : '좋아요가 취소되었습니다.')
   } catch (error) {
     console.error('Failed to like board:', error)
     message.error('좋아요 처리에 실패했습니다.')
@@ -65,8 +74,16 @@ const handleDislike = async () => {
     await authApi.post('/board/dislike', null, {
       params: { boardId: props.boardId },
     })
-    await fetchBoardDetail()
-    message.success('싫어요가 반영되었습니다.')
+    if (board.value) {
+      // 싫어요 상태 토글
+      board.value.isDisliked = !board.value.isDisliked
+      // 좋아요가 눌려있었다면 해제
+      if (board.value.isLiked) {
+        board.value.isLiked = false
+        board.value.likeCount -= 1
+      }
+    }
+    message.success(board.value?.isDisliked ? '싫어요가 반영되었습니다.' : '싫어요가 취소되었습니다.')
   } catch (error) {
     console.error('Failed to dislike board:', error)
     message.error('싫어요 처리에 실패했습니다.')
@@ -280,6 +297,18 @@ onMounted(() => {
 :deep(.ant-btn-link:hover) {
   background-color: rgba(24, 144, 255, 0.1);
   border-radius: 4px;
+}
+
+:deep(.ant-btn-danger) {
+  color: #fff;
+  border-color: #ff4d4f;
+  background: #ff4d4f;
+}
+
+:deep(.ant-btn-danger:hover) {
+  color: #fff;
+  border-color: #ff4d4f;
+  background: #ff4d4f;
 }
 
 @media (max-width: 768px) {

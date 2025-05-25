@@ -207,4 +207,20 @@
         INSERT INTO comment_reports(user_id, comment_id)
         VALUES (#{userId}, #{commentId})
     </insert>
+
+    <select id="isLiked" parameterType="map" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 
+            FROM board_likes 
+            WHERE user_id = #{userId} AND board_id = #{boardId}
+        )
+    </select>
+
+    <select id="isDisliked" parameterType="map" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 
+            FROM board_dislikes 
+            WHERE user_id = #{userId} AND board_id = #{boardId}
+        )
+    </select>
 </mapper>

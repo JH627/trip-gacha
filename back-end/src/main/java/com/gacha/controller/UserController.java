@@ -1,7 +1,5 @@
 package com.gacha.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,29 +26,18 @@ public class UserController {
 	
     private final UserService userService;
 
+    @Operation(summary = "회원 가입", description = "사용자 입력 정보를 바탕으로 회원가입을 진행합니다.")
     @PostMapping("/regist")
-    public ResponseEntity<Response<?>> regist(@ModelAttribute RegistRequest registRequest){
-        if(!userService.regist(registRequest)){
-            return ResponseEntity
-                    .badRequest()
-                    .body(Response.onFailure(HttpStatus.BAD_REQUEST, "400", "이미 가입한 이메일입니다.", null));
-        }
-        
-    	return ResponseEntity.ok().body(Response.onSuccess());
+    public Response<?> regist(@ModelAttribute RegistRequest registRequest){
+        userService.regist(registRequest);
+    	return Response.onSuccess();
     }
     
+    @Operation(summary = "회원 필수 정보", description = "회원 필수 정보(이메일, 닉네임, 프로필 이미지 링크)를 반환합니다.")
     @GetMapping("")
-    public ResponseEntity<?> getUserInfo(@LoginUser Integer userId) {
-        // cookie에 있는 jwt를 까서 거기에 있는 user_id로 사용자 정보 가져오기
-        FullUserInfo fullUserInfo = userService.searchUserInfo(String.valueOf(userId));
-        
-        if(fullUserInfo == null){
-            return ResponseEntity
-            .badRequest()
-            .body(Response.onFailure(HttpStatus.BAD_REQUEST, "400", "존재하지 않는 사용자", null));  
-        }
-
-        return ResponseEntity.ok(Response.onSuccess(fullUserInfo));
+    public Response<?> getUserInfo(@LoginUser Integer userId) {
+        FullUserInfo fullUserInfo = userService.searchUserInfo(userId);
+        return Response.onSuccess(fullUserInfo);
     }    
     
     @Operation(summary = "회원 부가 정보", description = "회원 부가 정보(생성한 여행 일정 수, 찜한 관광지 수, 작성한 게시글 수, 서비스 이용일을 반환합니다.")
