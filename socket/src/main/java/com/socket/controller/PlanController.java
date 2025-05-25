@@ -1,6 +1,7 @@
 package com.socket.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Controller;
 
 import com.socket.model.dto.plan.StartPlanDto;
 import com.socket.model.dto.plan.PlanProgress;
+import com.socket.model.dto.plan.SpotDto;
+import com.socket.model.dto.plan.SpotResponse;
 import com.socket.model.dto.plan.StartPlanRequest;
 import com.socket.model.dto.room.RoomEventType;
 import com.socket.model.dto.room.RoomResponse;
@@ -78,10 +81,17 @@ public class PlanController {
 
             System.out.println(roomStore.get(planId));
 
-            // 현재 상태를 반환해!
+            // spotMapMap의 id 리스트도 추가 반환
             messagingTemplate.convertAndSend(
                 "/topic/plan/" + planId,
                 planStore.getPlanProgress(planId)
+            );
+            
+            SpotResponse response = new SpotResponse("add", planStore.getSpotIdListByPlanId(planId));
+
+            messagingTemplate.convertAndSend(
+                "/topic/plan/spot/" + planId,
+                response
             );
         }
     }
@@ -189,6 +199,25 @@ public class PlanController {
                 userId,
                 "/queue/destination",
                 destinationId
+            );
+        }
+    }
+
+    @MessageMapping("/plan/add-cart/**")
+    public void addToSpotCart(StompHeaderAccessor accessor, SpotDto spotInfo){
+        String destination = accessor.getDestination();
+
+        if (destination != null && destination.startsWith("/app/plan/add-cart/")) {
+            String planId = destination.substring("/app/plan/add-cart/".length());
+            System.out.println(planId);
+            planStore.addSpot(planId, spotInfo);
+            // 모두에게 이번에 추가한 Id 전달 (리스트에 담아서 전달)
+
+            SpotResponse response = new SpotResponse("add", new ArrayList<>(Arrays.asList(spotInfo.getSpotId())));
+
+            messagingTemplate.convertAndSend(
+                "/topic/plan/spot/" + planId,
+                response
             );
         }
     }
