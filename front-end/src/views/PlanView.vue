@@ -12,7 +12,13 @@
     <!-- Body 섹션 - currentProgress에 따라 다른 컴포넌트 렌더링 -->
     <div class="body-container">
       <!-- 검색창과 정렬 버튼 -->
-      <div class="search-section">
+      <div
+        v-if="
+          currentProgress === PlanProgress.SELECT_TOURIST_SPOTS ||
+          currentProgress === PlanProgress.SELECT_ACCOMMODATION
+        "
+        class="search-section"
+      >
         <div class="search-bar">
           <input
             type="text"
@@ -65,6 +71,12 @@
         @item-selected="handleItemSelected"
       />
 
+      <SelectedSpotList
+        v-else-if="currentProgress === PlanProgress.FINALIZE_DESTINATIONS"
+        :plan-id="planId"
+        @spot-detail="handleSpotDetail"
+      />
+
       <!-- 기타 진행 상태들... -->
       <div v-else class="placeholder">
         <p>{{ progressTextMap[currentProgress] }} 단계입니다.</p>
@@ -93,6 +105,7 @@ import WhiteGloves from '@/assets/gloves-white.png'
 import GameModal from '@/components/game/GameModal.vue'
 import { Game } from '@/components/game/Game'
 import { SortAsc, SortDesc, MapPin, UtensilsCrossed, Coffee, Heart } from 'lucide-vue-next'
+import SelectedSpotList from '@/components/plan/SelectedSpotList.vue'
 
 // 컴포넌트 import
 import AccommodationList from '@/components/plan/AccommodationList.vue'
@@ -226,6 +239,11 @@ const handleItemSelected = (item: any) => {
   }
 
   socketStore.send('/app/plan/' + requestUrl + planId.value, authStore.accessToken || '', item.item)
+}
+
+const handleSpotDetail = (spot: any) => {
+  console.log('선택된 스팟 상세보기:', spot)
+  // 상세보기 모달이나 페이지로 이동하는 로직 추가
 }
 </script>
 
