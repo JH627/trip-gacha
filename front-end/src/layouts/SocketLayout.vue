@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, onBeforeMount } from 'vue'
+import { onBeforeUnmount, onBeforeMount, ref } from 'vue'
 import { useSocketStore } from '@/stores/socket'
 import { useAuthStore } from '@/stores/auth'
+//import Gloves from '@/assets/gloves.png' -> 버튼 색 밝아지면 검은 아이콘
 
 const socketStore = useSocketStore()
 const authStore = useAuthStore()
 
 onBeforeMount(async () => {
-  console.log(1)
   socketStore.initializeClient()
   await socketStore.connect(authStore.accessToken || '', false)
 })
