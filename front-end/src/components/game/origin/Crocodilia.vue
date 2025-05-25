@@ -109,7 +109,7 @@ export default defineComponent({
 
       // BGM 재생
       if (bgm.value) {
-        bgm.value.volume = 0.5
+        bgm.value.volume = 0.1
         bgm.value.currentTime = 0
         bgm.value.play().catch((error) => {
           console.log('BGM 재생 실패:', error)
@@ -204,6 +204,8 @@ export default defineComponent({
   justify-content: center;
   background: linear-gradient(to bottom, #f0fdf4, #dcfce7);
   padding: 1rem;
+  min-height: 100%;
+  overflow-y: auto;
 }
 
 .game-title {
@@ -482,5 +484,24 @@ export default defineComponent({
 
 .shake {
   animation: shake 0.5s;
+}
+
+@media (max-width: 600px) {
+  .lower-teeth {
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 0.5rem;
+    justify-content: flex-start;
+  }
+  .tooth-container {
+    display: inline-block;
+  }
+  .game-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.7rem;
+    word-break: keep-all;
+    padding-top: 0.5rem;
+    line-height: 1.3;
+  }
 }
 </style>
