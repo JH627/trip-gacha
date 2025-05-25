@@ -14,10 +14,10 @@
           <h3 class="spot-name">{{ item.name }}</h3>
           <button
             class="register-button"
-            :class="{ registered: item.marked }"
+            :class="{ registered: isRegistered(item.spotId) }"
             @click="toggleRegister(item)"
           >
-            {{ item.marked ? '등록됨' : '등록' }}
+            {{ isRegistered(item.spotId) ? '등록됨' : '등록' }}
           </button>
         </div>
 
@@ -54,10 +54,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { authApi } from '@/api/axios'
 import type { SpotParams } from '@/types/trip'
 import { Star, Heart, SearchX } from 'lucide-vue-next'
+import { useSpotStore } from '@/stores/spot'
 
 interface Props {
   destinationId: number
@@ -70,6 +71,13 @@ const props = defineProps<Props>()
 const emit = defineEmits(['item-selected'])
 
 const spotData = ref<any[]>([])
+const spotStore = useSpotStore()
+
+const selectedSpotIds = computed(() => spotStore.getSpotIdsArray())
+
+const isRegistered = (spotId: number) => {
+  return selectedSpotIds.value.includes(spotId)
+}
 
 // API 호출 함수
 const fetchSpotData = async () => {
@@ -103,9 +111,12 @@ const showDetail = (item: any) => {
 }
 
 const toggleRegister = (item: any) => {
-  item.marked = !item.marked
-  console.log('등록 토글:', item.name, item.marked)
-  emit('item-selected', { type: 'register', item })
+  console.log(isRegistered(item.spotId))
+  if (isRegistered(item.spotId)) {
+    emit('item-selected', { type: 'remove', item })
+  } else {
+    emit('item-selected', { type: 'register', item })
+  }
 }
 
 const truncateContent = (content: string) => {

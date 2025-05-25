@@ -1,24 +1,24 @@
 package com.socket.model.store;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import com.socket.model.dto.plan.PlanDto;
 import com.socket.model.dto.plan.PlanProgress;
+import com.socket.model.dto.plan.SpotDto;
 import com.socket.model.dto.room.SocketRoomUser;
 
 @Component
 public class PlanSessionStore {
     private final Map<String, PlanDto> planMap = new ConcurrentHashMap<>();
     private final Map<String, Map<String, SocketRoomUser>> planningUserMapMap = new ConcurrentHashMap<>();
-    private final Map<String, Set<String>> selectedSpotSetMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<Integer, SpotDto>> selectedSpotMapMap = new ConcurrentHashMap<>();
 
     public void addPlan(String planId, String ownerId, Integer destinationId, List<SocketRoomUser> roomUsers) {
         PlanDto plan = PlanDto.builder()
@@ -30,9 +30,9 @@ public class PlanSessionStore {
         
         planMap.put(planId, plan);
 
-        if(!selectedSpotSetMap.containsKey(planId)){
-            Set<String> selectedSpotSet = new ConcurrentSkipListSet<>();
-            selectedSpotSetMap.put(planId, selectedSpotSet);
+        if(!selectedSpotMapMap.containsKey(planId)){
+            Map<Integer, SpotDto> selectedSpotMap = new ConcurrentHashMap<>();
+            selectedSpotMapMap.put(planId, selectedSpotMap);
         }
 
         for(SocketRoomUser roomUser : roomUsers){
@@ -81,8 +81,10 @@ public class PlanSessionStore {
         planningUserMapMap.get(planId).put(userInfo.getUserId(), userInfo);
     }
 
-    public void addSpot(String planId, String spotId){
-        selectedSpotSetMap.get(planId).add(spotId);
+    public void addSpot(String planId, SpotDto spotInfo){
+        selectedSpotMapMap.get(planId).put(spotInfo.getSpotId(), spotInfo);
+
+        System.out.println("현재 장바구니 개수 : " + selectedSpotMapMap.get(planId).size());
     }
 
     public boolean isUserInPlan(String planId, String userId){
@@ -107,5 +109,13 @@ public class PlanSessionStore {
         }
 
         return planMap.get(planId).getDestinationId();
+    }
+
+    public List<Integer> getSpotIdListByPlanId(String planId) {
+        Map<Integer, SpotDto> spotMap = selectedSpotMapMap.get(planId);
+        if (spotMap == null) {
+            return Collections.emptyList();
+        }
+        return new ArrayList<>(spotMap.keySet());
     }
 }

@@ -76,3 +76,20 @@ export interface SpotParams {
   destinationId?: number
   keyword?: string
 }
+
+export interface SpotInfo {
+  spotId: number
+  name: string
+  address: string
+  category: string
+  content: string
+  destination: string
+  img: string
+  latitude: number
+  longitude: number
+  likes: number
+  marked: boolean
+  phone: string
+  stars: number
+  workTime: string
+}
