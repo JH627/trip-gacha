@@ -16,6 +16,7 @@ import com.gacha.model.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "회원 도메인 API")
@@ -28,7 +29,7 @@ public class UserController {
 
     @Operation(summary = "회원 가입", description = "사용자 입력 정보를 바탕으로 회원가입을 진행합니다.")
     @PostMapping("/regist")
-    public Response<?> regist(@ModelAttribute RegistRequest registRequest){
+    public Response<?> regist(@Valid @ModelAttribute RegistRequest registRequest){
         userService.regist(registRequest);
     	return Response.onSuccess();
     }
@@ -48,7 +49,7 @@ public class UserController {
     
     @Operation(summary = "회원 정보 업데이트", description = "회원 정보(닉네임, 프로필 이미지)를 업데이트합니다.")
     @PutMapping("")
-    public Response<?> updateUserInfo(@LoginUser Integer userId, @ModelAttribute UpdateRequest updateRequest) {
+    public Response<?> updateUserInfo(@LoginUser Integer userId, @Valid @ModelAttribute UpdateRequest updateRequest) {
     	userService.updateProfile(userId, updateRequest);
         return Response.onSuccess();
     }  

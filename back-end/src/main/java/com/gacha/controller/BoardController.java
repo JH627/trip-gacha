@@ -20,6 +20,7 @@ import com.gacha.model.dto.board.BoardSearchResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -40,7 +41,7 @@ public class BoardController {
 
     @Operation(summary = "게시글 등록", description = "사용자 입력을 기반으로 게시글을 등록합니다.")
     @PostMapping("")
-    public Response<?> addBoard(@LoginUser Integer userId, @RequestBody AddBoardRequest addBoardRequest) {
+    public Response<?> addBoard(@LoginUser Integer userId, @Valid @RequestBody AddBoardRequest addBoardRequest) {
         boardService.createBoard(addBoardRequest, userId);
         return Response.onSuccess();
     }
@@ -61,7 +62,7 @@ public class BoardController {
 
     @Operation(summary = "게시글 수정", description = "새로 입력된 내용을 기반으로 게시글을 수정합니다.")
     @PatchMapping("")
-    public Response<?> updateBoard(@LoginUser Integer userId, @RequestBody UpdateBoardRequest updateBoardRequest) {
+    public Response<?> updateBoard(@LoginUser Integer userId, @Valid @RequestBody UpdateBoardRequest updateBoardRequest) {
         boardService.updateById(updateBoardRequest, userId);
         return Response.onSuccess();
     }
@@ -103,7 +104,7 @@ public class BoardController {
 
     @Operation(summary = "댓글 등록", description = "게시글에 댓글을 등록합니다.")
     @PostMapping("/comment")
-    public Response<?> addComment(@LoginUser Integer userId, @RequestBody AddCommentRequest addCommentRequest) {
+    public Response<?> addComment(@LoginUser Integer userId, @Valid @RequestBody AddCommentRequest addCommentRequest) {
         boardService.createComment(addCommentRequest, userId);
         return Response.onSuccess();
     }

@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gacha.model.dto.validation.annotation.ValidDateRange;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,30 +25,37 @@ import lombok.Setter;
 public class ScheduleRegistFormRequest {
 	@JsonIgnore
 	private Integer tripScheduleId;
-	@NotNull
+	
+	@NotNull(message = "목적지 ID는 필수 입력값입니다.")
 	private Integer destinationId;
-	@NotNull
-	@Size(max = 50)
+	
+	@NotNull(message = "제목은 필수 입력값입니다.")
+	@Size(min = 1, max = 50, message = "제목은 1자 이상 50자 이하로 입력해주세요.")
 	private String title;
-	@NotNull
-	// yyyy-MM-dd 형식
+	
+	@NotNull(message = "시작일은 필수 입력값입니다.")
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate startDate;
-	@NotNull
-	// yyyy-MM-dd 형식
+	
+	@NotNull(message = "종료일은 필수 입력값입니다.")
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate endDate;
-	@NotNull @NotEmpty
+	
+	@NotNull(message = "일정 항목은 필수 입력값입니다.")
+	@NotEmpty(message = "일정 항목은 최소 1개 이상이어야 합니다.")
+	@Valid
 	private List<ScheduleItem> scheduleItems;
 	
 	@Getter
 	@Setter
 	public static class ScheduleItem {
-		@NotNull
+		@NotNull(message = "관광지 ID는 필수 입력값입니다.")
 		private Integer spotId;
-		@NotNull
+		
+		@NotNull(message = "일차는 필수 입력값입니다.")
 		private Integer day;
-		@NotNull
+		
+		@NotNull(message = "순서는 필수 입력값입니다.")
 		private Integer sequence;
 	}
 }

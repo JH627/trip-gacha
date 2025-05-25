@@ -55,12 +55,29 @@
     </select>
 
     <select id="checkIsShared" resultType="boolean">
-        SELECT EXISTS (
-            SELECT 1 FROM trip_schedule 
-            WHERE trip_route_id = #{scheduleId} 
-            AND (user_id = #{userId} OR is_shared = true)
-        )
+        SELECT CASE 
+            WHEN user_id = #{userId} THEN true
+            WHEN is_shared = true THEN true
+            ELSE false
+        END
+        FROM trip_schedule
+        WHERE trip_route_id = #{scheduleId}
     </select>
+
+    <select id="isOwner" resultType="boolean">
+        SELECT CASE 
+            WHEN user_id = #{userId} THEN true
+            ELSE false
+        END
+        FROM trip_schedule
+        WHERE trip_route_id = #{scheduleId}
+    </select>
+
+    <update id="toggleShareStatus">
+        UPDATE trip_schedule
+        SET is_shared = NOT is_shared
+        WHERE trip_route_id = #{scheduleId}
+    </update>
 
     <select id="selectScheduleByUserId" resultMap="scheduleDetailMap">
         SELECT 
@@ -68,10 +85,11 @@
             ts.start_date as startDate,
             ts.end_date as endDate,
             ts.created_at as createAt,
+            ts.is_shared as isShared,
+            (CASE WHEN ts.user_id = #{userId} THEN true ELSE false END) as isMine,
             tsi.day,
-            tsi.sequence as orderNum,
+            tsi.sequence as sequence,
             s.spot_id as spotId,
-            d.name as destination,
             s.name,
             s.content,
             s.img,
@@ -81,17 +99,15 @@
             sc.name as category,
             s.phone,
             s.work_time as workTime,
-            CASE WHEN b.bookmark_id IS NOT NULL THEN true ELSE false END as marked,
             s.latitude,
-            s.longitude
+            s.longitude,
+            (CASE WHEN b.user_id IS NOT NULL THEN true ELSE false END) as marked
         FROM trip_schedule ts
         LEFT JOIN trip_schedule_items tsi ON ts.trip_route_id = tsi.trip_schedule_id
         LEFT JOIN spots s ON tsi.spot_id = s.spot_id
-        LEFT JOIN destinations d ON s.destination_id = d.destination_id
         LEFT JOIN spot_categories sc ON s.category_id = sc.category_id
         LEFT JOIN bookmarks b ON s.spot_id = b.spot_id AND b.user_id = #{userId}
         WHERE ts.trip_route_id = #{scheduleId}
-        AND (ts.user_id = #{userId} OR ts.is_shared = true)
         ORDER BY tsi.day, tsi.sequence
     </select>
 
@@ -100,12 +116,13 @@
         <result property="startDate" column="startDate"/>
         <result property="endDate" column="endDate"/>
         <result property="createAt" column="createAt"/>
+        <result property="isShared" column="isShared"/>
+        <result property="isMine" column="isMine"/>
         <collection property="scheduleDetailItems" ofType="com.gacha.model.dto.trip.ScheduleDetailItem">
             <result property="day" column="day"/>
-            <result property="order" column="orderNum"/>
+            <result property="order" column="sequence"/>
             <association property="spotInfo" javaType="com.gacha.model.dto.trip.SpotInfo">
                 <result property="spotId" column="spotId"/>
-                <result property="destination" column="destination"/>
                 <result property="name" column="name"/>
                 <result property="content" column="content"/>
                 <result property="img" column="img"/>

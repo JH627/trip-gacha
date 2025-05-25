@@ -49,6 +49,8 @@ export interface ScheduleDetail {
   endDate: string
   createAt: string
   scheduleDetailItems: ScheduleDetailItem[]
+  shared: boolean
+  mine: boolean
 }
 
 // 관광지 카테고리 타입

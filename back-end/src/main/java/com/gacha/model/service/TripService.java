@@ -80,4 +80,11 @@ public interface TripService {
 	 * @return 여행 일정 상세(일정이름, 시작일, 종료일, 일정 생성일, N일차(관광지 정보, 순서))
 	 */
 	ScheduleDetail getScheduleDetail(Integer userId, Integer scheduleId);
+	
+	/**
+	 * 여행 일정 공유 상태를 토글한다.
+	 * @param userId 사용자 ID
+	 * @param scheduleId 일정 ID
+	 */
+	void toggleScheduleShare(Integer userId, Integer scheduleId);
 }

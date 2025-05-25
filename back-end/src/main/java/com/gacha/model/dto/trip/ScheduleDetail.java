@@ -28,4 +28,7 @@ public class ScheduleDetail {
 	private LocalDate createAt;
 
 	private List<ScheduleDetailItem> scheduleDetailItems;
+	
+	private boolean isShared;
+	private boolean isMine;
 }

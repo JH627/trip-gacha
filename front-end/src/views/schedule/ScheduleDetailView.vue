@@ -3,7 +3,7 @@ import { authApi } from '@/api/axios'
 import type { ScheduleDetail } from '@/types/trip'
 import { onMounted, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Tabs, Modal } from 'ant-design-vue'
+import { Tabs, Modal, message } from 'ant-design-vue'
 import ScheduleMap from '@/components/schedule/ScheduleMap.vue'
 import ScheduleSpotList from '@/components/schedule/ScheduleSpotList.vue'
 
@@ -35,6 +35,18 @@ const selectedDayCoordinates = computed(() => {
   }))
 })
 
+const toggleShare = async () => {
+  if (!schedule.value) return
+  
+  try {
+    await authApi.post(`/trip/schedule/share/${scheduleId}`)
+    schedule.value.shared = !schedule.value.shared
+  } catch (error) {
+    console.error('일정 공유 상태 변경에 실패했습니다:', error)
+    message.error('일정 공유 상태 변경에 실패했습니다')
+  }
+}
+
 // 모달 관련 메서드
 const showModal = () => {
   isModalVisible.value = true
@@ -61,8 +73,20 @@ onMounted(async () => {
   <div class="main-container">
     <div v-if="schedule" class="schedule-detail">
       <div class="title-container">
-        <h1 class="title">{{ schedule.title }}</h1>
-        <span class="period">{{ schedule.startDate }} ~ {{ schedule.endDate }}</span>
+        <div class="title-left">
+          <h1 class="title">{{ schedule.title }}</h1>
+        </div>
+        <div class="title-right">
+          <span class="period">{{ schedule.startDate }} ~ {{ schedule.endDate }}</span>
+          <button 
+            v-if="schedule.mine" 
+            class="share-button" 
+            :class="{ 'shared': schedule.shared }"
+            @click="toggleShare"
+          >
+            {{ schedule.shared ? '공유 취소' : '공유' }}
+          </button>
+        </div>
       </div>
 
       <!-- 날짜 선택 -->
@@ -121,9 +145,21 @@ onMounted(async () => {
 
 .title-container {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
   margin-bottom: 16px;
+}
+
+.title-left {
+  display: flex;
+  align-items: center;
+}
+
+.title-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .title {
@@ -288,5 +324,36 @@ onMounted(async () => {
   width: 100%;
   height: 100%;
   position: relative;
+}
+
+.share-button {
+  padding: 6px 16px;
+  border: 1px solid #1890ff;
+  border-radius: 6px;
+  background-color: white;
+  color: #1890ff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-button:hover {
+  background-color: #e6f7ff;
+  border-color: #40a9ff;
+}
+
+.share-button.shared {
+  background-color: #1890ff;
+  color: white;
+}
+
+.share-button.shared:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
 }
 </style>

@@ -19,6 +19,7 @@ import com.gacha.model.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "인증 도메인 API")
@@ -38,7 +39,7 @@ public class AuthController {
     @Operation(summary = "로그인", description = "아이디와 비밀번호를 기반으로 로그인을 진행합니다.<br/>"
     		+ "로그인 성공시 헤더에 AccessToken이 반환되고, Cookie에 RefreshToken이 반환됩니다.")
     @PostMapping("/login")
-    public ResponseEntity<Response<?>> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<Response<?>> login(@Valid @RequestBody LoginRequest loginRequest){
         LoginResponse loginResponse = authService.login(loginRequest);
 
         HttpHeaders httpHeaders = new HttpHeaders();

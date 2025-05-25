@@ -23,4 +23,12 @@ public interface TripScheduleDao {
 	boolean checkIsShared(Integer userId, Integer scheduleId);
 
 	ScheduleDetail selectScheduleByUserId(Integer userId, Integer scheduleId);
+	
+	boolean isOwner(Integer userId, Integer scheduleId);
+	
+	/**
+	 * 여행 일정 공유 상태를 토글한다.
+	 * @param scheduleId 일정 ID
+	 */
+	void toggleShareStatus(Integer scheduleId);
 } 

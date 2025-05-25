@@ -14,6 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookmarkSpotRequest {
-	@NotNull
+	@NotNull(message = "관광지 ID는 필수 입력값입니다.")
     private Integer spotId;
 }

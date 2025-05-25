@@ -153,7 +153,7 @@ export default defineComponent({
     onMounted(() => {
       bgm.value = document.querySelector('audio')
       if (bgm.value) {
-        bgm.value.volume = 0.5
+        bgm.value.volume = 0.1
         bgm.value.currentTime = 0
         bgm.value.play().catch((error) => {
           console.log('BGM 재생 실패:', error)
@@ -272,26 +272,37 @@ export default defineComponent({
 
 <style scoped>
 .roulette-container {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  height: auto;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 1rem 0.5rem;
+  box-sizing: border-box;
+  background: linear-gradient(to bottom, #1a1a2e, #16213e);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background: linear-gradient(to bottom, #1a1a2e, #16213e);
-  padding: 1rem;
+  justify-content: flex-start;
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
   color: #fff;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .setup-container,
-.input-container {
+.input-container,
+.roulette-game-container {
   width: 100%;
   max-width: 28rem;
+  margin: 0 auto;
+  padding-top: 1rem;
+  box-sizing: border-box;
 }
 
 .setup-box,
@@ -334,6 +345,7 @@ export default defineComponent({
   border-radius: 0.5rem;
   color: #fff;
   font-size: 1rem;
+  box-sizing: border-box;
 }
 
 .number-input:focus,
@@ -390,17 +402,8 @@ export default defineComponent({
   margin-top: 1.5rem;
 }
 
-.roulette-game-container {
-  width: 100%;
-  max-width: 42rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .roulette-wrapper {
   position: relative;
-  margin-bottom: 2rem;
   filter: drop-shadow(0 0 20px rgba(124, 58, 237, 0.3));
 }
 
@@ -420,8 +423,11 @@ export default defineComponent({
 
 .roulette-wheel {
   position: relative;
-  width: 20rem;
-  height: 20rem;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  aspect-ratio: 1/1;
+  margin: 0 auto;
   border-radius: 50%;
   border: 12px solid #7c3aed;
   overflow: hidden;
@@ -511,6 +517,8 @@ export default defineComponent({
   text-transform: uppercase;
   letter-spacing: 1px;
   box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3);
+  display: block;
+  margin: 1.5rem auto 0 auto;
 }
 
 .spin-button:hover,
@@ -526,7 +534,7 @@ export default defineComponent({
 
 .result-box {
   background: rgba(255, 255, 255, 0.1);
-  padding: 2rem;
+  padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 1rem;
   box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
@@ -544,7 +552,7 @@ export default defineComponent({
 }
 
 .result-text {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #7c3aed;
   margin-bottom: 0px;
@@ -590,6 +598,22 @@ export default defineComponent({
   }
   50% {
     transform: translateY(-15px);
+  }
+}
+
+@media (max-width: 600px) {
+  .setup-container,
+  .input-container,
+  .roulette-game-container {
+    max-width: 100%;
+    padding-top: 0.5rem;
+  }
+  .roulette-wheel {
+    max-width: 95vw;
+  }
+  .title {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
   }
 }
 </style>

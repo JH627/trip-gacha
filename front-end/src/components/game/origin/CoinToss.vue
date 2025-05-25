@@ -176,7 +176,7 @@ export default defineComponent({
     onMounted(() => {
       bgm.value = document.querySelector('audio')
       if (bgm.value) {
-        bgm.value.volume = 0.5
+        bgm.value.volume = 0.1
         bgm.value.play().catch((error) => {
           console.log('BGM 재생 실패:', error)
         })
@@ -209,6 +209,8 @@ export default defineComponent({
   justify-content: center;
   background: linear-gradient(to bottom, #fffbeb, #fef3c7);
   padding: 1rem;
+  min-height: 100%;
+  overflow-y: auto;
 }
 
 .title {

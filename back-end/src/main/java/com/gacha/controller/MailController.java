@@ -12,6 +12,7 @@ import com.gacha.model.service.MailService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,14 +28,14 @@ public class MailController {
 
     @Operation(summary = "이메일 인증코드 발송", description = "사용자가 입력한 이메일을 바탕으로 인증코드를 발송합니다.")
     @PostMapping("/verification")
-    public Response<?> sendVerifyCodeToEmail(@RequestBody EmailVerificationRequest body) throws Exception {
+    public Response<?> sendVerifyCodeToEmail(@Valid @RequestBody EmailVerificationRequest body) throws Exception {
         mailService.sendSimpleMessage(body.getEmail());
         return Response.onSuccess();
     }
 
     @Operation(summary = "이메일 인증코드 확인", description = "이메일로 발송된 이메일 인증코드를 확인합니다.")
     @PostMapping("/verification-confirm")
-    public Response<?> checkVerifyCode(@RequestBody EmailVerificationConfirmRequest body) throws Exception {
+    public Response<?> checkVerifyCode(@Valid @RequestBody EmailVerificationConfirmRequest body) throws Exception {
         mailService.verifyCode(body.getEmail(), body.getCode());
         return Response.onSuccess();
     }

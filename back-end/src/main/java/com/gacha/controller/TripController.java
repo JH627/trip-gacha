@@ -115,4 +115,11 @@ public class TripController {
 		return Response.onSuccess(tripService.getScheduleDetail(userId, scheduleId));
 	}
 	
+	@Operation(summary = "여행 일정 공유 토글", description = "여행 일정의 공유 상태를 토글한다. 자신의 일정만 공유할 수 있다.")
+	@PostMapping(path = "/schedule/share/{scheduleId}")
+	public Response<?> toggleScheduleShare(@LoginUser Integer userId, @PathVariable(required = true) Integer scheduleId) {
+		tripService.toggleScheduleShare(userId, scheduleId);
+		return Response.onSuccess();
+	}
+	
 }
