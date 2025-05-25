@@ -8,6 +8,61 @@
       </button>
       <button v-else class="nav-button next-button" @click="goNext">완료</button>
     </div>
+
+    <!-- Body 섹션 - currentProgress에 따라 다른 컴포넌트 렌더링 -->
+    <div class="body-container">
+      <!-- 검색창과 정렬 버튼 -->
+      <div class="search-section">
+        <div class="search-bar">
+          <input
+            type="text"
+            v-model="keyword"
+            placeholder="검색어를 입력하세요"
+            class="search-input"
+          />
+          <button class="search-button" @click="handleSearch">검색</button>
+        </div>
+        <button class="sort-button" @click="toggleSort">
+          <SortAsc v-if="sortOrder === 'asc'" :size="16" />
+          <SortDesc v-else :size="16" />
+          정렬
+        </button>
+      </div>
+
+      <!-- 진행 상태에 따른 컴포넌트 렌더링 -->
+      <AccommodationList
+        v-if="currentProgress === PlanProgress.SELECT_ACCOMMODATION"
+        :destination-id="destinationId"
+        :plan-id="planId"
+        :keyword="keyword"
+        :sort-order="sortOrder"
+        @item-selected="handleItemSelected"
+      />
+
+      <!-- <TouristSpotList 
+        v-else-if="currentProgress === PlanProgress.SELECT_TOURIST_SPOTS"
+        :destination-id="destinationId"
+        :plan-id="planId"
+        :keyword="keyword"
+        :sort-order="sortOrder"
+        @item-selected="handleItemSelected"
+      /> -->
+
+      <!-- <RestaurantList 
+        v-else-if="currentProgress === PlanProgress.SELECT_RESTAURANTS"
+        :destination-id="destinationId"
+        :plan-id="planId"
+        :keyword="keyword"
+        :sort-order="sortOrder"
+        @item-selected="handleItemSelected"
+      /> -->
+
+      <!-- 기타 진행 상태들... -->
+      <div v-else class="placeholder">
+        <p>{{ progressTextMap[currentProgress] }} 단계입니다.</p>
+      </div>
+    </div>
+
     <div class="game-button" @click="openModal">
       <img class="game-icon" :src="WhiteGloves" />
     </div>
@@ -24,11 +79,17 @@
 import { PlanProgress, progressTextMap } from '@/socket/webSocket'
 import { useAuthStore } from '@/stores/auth'
 import { useSocketStore } from '@/stores/socket'
-import { computed, onMounted, ref, type Ref } from 'vue'
+import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import WhiteGloves from '@/assets/gloves-white.png'
 import GameModal from '@/components/game/GameModal.vue'
 import { Game } from '@/components/game/Game'
+import { SortAsc, SortDesc } from 'lucide-vue-next'
+
+// 컴포넌트 import
+import AccommodationList from '@/components/plan/AccommodationList.vue'
+// import TouristSpotList from '@/components/plan/TouristSpotList.vue'
+// import RestaurantList from '@/components/plan/RestaurantList.vue'
 
 const route = useRoute()
 const planId = computed(() => route.params.planId as string)
@@ -39,26 +100,31 @@ const authStore = useAuthStore()
 
 const invitedGameType: Ref<Game> = ref(Game.DEFAULT)
 
+// 부모에서 관리하는 상태들
+const keyword = ref('')
+const sortOrder = ref<'asc' | 'desc'>('desc')
+const destinationId = ref(0)
+
 const processMessage = (message: string) => {
   alert(message)
 }
 
 const processJoinMessage = (body: string) => {
   const response: PlanProgress = JSON.parse(body)
-
   console.log('현재 : ' + currentProgress.value)
   console.log('다음 : ' + response)
-
   currentProgress.value = response
 }
 
 const processGameMessage = (body: string) => {
   const gameType = JSON.parse(body)
-  // 모달에 선택한 게임 전달
   console.log(('초대 당한 게임 : ' + gameType) as Game)
   invitedGameType.value = gameType as Game
-  // 모달 개방
   openModal()
+}
+
+const processDestinationId = (body: string) => {
+  destinationId.value = JSON.parse(body)
 }
 
 onMounted(() => {
@@ -66,8 +132,10 @@ onMounted(() => {
     socketStore.subscribe(`/user/queue/game`, processGameMessage)
     socketStore.subscribe(`/user/queue/plan`, processMessage)
     socketStore.subscribe(`/topic/plan/${planId.value}`, processJoinMessage)
+    socketStore.subscribe(`/user/queue/destination`, processDestinationId)
 
     socketStore.send(`/app/plan/join/${planId.value}`, authStore.accessToken || '', null)
+    socketStore.send(`/app/plan/destination`, authStore.accessToken || ``, planId.value)
   } catch (error) {
     window.location.href = '/trip/lobby'
   }
@@ -92,6 +160,23 @@ const closeModal = () => {
   isOpen.value = false
   invitedGameType.value = Game.DEFAULT
 }
+
+// 검색 및 정렬 핸들러
+const handleSearch = () => {
+  console.log('검색:', keyword.value)
+  // 검색 이벤트는 자식 컴포넌트에서 watch로 감지
+}
+
+const toggleSort = () => {
+  sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+  // 정렬 변경 이벤트는 자식 컴포넌트에서 watch로 감지
+}
+
+// 자식 컴포넌트에서 아이템 선택 시 호출
+const handleItemSelected = (item: any) => {
+  console.log('선택된 아이템:', item)
+  // 선택된 아이템 처리 로직
+}
 </script>
 
 <style scoped>
@@ -112,6 +197,7 @@ const closeModal = () => {
   background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .nav-button {
@@ -151,6 +237,82 @@ const closeModal = () => {
   order: 3;
 }
 
+.body-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.search-section {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.search-bar {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.search-button {
+  padding: 10px 20px;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.search-button:hover {
+  background-color: #4338ca;
+}
+
+.sort-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.sort-button:hover {
+  background-color: #e9ecef;
+}
+
+.placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 16px;
+}
+
 .game-button {
   position: absolute;
   bottom: 50px;
@@ -165,6 +327,7 @@ const closeModal = () => {
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  z-index: 10;
 }
 
 .game-button:hover {
@@ -181,5 +344,18 @@ const closeModal = () => {
   height: 36px;
   color: white;
   pointer-events: none;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .search-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sort-button {
+    align-self: flex-end;
+    width: fit-content;
+  }
 }
 </style>

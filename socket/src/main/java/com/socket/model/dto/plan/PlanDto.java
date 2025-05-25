@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class PlanDto {
     private String planId;
     private String ownerId;
+    private Integer destinationId;
     private PlanProgress planProgress;
 }

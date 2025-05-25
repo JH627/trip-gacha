@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class JoinPlanDto {
+public class StartPlanDto {
     private String planId;
     private PlanProgress progress;
 }

@@ -18,7 +18,7 @@ public class SocketRoom {
     private String password;
     private String startDate;
     private String endDate;
-    private String destination;
+    private Integer destination;
     private SocketRoomUser owner;
     private boolean isPlanning;
     private List<SocketRoomUser> userList;
