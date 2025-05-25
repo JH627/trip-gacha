@@ -38,12 +38,6 @@ public class TripServiceImpl implements TripService {
 	private final ImageUtil imageUtil;
 
 	@Override
-	@Transactional(readOnly = true)
-	public List<SpotInfo> getRecommendSpotList(Integer userId) {
-		return spotDao.selectAll(userId);
-	}
-
-	@Override
 	@Transactional
 	public void toggleSpotBookmark(Integer userId, BookmarkSpotRequest dto) {
 		boolean isBookmarked = spotDao.isBookmarked(userId, dto.getSpotId());

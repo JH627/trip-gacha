@@ -33,12 +33,6 @@ public class TripController {
 
 	private final TripService tripService;
 	
-	@Operation(summary = "추천 관광지 목록 조회", description = "메인 페이지에 사용할 추천 여행지 목록을 가져옵니다.")
-	@GetMapping("/recommend")
-	public Response<?> getRecommendSpotList(@LoginUser Integer userId) {
-		return Response.onSuccess(tripService.getRecommendSpotList(userId));
-	}
-	
 	@Operation(summary = "관광지 찜하기", description = "관광지를 내 찜 목록에 추가한다. 이미 찜 목록에 있는 경우 찜을 해제한다.")
 	@PostMapping("/bookmark")
 	public Response<?> bookmark(@LoginUser Integer userId, @Valid @RequestBody BookmarkSpotRequest bookmarkSpot) {

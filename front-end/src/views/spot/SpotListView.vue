@@ -6,7 +6,6 @@ import SpotDetailModal from '@/components/spot/SpotDetailModal.vue'
 import type { SpotInfo, Destination, SpotCategory, SpotParams } from '@/types/trip'
 import { SPOT_CATEGORIES } from '@/types/trip'
 import { authApi } from '@/api/axios'
-import { Pagination } from 'ant-design-vue'
 
 const route = useRoute()
 
@@ -28,8 +27,6 @@ const destinations = ref<Destination[]>([])
 const spots = ref<SpotInfo[]>([])
 // 전체 관광지 개수
 const totalSpots = ref(0)
-// 추천 관광지 목록
-const recommends = ref<SpotInfo[]>([])
 // 모달 상태 관리
 const selectedSpot = ref<SpotInfo | null>(null)
 const showModal = ref(false)
@@ -78,16 +75,6 @@ const fetchSpots = async () => {
   }
 }
 
-// 추천 관광지 목록 조회
-const fetchRecommends = async () => {
-  try {
-    const { data } = await authApi.get('/trip/recommend')
-    recommends.value = data.data
-  } catch (error) {
-    console.error('추천 관광지 조회 실패:', error)
-  }
-}
-
 // 필터링된 관광지 목록
 const filteredSpots = computed(() => spots.value)
 
@@ -115,7 +102,6 @@ const handleCloseModal = () => {
 onMounted(() => {
   fetchDestinations()
   fetchSpots()
-  fetchRecommends()
 })
 
 // 페이지 변경 핸들러
