@@ -20,10 +20,11 @@ public class PlanSessionStore {
     private final Map<String, Map<String, SocketRoomUser>> planningUserMapMap = new ConcurrentHashMap<>();
     private final Map<String, Set<String>> selectedSpotSetMap = new ConcurrentHashMap<>();
 
-    public void addPlan(String planId, String ownerId, List<SocketRoomUser> roomUsers) {
+    public void addPlan(String planId, String ownerId, Integer destinationId, List<SocketRoomUser> roomUsers) {
         PlanDto plan = PlanDto.builder()
                                 .planId(planId)
                                 .ownerId(ownerId)
+                                .destinationId(destinationId)
                                 .planProgress(PlanProgress.SELECT_ACCOMMODATION)
                                 .build();
         
@@ -98,5 +99,13 @@ public class PlanSessionStore {
         }
 
         return new ArrayList<>(planningUserMapMap.get(planId).values());
+    }
+
+    public Integer getPlanDestinationId(String planId){
+        if(planMap.get(planId)==null){
+            return null;
+        }
+
+        return planMap.get(planId).getDestinationId();
     }
 }

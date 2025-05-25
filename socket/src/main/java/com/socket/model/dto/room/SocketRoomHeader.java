@@ -12,7 +12,7 @@ import lombok.ToString;
 public class SocketRoomHeader {
     private String roomId;
     private String title;
-    private String destination;
+    private Integer destination;
     private Integer userCount;
     private String startDate;
     private String endDate;

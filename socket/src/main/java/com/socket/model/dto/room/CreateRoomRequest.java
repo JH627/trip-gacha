@@ -14,5 +14,5 @@ public class CreateRoomRequest {
     private String password;
     private String startDate;
     private String endDate;
-    private String destination;
+    private Integer destination;
 }

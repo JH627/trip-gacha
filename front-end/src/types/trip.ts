@@ -60,7 +60,13 @@ export const SPOT_CATEGORIES = [
   { value: 'MARKED', label: '찜 목록' },
 ] as const
 
-export type SpotCategory = 'ATTRACTION' | 'RESTAURANT' | 'CAFE' | 'MARKED' | 'ALLSPOT'
+export type SpotCategory =
+  | 'ATTRACTION'
+  | 'RESTAURANT'
+  | 'CAFE'
+  | 'MARKED'
+  | 'ALLSPOT'
+  | 'ACCOMMODATION'
 
 // 관광지 검색 파라미터 타입
 export interface SpotParams {
