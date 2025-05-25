@@ -57,6 +57,7 @@ const mapOptions = {
             <h3>위치</h3>
             <div class="map-container">
               <KakaoMap
+                v-if="show"
                 :lat="spot.latitude"
                 :lng="spot.longitude"
                 :options="mapOptions"
