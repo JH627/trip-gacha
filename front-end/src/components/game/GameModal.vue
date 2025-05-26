@@ -9,8 +9,9 @@
     <component
       :is="props.isSocket ? socketGameComponent : currentGameComponent"
       @selectGame="selectGame"
-      @goBackToSelect="goBack"
+      @close="handleClose"
       :gameType="selectedGame"
+      :is-owner="isOwner"
       @players-select-complete="playerSelectComplete"
     />
   </ReuseableModal>
@@ -39,6 +40,7 @@ const emit = defineEmits<{
 }>()
 
 const selectedGame = ref<string | null>(null)
+const isOwner = ref(false)
 
 const currentGameComponent = computed(() => {
   if (!selectedGame.value) return GameSelection
@@ -60,8 +62,6 @@ const currentGameComponent = computed(() => {
 const hasSelectedPlayers = ref(false)
 
 const socketGameComponent = computed(() => {
-  console.log('glglg : ' + props.invitedGameType)
-
   if (props.invitedGameType != Game.DEFAULT) {
     hasSelectedPlayers.value = true
     selectGame(props.invitedGameType)
@@ -102,5 +102,6 @@ const handleClose = () => {
 
 const playerSelectComplete = () => {
   hasSelectedPlayers.value = true
+  isOwner.value = true
 }
 </script>
