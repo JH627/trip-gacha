@@ -6,7 +6,7 @@
       <button v-if="currentProgress !== endProgress" class="nav-button next-button" @click="goNext">
         앞으로
       </button>
-      <button v-else class="nav-button next-button" @click="goNext">완료</button>
+      <button v-else class="complete-button" @click="saveSchedule">완료</button>
     </div>
 
     <!-- Body 섹션 - currentProgress에 따라 다른 컴포넌트 렌더링 -->
@@ -77,6 +77,8 @@
         @spot-detail="handleSpotDetail"
       />
 
+      <SocketScheduleDetailView v-else-if="currentProgress === PlanProgress.REVIEW_AND_EDIT" />
+
       <!-- 기타 진행 상태들... -->
       <div v-else class="placeholder">
         <p>{{ progressTextMap[currentProgress] }} 단계입니다.</p>
@@ -100,7 +102,7 @@ import { PlanProgress, progressTextMap } from '@/socket/webSocket'
 import { useAuthStore } from '@/stores/auth'
 import { useSocketStore } from '@/stores/socket'
 import { computed, onMounted, ref, watch, type Ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import WhiteGloves from '@/assets/gloves-white.png'
 import GameModal from '@/components/game/GameModal.vue'
 import { Game } from '@/components/game/Game'
@@ -111,11 +113,16 @@ import SelectedSpotList from '@/components/plan/SelectedSpotList.vue'
 import AccommodationList from '@/components/plan/AccommodationList.vue'
 import TouristSpotList from '@/components/plan/TouristSpotList.vue'
 import { useSpotStore } from '@/stores/spot'
+import SocketScheduleDetailView from '@/components/plan/SocketScheduleDetailView.vue'
+import { authApi } from '@/api/axios'
+import { useDestinationStore } from '@/stores/destination'
+import { useScheduleStore } from '@/stores/schedule'
+import type { ScheduleDetail } from '@/types/trip'
 
 const route = useRoute()
 const planId = computed(() => route.params.planId as string)
 const currentProgress = ref(PlanProgress.SELECT_ACCOMMODATION)
-const endProgress = PlanProgress.COMPLETE
+const endProgress = PlanProgress.REVIEW_AND_EDIT
 const socketStore = useSocketStore()
 const authStore = useAuthStore()
 
@@ -174,12 +181,21 @@ const processSpotIdMessage = (body: string) => {
   }
 }
 
+const router = useRouter()
+
+const processByeMessage = (body: string) => {
+  alert('여행 계획 생성 완료!')
+
+  router.push('/')
+}
+
 onMounted(() => {
   try {
     socketStore.subscribe(`/user/queue/game`, processGameMessage)
     socketStore.subscribe(`/user/queue/plan`, processMessage)
     socketStore.subscribe(`/topic/plan/${planId.value}`, processJoinMessage)
     socketStore.subscribe(`/topic/plan/spot/${planId.value}`, processSpotIdMessage)
+    socketStore.subscribe(`/topic/plan/bye/${planId.value}`, processByeMessage)
     socketStore.subscribe(`/user/queue/destination`, processDestinationId)
 
     socketStore.send(`/app/plan/join/${planId.value}`, authStore.accessToken || '', null)
@@ -188,6 +204,35 @@ onMounted(() => {
     window.location.href = '/trip/lobby'
   }
 })
+const scheduleStore = useScheduleStore()
+
+const saveSchedule = async () => {
+  const finalSchedule: ScheduleDetail | null = scheduleStore.schedule
+
+  if (!finalSchedule) {
+    console.log('왜 없지')
+  }
+
+  const scheduleItems = finalSchedule?.scheduleDetailItems.map((item) => {
+    return {
+      day: item.day,
+      sequence: item.order,
+      spotId: item.spotInfo.spotId,
+    }
+  })
+
+  const scheduleRequest = {
+    destinationId: destinationId.value,
+    title: finalSchedule?.title,
+    startDate: finalSchedule?.startDate,
+    endDate: finalSchedule?.endDate,
+    scheduleItems: scheduleItems,
+  }
+
+  await authApi.post('/trip/schedule', scheduleRequest)
+
+  socketStore.send(`/app/plan/bye/${planId.value}`, authStore.accessToken || '', null)
+}
 
 const goNext = () => {
   socketStore.send(`/app/plan/move/${planId.value}`, authStore.accessToken || '', true)
@@ -303,6 +348,18 @@ const handleSpotDetail = (spot: any) => {
 
 .next-button {
   order: 3;
+}
+
+.complete-button {
+  order: 3;
+  padding: 8px 16px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background-color: green;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 .body-container {

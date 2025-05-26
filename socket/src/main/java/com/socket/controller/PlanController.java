@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 
 import com.socket.model.dto.plan.StartPlanDto;
 import com.socket.model.dto.plan.PlanProgress;
+import com.socket.model.dto.plan.ScheduleDetail;
 import com.socket.model.dto.plan.SpotDto;
 import com.socket.model.dto.plan.SpotResponse;
 import com.socket.model.dto.plan.StartPlanRequest;
@@ -142,6 +143,10 @@ public class PlanController {
             }
 
             System.out.println("이동 위치 :" + planStore.getPlanProgress(planId));
+
+            if(planStore.getPlanProgress(planId).equals(PlanProgress.REVIEW_AND_EDIT)){
+                planStore.initFinalScheduleDetail(planId, userId);
+            }
 
             // 이동 성공 ( 다 같이 이동 )
             messagingTemplate.convertAndSend(
@@ -299,6 +304,51 @@ public class PlanController {
             messagingTemplate.convertAndSend(
                 "/topic/plan/spot-operation/" + planId,
                 new UpdateSpotInDateResponse(request.getType() , request.getDate(), request.getSpotId())
+            );
+        }
+    }
+
+    @MessageMapping("/plan/final/get/**")
+    public void getFinalScheduleRequest(StompHeaderAccessor accessor){
+        String destination = accessor.getDestination();
+
+        if (destination != null && destination.startsWith("/app/plan/final/get/")) {
+            String planId = destination.substring("/app/plan/final/get/".length());
+            
+
+            messagingTemplate.convertAndSend(
+                "/topic/plan/final/" + planId,
+                planStore.getFinalScheduleDetail(planId)
+            );
+        }
+    }
+
+    @MessageMapping("/plan/final/update/**")
+    public void updateFinalScheduleRequest(StompHeaderAccessor accessor, ScheduleDetail scheduleDetail){
+        String destination = accessor.getDestination();
+
+        if (destination != null && destination.startsWith("/app/plan/final/update/")) {
+            String planId = destination.substring("/app/plan/final/update/".length());
+            
+            planStore.updateFinalScheduleDetail(planId, scheduleDetail);
+
+            messagingTemplate.convertAndSend(
+                "/topic/plan/final/" + planId,
+                planStore.getFinalScheduleDetail(planId)
+            );
+        }
+    }
+
+    @MessageMapping("/plan/bye/**")
+    public void byebye(StompHeaderAccessor accessor){
+        String destination = accessor.getDestination();
+
+        if (destination != null && destination.startsWith("/app/plan/bye/")) {
+            String planId = destination.substring("/app/plan/bye/".length());
+
+            messagingTemplate.convertAndSend(
+                "/topic/plan/bye/" + planId,
+                "생성 완료"
             );
         }
     }
