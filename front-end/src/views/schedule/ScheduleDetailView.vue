@@ -296,11 +296,11 @@ onMounted(() => {
     <div v-if="schedule" class="schedule-detail">
       <div class="title-container">
         <div class="title-left">
-          <h1 v-if="!isEditMode" class="title">{{ schedule.title }}</h1>
           <input
-            v-else
             v-model="editedTitle"
             class="title-input"
+            :disabled="!isEditMode"
+            :class="{ 'edit-mode': isEditMode }"
             placeholder="일정 제목을 입력하세요"
           />
         </div>
@@ -705,11 +705,34 @@ onMounted(() => {
   font-size: 2rem;
   font-weight: 800;
   color: #1a1a1a;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
+  border: 1px solid transparent;
+  background: transparent;
   padding: 4px 8px;
   width: 100%;
   max-width: 400px;
+  cursor: default;
+  box-sizing: border-box;
+  height: 44.8px;
+  line-height: 1;
+}
+
+.title-input:disabled {
+  cursor: default;
+  -webkit-text-fill-color: #1a1a1a;
+  opacity: 1;
+}
+
+.title-input.edit-mode {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  background: white;
+  cursor: text;
+}
+
+.title-input.edit-mode:focus {
+  border-color: #40a9ff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 
 .date-inputs {

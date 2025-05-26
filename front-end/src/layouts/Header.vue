@@ -121,6 +121,7 @@ watch(
       <div class="drawer-menu-item" @click="handleMenuClick('/spot')">관광지 둘러보기</div>
       <div class="drawer-menu-item" @click="handleMenuClick('/board')">게시판</div>
       <div class="drawer-menu-item" @click="handleMenuClick('/mypage')">마이페이지</div>
+      <div class="drawer-menu-item" @click="handleMenuClick('/game')">게임</div>
       <div class="drawer-menu-item logout" @click="handleLogout">로그아웃</div>
     </div>
   </a-drawer>

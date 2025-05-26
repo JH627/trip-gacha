@@ -84,6 +84,10 @@
 
       <button @click="resetGame" class="restart-button">다시 하기</button>
     </div>
+
+    <button class="back-button" @click="$emit('goBackToSelect')">
+      <i class="fas fa-arrow-left"></i> 게임 선택
+    </button>
   </div>
 </template>
 
@@ -494,5 +498,36 @@ export default defineComponent({
   100% {
     transform: rotateY(var(--final-rotation)) translateY(0);
   }
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateX(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.back-button i {
+  font-size: 1.1rem;
+  color: #d97706;
 }
 </style>

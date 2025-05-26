@@ -62,6 +62,10 @@
         </div>
       </div>
     </div>
+
+    <button class="back-button" @click="$emit('goBackToSelect')">
+      <i class="fas fa-arrow-left"></i> 게임 선택
+    </button>
   </div>
 </template>
 
@@ -309,16 +313,33 @@ const close = () => {
 }
 
 .back-button {
-  flex: 1;
-  padding: 0.75rem;
-  background-color: #e5e7eb;
-  color: #111827;
-  border-radius: 0.5rem;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
 }
 
 .back-button:hover {
-  background-color: #d1d5db;
+  background: rgba(255, 255, 255, 1);
+  transform: translateX(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.back-button i {
+  font-size: 1.1rem;
+  color: #22c55e;
 }
 </style>
