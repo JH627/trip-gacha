@@ -9,11 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PlanDto {
-    private String planId;
-    private String ownerId;
-    private Integer destinationId;
+public class PlanDate {
     private String startDate;
     private String endDate;
-    private PlanProgress planProgress;
 }
