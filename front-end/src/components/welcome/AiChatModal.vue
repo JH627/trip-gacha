@@ -124,6 +124,7 @@ const sendMessage = async () => {
   align-self: flex-start;
   background-color: white;
   border: 1px solid #d9d9d9;
+  white-space: pre-line;
 }
 
 /* 채팅 입력 컨테이너 */

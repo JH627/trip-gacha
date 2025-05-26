@@ -28,6 +28,7 @@ public class ChatClientFactory {
             .defaultSystem("""
                 당신은 여행지를 추천해주는 인공지능입니다.
                 말을 할 때는 {language}로 하고 {character} 성격으로 대답해주세요.
+                줄바꿈할때는 \n을 넣어줘
                 """)
             .defaultAdvisors(
                 new SimpleLoggerAdvisor(Ordered.LOWEST_PRECEDENCE - 1),
