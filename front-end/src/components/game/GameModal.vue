@@ -9,8 +9,9 @@
     <component
       :is="props.isSocket ? socketGameComponent : currentGameComponent"
       @selectGame="selectGame"
-      @goBackToSelect="goBack"
+      @close="handleClose"
       :gameType="selectedGame"
+      :is-owner="isOwner"
       @players-select-complete="playerSelectComplete"
     />
   </ReuseableModal>
@@ -27,6 +28,7 @@ import Crocodilia from '@/components/game/origin/Crocodilia.vue'
 import { Game } from './Game'
 import SelectPlayers from './socket/SelectPlayers.vue'
 import SocketFastClick from './socket/SocketFastClick.vue'
+import SocketCrocodilia from './socket/SocketCrocodilia.vue'
 
 const props = defineProps<{
   isOpen: boolean
@@ -39,6 +41,7 @@ const emit = defineEmits<{
 }>()
 
 const selectedGame = ref<string | null>(null)
+const isOwner = ref(false)
 
 const currentGameComponent = computed(() => {
   if (!selectedGame.value) return GameSelection
@@ -60,8 +63,6 @@ const currentGameComponent = computed(() => {
 const hasSelectedPlayers = ref(false)
 
 const socketGameComponent = computed(() => {
-  console.log('glglg : ' + props.invitedGameType)
-
   if (props.invitedGameType != Game.DEFAULT) {
     hasSelectedPlayers.value = true
     selectGame(props.invitedGameType)
@@ -79,7 +80,7 @@ const socketGameComponent = computed(() => {
     case Game.COIN_TOSS:
       return CoinToss
     case Game.CROCODILIA:
-      return Crocodilia
+      return SocketCrocodilia
     default:
       return GameSelection
   }
@@ -102,5 +103,6 @@ const handleClose = () => {
 
 const playerSelectComplete = () => {
   hasSelectedPlayers.value = true
+  isOwner.value = true
 }
 </script>

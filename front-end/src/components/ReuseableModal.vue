@@ -103,7 +103,7 @@ const modalHeight = computed(() => {
 
 .modal-content {
   flex: 1;
-  overflow: hidden; /* 전체 콘텐츠가 모달 안에서 잘리지 않도록 */
+  overflow: scroll; /* 전체 콘텐츠가 모달 안에서 잘리지 않도록 */
   display: flex;
   flex-direction: column;
 }

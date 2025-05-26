@@ -8,4 +8,8 @@ export enum Game {
 
 export enum GameProgress {
   USER_LIST = 'USER_LIST',
+  INIT_SCREEN = 'INIT_SCREEN',
+  WAIT = 'WAIT',
+  PLAY_GAME = 'PLAY_GAME',
+  RESULT = 'RESULT',
 }
