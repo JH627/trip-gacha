@@ -43,6 +43,7 @@ onMounted(async () => {
   margin: 0 auto;
   padding: 32px 0px;
   min-height: calc(100vh - 64px);
+  background-color: #f5f5f5;
 }
 
 .title {
