@@ -28,6 +28,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { message } from 'ant-design-vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -41,7 +42,7 @@ const handleLogin = async () => {
       email: email.value,
       password: password.value,
     })
-    
+
     // 로그인 성공 후 리다이렉트 처리
     const redirectPath = router.currentRoute.value.query.redirect as string
     if (redirectPath) {
@@ -50,8 +51,8 @@ const handleLogin = async () => {
       router.push('/')
     }
   } catch (error) {
+    message.error('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.')
     console.error('로그인 실패:', error)
-    alert('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.')
   }
 }
 </script>

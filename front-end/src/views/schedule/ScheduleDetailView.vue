@@ -81,6 +81,7 @@ const fetchScheduleData = async () => {
       selectedDay.value = schedule.value.scheduleDetailItems[0].day
     }
   } catch (error) {
+    message.error('공유되지 않은 일정입니다')
     console.error('일정 정보를 불러오는데 실패했습니다:', error)
   }
 }
