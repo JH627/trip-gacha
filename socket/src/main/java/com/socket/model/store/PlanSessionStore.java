@@ -1,16 +1,20 @@
 package com.socket.model.store;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
 
+import com.socket.model.dto.plan.PlanDate;
 import com.socket.model.dto.plan.PlanDto;
 import com.socket.model.dto.plan.PlanProgress;
 import com.socket.model.dto.plan.SpotDto;
+import com.socket.model.dto.plan.UpdateSpotInDateRequest;
 import com.socket.model.dto.room.SocketRoom;
 import com.socket.model.dto.room.SocketRoomUser;
 
@@ -19,7 +23,7 @@ public class PlanSessionStore {
     private final Map<String, PlanDto> planMap = new ConcurrentHashMap<>();
     private final Map<String, Map<String, SocketRoomUser>> planningUserMapMap = new ConcurrentHashMap<>();
     private final Map<String, Map<Integer, SpotDto>> selectedSpotMapMap = new ConcurrentHashMap<>();
-
+    private final Map<String, Map<String, List<SpotDto>>> decidePlanPerDayMapMap =  new ConcurrentHashMap<>();
     public void addPlan(String planId, String ownerId, SocketRoom roomInfo) {
         PlanDto plan = PlanDto.builder()
                                 .planId(planId)
@@ -40,10 +44,30 @@ public class PlanSessionStore {
         for(SocketRoomUser roomUser : roomInfo.getUserList()){
             joinPlan(planId, roomUser);
         }
+
+        if(!decidePlanPerDayMapMap.containsKey(planId)){
+            Map<String, List<SpotDto>> decidePlanPerDayMap = new ConcurrentHashMap<>();
+
+            LocalDate startDate = LocalDate.parse(plan.getStartDate());
+            LocalDate endDate = LocalDate.parse(plan.getEndDate());
+
+            while(!startDate.isAfter(endDate)){
+                decidePlanPerDayMap.put(startDate.toString(), new LinkedList<>());
+                startDate = startDate.plusDays(1);
+            }
+
+            System.out.println(decidePlanPerDayMap);
+
+            decidePlanPerDayMapMap.put(planId, decidePlanPerDayMap);
+        }
     }
 
     public PlanProgress getPlanProgress(String planId){
         return planMap.get(planId).getPlanProgress();
+    }
+
+    public PlanDate getPlanDate(String planId){
+        return new PlanDate(planMap.get(planId).getStartDate(), planMap.get(planId).getEndDate());
     }
 
     public boolean goNextProgress(String planId){
@@ -134,5 +158,25 @@ public class PlanSessionStore {
             return Collections.emptyList();
         }
         return new ArrayList<>(spotMap.values());
+    }
+
+    public void decideSpotInDateOnPlan(String planId, UpdateSpotInDateRequest request){
+        SpotDto updateSpot = selectedSpotMapMap.get(planId).get(request.getSpotId());
+        decidePlanPerDayMapMap.get(planId).get(request.getDate()).add(updateSpot);
+    }
+
+    public Map<String, List<SpotDto>> getSchedule (String planId){
+        return decidePlanPerDayMapMap.get(planId);
+    }
+
+    public void addSpotToSchedule(String planId, String date, Integer spotId){
+        System.out.println(planId + " " + spotId + " " + date);
+        SpotDto updateSpot = selectedSpotMapMap.get(planId).get(spotId);
+        decidePlanPerDayMapMap.get(planId).get(date).add(updateSpot);
+    }
+    // 스케줄 추가 ,삭제 만들기
+    public void removeSpotToSchedule(String planId, String date, Integer spotId){
+        List<SpotDto> spots = decidePlanPerDayMapMap.get(planId).get(date);
+        spots.removeIf(s -> s.getSpotId() == spotId);
     }
 }

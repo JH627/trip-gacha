@@ -15,6 +15,8 @@ import com.socket.model.dto.plan.PlanProgress;
 import com.socket.model.dto.plan.SpotDto;
 import com.socket.model.dto.plan.SpotResponse;
 import com.socket.model.dto.plan.StartPlanRequest;
+import com.socket.model.dto.plan.UpdateSpotInDateRequest;
+import com.socket.model.dto.plan.UpdateSpotInDateResponse;
 import com.socket.model.dto.room.RoomEventType;
 import com.socket.model.dto.room.RoomResponse;
 import com.socket.model.dto.room.SocketRoom;
@@ -36,13 +38,17 @@ public class PlanController {
         String userId = accessor.getUser().getName();
         String roomId = request.getRoomId();
 
+        System.out.println("생성 요청 : " + roomId + " 사용자 : " + userId);
+
         if(roomId==null || roomId.isBlank() || roomStore.get(roomId)==null){
             // 방이 없습니다.
+            System.out.println("No Room");
             return;
         }
 
         if(!roomStore.isRoomOwner(roomId, userId)){
             // 당신은 owner가 아닙니다
+            System.out.println("You Are Not Owner");
             return;
         }
 
@@ -254,6 +260,45 @@ public class PlanController {
             messagingTemplate.convertAndSend(
                 "/topic/plan/cart/" + planId,
                 cart
+            );
+        }
+    }
+
+    @MessageMapping("/plan/get-schedule/**")
+    public void getSchedule(StompHeaderAccessor accessor){
+        String destination = accessor.getDestination();
+
+        if (destination != null && destination.startsWith("/app/plan/get-schedule")) {
+            String planId = destination.substring("/app/plan/get-schedule/".length());
+            System.out.println(planId);
+
+            messagingTemplate.convertAndSend(
+                "/topic/plan/schedule/" + planId,
+                planStore.getSchedule(planId)
+            );
+        }
+    }
+
+    @MessageMapping("/plan/schedule/update/**")
+    public void updateSchedule(StompHeaderAccessor accessor, UpdateSpotInDateRequest request){
+        String destination = accessor.getDestination();
+
+        if (destination != null && destination.startsWith("/app/plan/schedule/update/")) {
+            String planId = destination.substring("/app/plan/schedule/update/".length());
+            System.out.println("req :" + request);
+
+            switch(request.getType()){
+                case "add" :
+                    planStore.addSpotToSchedule(planId, request.getDate(), request.getSpotId());
+                    break;
+                case "remove" :
+                    planStore.removeSpotToSchedule(planId, request.getDate(), request.getSpotId());
+                    break;
+            }
+
+            messagingTemplate.convertAndSend(
+                "/topic/plan/spot-operation/" + planId,
+                new UpdateSpotInDateResponse(request.getType() , request.getDate(), request.getSpotId())
             );
         }
     }
