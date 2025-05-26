@@ -18,9 +18,7 @@ import com.socket.model.dto.game.GameUserInfo;
 import com.socket.model.dto.game.InviteRequest;
 import com.socket.model.dto.room.SocketRoomUser;
 import com.socket.model.store.FastClickStore;
-import com.socket.model.store.LobbySessionStore;
 import com.socket.model.store.PlanSessionStore;
-import com.socket.model.store.RoomSessionStore;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +28,17 @@ public class GameController {
     private final SimpMessagingTemplate messagingTemplate;
     private final FastClickStore fastClickStore;
     private final PlanSessionStore planStore;
+
+    @MessageMapping("/game/get-user-id")
+    public void getRequesterId(StompHeaderAccessor accessor){
+        String requesterId = accessor.getUser().getName();
+
+        messagingTemplate.convertAndSendToUser(
+            requesterId,
+            "/queue/game/userId", // 유니캐스트용 endpoint
+            requesterId
+        );
+    }
 
     @MessageMapping("/game/invite")
     public void invitePlayers(StompHeaderAccessor accessor, InviteRequest request){
@@ -46,11 +55,6 @@ public class GameController {
 
         List<SocketRoomUser> planUserList = planStore.getPlanUserList(request.getPlanId());
 
-        System.out.println("계획 유저어엉ㅅ");
-        for(SocketRoomUser u : planUserList){
-            System.out.println(u);
-        }
-
         List<SocketRoomUser> filteredUsers = planUserList.stream()
                                                 .filter(user -> userIds.contains(user.getUserId()) || user.getUserId().equals(requesterId))
                                                 .collect(Collectors.toList());
@@ -58,10 +62,9 @@ public class GameController {
         // 게임 Store 만들고, 새로운 게임방 추가 (결과 저장할 곳)
         switch (request.getGameType()) {
             case FAST_CLICK:
-                System.out.println("빨리 클릭 생성 : " + request.getPlanId());
                 fastClickStore.initFastClick(request.getPlanId(), filteredUsers);
                 break;
-            case ROULETTE:
+            case CROCODILIA:
                 // ...
                 break;
         }

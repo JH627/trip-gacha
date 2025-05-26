@@ -28,6 +28,7 @@ import Crocodilia from '@/components/game/origin/Crocodilia.vue'
 import { Game } from './Game'
 import SelectPlayers from './socket/SelectPlayers.vue'
 import SocketFastClick from './socket/SocketFastClick.vue'
+import SocketCrocodilia from './socket/SocketCrocodilia.vue'
 
 const props = defineProps<{
   isOpen: boolean
@@ -79,7 +80,7 @@ const socketGameComponent = computed(() => {
     case Game.COIN_TOSS:
       return CoinToss
     case Game.CROCODILIA:
-      return Crocodilia
+      return SocketCrocodilia
     default:
       return GameSelection
   }
