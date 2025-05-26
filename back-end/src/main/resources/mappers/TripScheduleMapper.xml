@@ -65,12 +65,12 @@
     </select>
 
     <select id="isOwner" resultType="boolean">
-        SELECT CASE 
-            WHEN user_id = #{userId} THEN true
-            ELSE false
-        END
-        FROM trip_schedule
-        WHERE trip_route_id = #{scheduleId}
+        SELECT EXISTS (
+            SELECT 1
+            FROM trip_schedule
+            WHERE trip_route_id = #{scheduleId}
+            AND user_id = #{userId}
+        )
     </select>
 
     <update id="toggleShareStatus">
@@ -78,6 +78,21 @@
         SET is_shared = NOT is_shared
         WHERE trip_route_id = #{scheduleId}
     </update>
+
+    <update id="updateSchedule">
+        UPDATE trip_schedule
+        SET 
+            title = #{form.title},
+            start_date = #{form.startDate},
+            end_date = #{form.endDate}
+        WHERE trip_route_id = #{form.tripScheduleId}
+        AND user_id = #{userId}
+    </update>
+
+    <delete id="deleteScheduleItems">
+        DELETE FROM trip_schedule_items
+        WHERE trip_schedule_id = #{scheduleId}
+    </delete>
 
     <select id="selectScheduleByUserId" resultMap="scheduleDetailMap">
         SELECT 

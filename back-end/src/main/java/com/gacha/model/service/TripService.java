@@ -9,18 +9,18 @@ import com.gacha.model.dto.trip.DestinationInfo;
 import com.gacha.model.dto.trip.ScheduleDetail;
 import com.gacha.model.dto.trip.ScheduleInfo;
 import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
-import com.gacha.model.dto.trip.SpotInfo;
+import com.gacha.model.dto.trip.ScheduleUpdateFormRequest;
 import com.gacha.model.dto.trip.SpotRegistFormRequest;
 import com.gacha.model.dto.trip.SpotListResponse;
 
 public interface TripService {
-	
+
 	/**
 	 * 관광지를 찜 목록에 추가
 	 * 이미 찜 목록에 있는 경우 찜을 해제
 	 * 
 	 * @param userId 사용자ID
-	 * @param dto 찜 상태를 변경할 관광지ID
+	 * @param dto    찜 상태를 변경할 관광지ID
 	 */
 	void toggleSpotBookmark(Integer userId, BookmarkSpotRequest dto);
 
@@ -35,34 +35,33 @@ public interface TripService {
 	/**
 	 * 검색 키워드에 따른 관광지 리스트 반환
 	 * 
-	 * @param userId 사용자ID 
+	 * @param userId        사용자ID
 	 * @param destinationId 목적지ID
-	 * @param keyword 검색키워드
-	 * @param category 카테고리
-	 * @param sort 정렬기준
-	 * @param page 페이지
+	 * @param keyword       검색키워드
+	 * @param category      카테고리
+	 * @param sort          정렬기준
+	 * @param page          페이지
 	 * @return 관광지 리스트와 전체 개수를 포함한 응답
 	 */
-	SpotListResponse getSpotList(Integer userId, Integer destinationId, String keyword, 
+	SpotListResponse getSpotList(Integer userId, Integer destinationId, String keyword,
 			SpotCategory category, SpotSearchCondition sort, Integer page);
-
 
 	/**
 	 * 장소 직접 등록
 	 * 
 	 * @param userId 사용자ID
-	 * @param form 장소정보(목적지ID, 카테고리, 이름, 주소, 설명, 이미지 파일)
+	 * @param form   장소정보(목적지ID, 카테고리, 이름, 주소, 설명, 이미지 파일)
 	 */
 	void registSpot(Integer userId, SpotRegistFormRequest form);
-	
+
 	/**
 	 * 여행 일정 등록
 	 * 
 	 * @param userId 사용자ID
-	 * @param form 여행 일정 정보(목적지ID, 제목, 시작일, 종료일, 일정 아이템들)
+	 * @param form   여행 일정 정보(목적지ID, 제목, 시작일, 종료일, 일정 아이템들)
 	 */
 	void registSchedule(Integer userId, ScheduleRegistFormRequest form);
-	
+
 	/**
 	 * 여행 일정 리스트 조회
 	 * 
@@ -71,20 +70,29 @@ public interface TripService {
 	 */
 	List<ScheduleInfo> getScheduleList(Integer userId);
 
-
 	/**
 	 * 여행 일정 상세 조회
 	 * 
-	 * @param userId 사용자ID
+	 * @param userId     사용자ID
 	 * @param scheduleId 일정ID
 	 * @return 여행 일정 상세(일정이름, 시작일, 종료일, 일정 생성일, N일차(관광지 정보, 순서))
 	 */
 	ScheduleDetail getScheduleDetail(Integer userId, Integer scheduleId);
-	
+
 	/**
 	 * 여행 일정 공유 상태를 토글한다.
-	 * @param userId 사용자 ID
+	 * 
+	 * @param userId     사용자 ID
 	 * @param scheduleId 일정 ID
 	 */
 	void toggleScheduleShare(Integer userId, Integer scheduleId);
+
+	/**
+	 * 여행 일정을 업데이트한다.
+	 * 
+	 * @param userId 사용자ID
+	 * @param form   일정 정보(일정 ID, 일정 제목, 방문할 관광지들)
+	 */
+	void updateSchedule(Integer userId, ScheduleUpdateFormRequest form);
+
 }
