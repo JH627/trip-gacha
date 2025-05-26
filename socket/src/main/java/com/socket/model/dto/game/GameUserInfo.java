@@ -1,20 +1,19 @@
 package com.socket.model.dto.game;
 
-import java.util.List;
-
-import com.socket.model.dto.room.SocketRoomUser;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class InviteRequest {
-    private String planId;
-    private List<String> userIds;
-    private Game gameType;
+@ToString
+public class GameUserInfo {
+    private String userId;
+    private String nickname;
+    private String img;
+    private Integer clickTime;
 }
