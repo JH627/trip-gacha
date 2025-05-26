@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { MenuOutlined } from '@ant-design/icons-vue'
+import { MenuOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import type { ScheduleDetailItem } from '@/types/trip'
 import defaultImg from '@/assets/no_img.png'
 import draggable from 'vuedraggable'
@@ -22,6 +22,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:spots', spots: ScheduleDetailItem[]): void
   (e: 'moveSpot', spotId: number, targetDay: number): void
+  (e: 'removeSpot', spotId: number): void
 }>()
 
 const localSpots = ref<ScheduleDetailItem[]>([])
@@ -46,6 +47,10 @@ const handleDragEnd = () => {
 
 const handleDayChange = (spotId: number, targetDay: number) => {
   emit('moveSpot', spotId, targetDay)
+}
+
+const handleRemoveSpot = (spotId: number) => {
+  emit('removeSpot', spotId)
 }
 </script>
 
@@ -87,6 +92,9 @@ const handleDayChange = (spotId: number, targetDay: number) => {
             >
               <option v-for="day in availableDays" :key="day" :value="day">{{ day }}일차</option>
             </select>
+            <button class="remove-btn" @click="handleRemoveSpot(spot.spotInfo.spotId)">
+              <DeleteOutlined />
+            </button>
           </div>
         </div>
       </template>
@@ -203,5 +211,21 @@ const handleDayChange = (spotId: number, targetDay: number) => {
 
 .spot-actions select:hover {
   border-color: #40a9ff;
+}
+
+.remove-btn {
+  padding: 4px 8px;
+  border: 1px solid #ff4d4f;
+  border-radius: 4px;
+  background-color: white;
+  color: #ff4d4f;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-btn:hover {
+  background-color: #fff1f0;
 }
 </style>

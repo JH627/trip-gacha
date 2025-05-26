@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { authApi } from '@/api/axios'
-import type { ScheduleDetail } from '@/types/trip'
+import type { ScheduleDetail, SpotInfo } from '@/types/trip'
 import { onMounted, ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { Tabs, Modal, message } from 'ant-design-vue'
 import ScheduleMap from '@/components/schedule/ScheduleMap.vue'
 import ScheduleSpotList from '@/components/schedule/ScheduleSpotList.vue'
-import { EditOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue'
+import SpotSearchModal from '@/components/schedule/SpotSearchModal.vue'
+import { EditOutlined, CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons-vue'
 
 // 컴포넌트 상태 관리
 const route = useRoute()
@@ -19,6 +20,7 @@ const isSaving = ref(false)
 const editedTitle = ref('')
 const editedStartDate = ref('')
 const editedEndDate = ref('')
+const isSpotSearchModalVisible = ref(false)
 
 // 여행 일정 날짜 계산
 const availableDays = computed(() => {
@@ -70,9 +72,27 @@ const toggleShare = async () => {
   }
 }
 
+// 일정 데이터 가져오기
+const fetchScheduleData = async () => {
+  try {
+    const response = await authApi.get(`/trip/schedule/${scheduleId}`)
+    schedule.value = response.data.result
+    if (schedule.value && schedule.value.scheduleDetailItems.length > 0) {
+      selectedDay.value = schedule.value.scheduleDetailItems[0].day
+    }
+  } catch (error) {
+    console.error('일정 정보를 불러오는데 실패했습니다:', error)
+  }
+}
+
 // 수정 모드 토글
 const toggleEditMode = () => {
-  isEditMode.value = !isEditMode.value
+  if (!isEditMode.value) {
+    isEditMode.value = true
+  } else {
+    isEditMode.value = false
+    fetchScheduleData() // 수정 모드 종료 시 데이터 새로고침
+  }
 }
 
 // 모달 관련 메서드
@@ -220,17 +240,53 @@ const saveSchedule = async () => {
   }
 }
 
+// 여행지 제거 처리
+const handleRemoveSpot = (spotId: number) => {
+  if (!schedule.value) return
+
+  // 로컬 상태에서 해당 여행지 제거
+  schedule.value.scheduleDetailItems = schedule.value.scheduleDetailItems.filter(
+    (item) => item.spotInfo.spotId !== spotId,
+  )
+
+  // 순서 재정렬
+  const dayGroups = schedule.value.scheduleDetailItems.reduce(
+    (acc, spot) => {
+      if (!acc[spot.day]) {
+        acc[spot.day] = []
+      }
+      acc[spot.day].push(spot)
+      return acc
+    },
+    {} as Record<number, typeof schedule.value.scheduleDetailItems>,
+  )
+
+  Object.entries(dayGroups).forEach(([day, spots]) => {
+    spots.forEach((spot, index) => {
+      spot.order = index + 1
+    })
+  })
+}
+
+// 여행지 추가 처리
+const handleAddSpot = (spot: SpotInfo, day: number) => {
+  if (!schedule.value) return
+
+  // 해당 날짜의 마지막 순서 찾기
+  const daySpots = schedule.value.scheduleDetailItems.filter((item) => item.day === day)
+  const lastOrder = daySpots.length > 0 ? Math.max(...daySpots.map((item) => item.order)) : 0
+
+  // 새로운 여행지 추가
+  schedule.value.scheduleDetailItems.push({
+    day,
+    spotInfo: spot,
+    order: lastOrder + 1,
+  })
+}
+
 // 일정 정보 불러오기
-onMounted(async () => {
-  try {
-    const response = await authApi.get(`/trip/schedule/${scheduleId}`)
-    schedule.value = response.data.result
-    if (schedule.value && schedule.value.scheduleDetailItems.length > 0) {
-      selectedDay.value = schedule.value.scheduleDetailItems[0].day
-    }
-  } catch (error) {
-    console.error('일정 정보를 불러오는데 실패했습니다:', error)
-  }
+onMounted(() => {
+  fetchScheduleData()
 })
 </script>
 
@@ -292,6 +348,14 @@ onMounted(async () => {
             <h3>방문 장소</h3>
             <div class="title-actions">
               <button
+                v-if="isEditMode"
+                class="add-spot-button"
+                @click="isSpotSearchModalVisible = true"
+              >
+                <PlusOutlined />
+                장소 추가
+              </button>
+              <button
                 v-if="schedule?.mine"
                 class="edit-button"
                 :class="{ editing: isEditMode }"
@@ -319,6 +383,7 @@ onMounted(async () => {
             :current-day="selectedDay"
             :available-days="availableDays"
             @move-spot="handleMoveSpot"
+            @remove-spot="handleRemoveSpot"
           />
         </div>
         <!-- 지도 -->
@@ -347,6 +412,13 @@ onMounted(async () => {
         <ScheduleMap :coordinates="selectedDayCoordinates" />
       </div>
     </Modal>
+
+    <!-- 여행지 검색 모달 -->
+    <SpotSearchModal
+      v-model:visible="isSpotSearchModalVisible"
+      :current-day="selectedDay"
+      @add-spot="handleAddSpot"
+    />
   </div>
 </template>
 
@@ -364,6 +436,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -650,5 +723,23 @@ onMounted(async () => {
   padding: 4px 8px;
   font-size: 0.9rem;
   color: #666;
+}
+
+.add-spot-button {
+  padding: 6px 12px;
+  border: 1px solid #52c41a;
+  border-radius: 4px;
+  background-color: white;
+  color: #52c41a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.add-spot-button:hover {
+  background-color: #52c41a;
+  color: white;
 }
 </style>
