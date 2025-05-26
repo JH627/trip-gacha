@@ -164,7 +164,7 @@ watch([search, selectedCategory, selectedDestination, sort], () => {
           <select v-model="sort">
             <option value="STARS">평점순</option>
             <option value="NAME">이름순</option>
-            <option value="LIKE">좋아요순</option>
+            <option value="LIKE">찜 많은순</option>
           </select>
         </div>
       </div>
