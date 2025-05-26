@@ -82,7 +82,13 @@ const filteredSpots = computed(() => spots.value)
 const toggleWish = async (spotId: number) => {
   try {
     await authApi.post('/trip/bookmark', { spotId })
-    await fetchSpots() // 목록 새로고침
+    // 전체 목록 새로고침 대신 해당 스팟의 상태만 업데이트
+    const spotIndex = spots.value.findIndex((spot) => spot.spotId === spotId)
+    if (spotIndex !== -1) {
+      const spot = spots.value[spotIndex]
+      spot.marked = !spot.marked
+      spot.likes = spot.marked ? (spot.likes || 0) + 1 : (spot.likes || 1) - 1
+    }
   } catch (error) {
     console.error('찜하기 실패:', error)
   }
@@ -158,6 +164,7 @@ watch([search, selectedCategory, selectedDestination, sort], () => {
           <select v-model="sort">
             <option value="STARS">평점순</option>
             <option value="NAME">이름순</option>
+            <option value="LIKE">좋아요순</option>
           </select>
         </div>
       </div>
