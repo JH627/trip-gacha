@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.socket.model.dto.plan.PlanDto;
 import com.socket.model.dto.plan.PlanProgress;
 import com.socket.model.dto.plan.SpotDto;
+import com.socket.model.dto.room.SocketRoom;
 import com.socket.model.dto.room.SocketRoomUser;
 
 @Component
@@ -19,12 +20,14 @@ public class PlanSessionStore {
     private final Map<String, Map<String, SocketRoomUser>> planningUserMapMap = new ConcurrentHashMap<>();
     private final Map<String, Map<Integer, SpotDto>> selectedSpotMapMap = new ConcurrentHashMap<>();
 
-    public void addPlan(String planId, String ownerId, Integer destinationId, List<SocketRoomUser> roomUsers) {
+    public void addPlan(String planId, String ownerId, SocketRoom roomInfo) {
         PlanDto plan = PlanDto.builder()
                                 .planId(planId)
                                 .ownerId(ownerId)
-                                .destinationId(destinationId)
+                                .destinationId(roomInfo.getDestination())
                                 .planProgress(PlanProgress.SELECT_ACCOMMODATION)
+                                .startDate(roomInfo.getStartDate())
+                                .endDate(roomInfo.getEndDate())
                                 .build();
         
         planMap.put(planId, plan);
@@ -34,7 +37,7 @@ public class PlanSessionStore {
             selectedSpotMapMap.put(planId, selectedSpotMap);
         }
 
-        for(SocketRoomUser roomUser : roomUsers){
+        for(SocketRoomUser roomUser : roomInfo.getUserList()){
             joinPlan(planId, roomUser);
         }
     }

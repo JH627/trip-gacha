@@ -53,7 +53,7 @@ public class PlanController {
         String planId = roomId;
         SocketRoom room = roomStore.get(roomId);
 
-        planStore.addPlan(planId, userId, room.getDestination(), room.getUserList());
+        planStore.addPlan(planId, userId, room);
 
         StartPlanDto startPlan = new StartPlanDto(planId, PlanProgress.SELECT_ACCOMMODATION);
 
