@@ -19,6 +19,7 @@ import com.gacha.model.dto.trip.DestinationInfo;
 import com.gacha.model.dto.trip.ScheduleDetail;
 import com.gacha.model.dto.trip.ScheduleInfo;
 import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
+import com.gacha.model.dto.trip.ScheduleUpdateFormRequest;
 import com.gacha.model.dto.trip.SpotInfo;
 import com.gacha.model.dto.trip.SpotRegistFormRequest;
 import com.gacha.util.ImageUtil;
@@ -31,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class TripServiceImpl implements TripService {
-	
+
 	private final SpotDao spotDao;
 	private final DestinationDao destinationDao;
 	private final TripScheduleDao tripScheduleDao;
@@ -41,12 +42,11 @@ public class TripServiceImpl implements TripService {
 	@Transactional
 	public void toggleSpotBookmark(Integer userId, BookmarkSpotRequest dto) {
 		boolean isBookmarked = spotDao.isBookmarked(userId, dto.getSpotId());
-		
+
 		try {
 			if (isBookmarked) {
 				spotDao.deleteBookmark(userId, dto.getSpotId());
-			}
-			else {
+			} else {
 				if (!spotDao.existsSpot(dto.getSpotId())) {
 					throw new TripException(TripErrorCode.SPOT_NOT_FOUND);
 				}
@@ -65,12 +65,12 @@ public class TripServiceImpl implements TripService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public SpotListResponse getSpotList(Integer userId, Integer destinationId, String keyword, 
-			SpotCategory category, SpotSearchCondition sort, Integer page) {		
+	public SpotListResponse getSpotList(Integer userId, Integer destinationId, String keyword,
+			SpotCategory category, SpotSearchCondition sort, Integer page) {
 		List<SpotInfo> spots;
 		int pageSize = 12;
 		int offset = page * pageSize;
-		
+
 		// 찜 목록
 		if (category == SpotCategory.MARKED) {
 			spots = spotDao.selectBookmarkedSpots(userId, destinationId, keyword, sort.name(), offset, pageSize);
@@ -81,11 +81,12 @@ public class TripServiceImpl implements TripService {
 		}
 		// 카테고리별 목록
 		else {
-			spots = spotDao.selectByDesinationIdAndCategory(userId, destinationId, category.name(), keyword, sort.name(), offset, pageSize);
+			spots = spotDao.selectByDesinationIdAndCategory(userId, destinationId, category.name(), keyword, sort.name(),
+					offset, pageSize);
 		}
-		
+
 		int total = spotDao.getTotalCount();
-		
+
 		return SpotListResponse.builder()
 				.spots(spots)
 				.total(total)
@@ -98,25 +99,24 @@ public class TripServiceImpl implements TripService {
 		String imgUrl = "";
 		boolean uploaded = false;
 
-	    if (form.getImg() != null && !form.getImg().isEmpty()) {
-	        try {
+		if (form.getImg() != null && !form.getImg().isEmpty()) {
+			try {
 				imgUrl = imageUtil.upload(form.getImg(), ImageCategory.spot);
 				uploaded = true;
-	        } catch (Exception e) {
-	        	log.info("이미지 파일 S3 업로드 실패");
-	            throw e;
-	        }
-	    }
+			} catch (Exception e) {
+				log.info("이미지 파일 S3 업로드 실패");
+				throw e;
+			}
+		}
 
 		try {
 			spotDao.insertSpot(
-				form.getDestinationId(),
-				form.getName(),
-				form.getContent(),
-				imgUrl,
-				form.getAddress(),
-				form.getCategory().name()
-			);
+					form.getDestinationId(),
+					form.getName(),
+					form.getContent(),
+					imgUrl,
+					form.getAddress(),
+					form.getCategory().name());
 			uploaded = false;
 		} catch (DataIntegrityViolationException e) {
 			throw new TripException(TripErrorCode.DESTINATION_NOT_FOUND);
@@ -125,7 +125,7 @@ public class TripServiceImpl implements TripService {
 		} finally {
 			// DB에 관광지 정보 등록 실패 시 S3이미지 롤백
 			if (uploaded) {
-//				s3Service.deleteImage(imgUrl);  // 실패 시 이미지 삭제
+				// s3Service.deleteImage(imgUrl); // 실패 시 이미지 삭제
 			}
 		}
 	}
@@ -137,14 +137,14 @@ public class TripServiceImpl implements TripService {
 			// 일정 등록
 			tripScheduleDao.insertSchedule(userId, form);
 			Integer scheduleId = form.getTripScheduleId();
-			
+
 			// 일정 아이템 등록
 			tripScheduleDao.insertScheduleItems(form.getScheduleItems(), scheduleId);
 		} catch (DataIntegrityViolationException e) {
 			// 목적지 ID 예외
 			if (e.getMessage().contains("destination_id")) {
 				throw new TripException(TripErrorCode.DESTINATION_NOT_FOUND);
-			} 
+			}
 			// 관광지 ID 예외
 			else if (e.getMessage().contains("spot_id")) {
 				throw new TripException(TripErrorCode.SPOT_NOT_FOUND);
@@ -167,10 +167,10 @@ public class TripServiceImpl implements TripService {
 		if (!tripScheduleDao.checkIsShared(userId, scheduleId)) {
 			throw new TripException(TripErrorCode.SCHEDULE_FORBIDDEN);
 		}
-		
+
 		return tripScheduleDao.selectScheduleByUserId(userId, scheduleId);
 	}
-	
+
 	@Override
 	@Transactional
 	public void toggleScheduleShare(Integer userId, Integer scheduleId) {
@@ -178,8 +178,25 @@ public class TripServiceImpl implements TripService {
 		if (!tripScheduleDao.isOwner(userId, scheduleId)) {
 			throw new TripException(TripErrorCode.SCHEDULE_FORBIDDEN);
 		}
-		
+
 		// 공유 상태 토글
 		tripScheduleDao.toggleShareStatus(scheduleId);
 	}
+
+	@Override
+	@Transactional
+	public void updateSchedule(Integer userId, ScheduleUpdateFormRequest form) {
+		// 자신의 일정인지 확인
+		if (!tripScheduleDao.isOwner(userId, form.getTripScheduleId())) {
+			throw new TripException(TripErrorCode.SCHEDULE_FORBIDDEN);
+		}
+
+		// 일정 기본 정보 업데이트
+		tripScheduleDao.updateSchedule(userId, form);
+
+		// 일정 아이템 업데이트
+		tripScheduleDao.deleteScheduleItems(form.getTripScheduleId());
+		tripScheduleDao.insertScheduleItems(form.getScheduleItems(), form.getTripScheduleId());
+	}
+
 }

@@ -40,7 +40,7 @@ const fetchDestinations = async () => {
   try {
     const { data } = await authApi.get('/trip/destination')
     destinations.value = data.result.map((dest: any) => ({
-      id: dest.destinationId,
+      destinationId: dest.destinationId,
       name: dest.name,
       description: dest.description || '',
       img: dest.img,

@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ import com.gacha.model.dto.enums.SpotCategory;
 import com.gacha.model.dto.enums.SpotSearchCondition;
 import com.gacha.model.dto.trip.BookmarkSpotRequest;
 import com.gacha.model.dto.trip.ScheduleRegistFormRequest;
+import com.gacha.model.dto.trip.ScheduleUpdateFormRequest;
 import com.gacha.model.dto.trip.SpotRegistFormRequest;
 import com.gacha.model.service.TripService;
 
@@ -119,6 +121,13 @@ public class TripController {
 	@PostMapping(path = "/schedule/share/{scheduleId}")
 	public Response<?> toggleScheduleShare(@LoginUser Integer userId, @PathVariable(required = true) Integer scheduleId) {
 		tripService.toggleScheduleShare(userId, scheduleId);
+		return Response.onSuccess();
+	}
+	
+	@Operation(summary = "여행 일정 수정", description = "여행 일정을 저장한다.")
+	@PutMapping(path = "/schedule")
+	public Response<?> updateSchedule(@LoginUser Integer userId, @Valid @RequestBody ScheduleUpdateFormRequest form) {
+		tripService.updateSchedule(userId, form);
 		return Response.onSuccess();
 	}
 	
