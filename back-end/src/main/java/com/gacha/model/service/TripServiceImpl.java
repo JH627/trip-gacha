@@ -46,11 +46,13 @@ public class TripServiceImpl implements TripService {
 		try {
 			if (isBookmarked) {
 				spotDao.deleteBookmark(userId, dto.getSpotId());
+				spotDao.decreaseLikes(dto.getSpotId());
 			} else {
 				if (!spotDao.existsSpot(dto.getSpotId())) {
 					throw new TripException(TripErrorCode.SPOT_NOT_FOUND);
 				}
 				spotDao.addBookmark(userId, dto.getSpotId());
+				spotDao.increaseLikes(dto.getSpotId());
 			}
 		} catch (DataIntegrityViolationException e) {
 			throw new TripException(TripErrorCode.SPOT_NOT_FOUND);

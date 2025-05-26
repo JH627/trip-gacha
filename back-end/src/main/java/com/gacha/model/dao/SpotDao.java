@@ -14,34 +14,31 @@ public interface SpotDao {
 
     // 찜 목록 조회
     List<SpotInfo> selectBookmarkedSpots(
-        @Param("userId") Integer userId,
-        @Param("destinationId") Integer destinationId,
-        @Param("keyword") String keyword,
-        @Param("sort") String sort,
-        @Param("offset") Integer offset,
-        @Param("pageSize") Integer pageSize
-    );
+            @Param("userId") Integer userId,
+            @Param("destinationId") Integer destinationId,
+            @Param("keyword") String keyword,
+            @Param("sort") String sort,
+            @Param("offset") Integer offset,
+            @Param("pageSize") Integer pageSize);
 
     // 전체 관광지 조회
     List<SpotInfo> selectAllSpots(
-        @Param("userId") Integer userId,
-        @Param("destinationId") Integer destinationId,
-        @Param("keyword") String keyword,
-        @Param("sort") String sort,
-        @Param("offset") Integer offset,
-        @Param("pageSize") Integer pageSize
-    );
+            @Param("userId") Integer userId,
+            @Param("destinationId") Integer destinationId,
+            @Param("keyword") String keyword,
+            @Param("sort") String sort,
+            @Param("offset") Integer offset,
+            @Param("pageSize") Integer pageSize);
 
     // 카테고리별 관광지 조회
     List<SpotInfo> selectByDesinationIdAndCategory(
-        @Param("userId") Integer userId,
-        @Param("destinationId") Integer destinationId,
-        @Param("category") String category,
-        @Param("keyword") String keyword,
-        @Param("sort") String sort,
-        @Param("offset") Integer offset,
-        @Param("pageSize") Integer pageSize
-    );
+            @Param("userId") Integer userId,
+            @Param("destinationId") Integer destinationId,
+            @Param("category") String category,
+            @Param("keyword") String keyword,
+            @Param("sort") String sort,
+            @Param("offset") Integer offset,
+            @Param("pageSize") Integer pageSize);
 
     // 찜하기 상태 확인
     boolean isBookmarked(@Param("userId") Integer userId, @Param("spotId") Integer spotId);
@@ -55,15 +52,20 @@ public interface SpotDao {
     // 찜하기 삭제
     void deleteBookmark(@Param("userId") Integer userId, @Param("spotId") Integer spotId);
 
+    // 좋아요 수 감소
+    void decreaseLikes(@Param("spotId") Integer spotId);
+
+    // 좋아요 수 증가
+    void increaseLikes(@Param("spotId") Integer spotId);
+
     // 관광지 등록
     void insertSpot(
-        @Param("destinationId") Integer destinationId,
-        @Param("name") String name,
-        @Param("content") String content,
-        @Param("img") String img,
-        @Param("address") String address,
-        @Param("category") String category
-    );
+            @Param("destinationId") Integer destinationId,
+            @Param("name") String name,
+            @Param("content") String content,
+            @Param("img") String img,
+            @Param("address") String address,
+            @Param("category") String category);
 
     // 전체 개수 조회
     int getTotalCount();

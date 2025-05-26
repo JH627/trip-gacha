@@ -59,6 +59,18 @@
         WHERE user_id = #{userId} AND spot_id = #{spotId}
     </delete>
 
+    <update id="decreaseLikes">
+        UPDATE spots
+        SET likes = likes - 1
+        WHERE spot_id = #{spotId}
+    </update>
+
+    <update id="increaseLikes">
+        UPDATE spots
+        SET likes = likes + 1
+        WHERE spot_id = #{spotId}
+    </update>
+
 	<select id="selectByDesinationIdAndCategory" resultMap="spotResultMap">
 	    SELECT SQL_CALC_FOUND_ROWS s.*, 
 	           d.name as destination_name,
