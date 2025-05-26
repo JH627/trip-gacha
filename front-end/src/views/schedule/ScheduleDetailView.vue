@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { authApi } from '@/api/axios'
 import type { ScheduleDetail } from '@/types/trip'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { Tabs, Modal, message } from 'ant-design-vue'
 import ScheduleMap from '@/components/schedule/ScheduleMap.vue'
 import ScheduleSpotList from '@/components/schedule/ScheduleSpotList.vue'
+import { EditOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue'
 
 // 컴포넌트 상태 관리
 const route = useRoute()
@@ -13,13 +14,33 @@ const scheduleId = route.params.scheduleId
 const schedule = ref<ScheduleDetail | null>(null)
 const selectedDay = ref(1)
 const isModalVisible = ref(false)
+const isEditMode = ref(false)
+const isSaving = ref(false)
+const editedTitle = ref('')
+const editedStartDate = ref('')
+const editedEndDate = ref('')
 
+// 여행 일정 날짜 계산
 const availableDays = computed(() => {
   if (!schedule.value) return []
-  const days = new Set(schedule.value.scheduleDetailItems.map((item) => item.day))
-  return Array.from(days).sort((a, b) => a - b)
+  // 시작일과 종료일 사이의 모든 날짜를 생성
+  const startDate = new Date(schedule.value.startDate)
+  const endDate = new Date(schedule.value.endDate)
+  const days = []
+
+  // 날짜 차이 계산
+  const diffTime = endDate.getTime() - startDate.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
+
+  // 1부터 diffDays까지의 배열 생성
+  for (let i = 1; i <= diffDays; i++) {
+    days.push(i)
+  }
+
+  return days
 })
 
+// 선택된 날짜의 장소 목록
 const selectedDaySpots = computed(() => {
   if (!schedule.value) return []
   return schedule.value.scheduleDetailItems
@@ -27,17 +48,19 @@ const selectedDaySpots = computed(() => {
     .sort((a, b) => a.order - b.order)
 })
 
+// 선택된 날짜의 좌표 목록
 const selectedDayCoordinates = computed(() => {
   if (!schedule.value) return []
-  return selectedDaySpots.value.map(spot => ({
+  return selectedDaySpots.value.map((spot) => ({
     lat: spot.spotInfo.latitude,
-    lng: spot.spotInfo.longitude
+    lng: spot.spotInfo.longitude,
   }))
 })
 
+// 일정 공유 상태 변경
 const toggleShare = async () => {
   if (!schedule.value) return
-  
+
   try {
     await authApi.post(`/trip/schedule/share/${scheduleId}`)
     schedule.value.shared = !schedule.value.shared
@@ -45,6 +68,11 @@ const toggleShare = async () => {
     console.error('일정 공유 상태 변경에 실패했습니다:', error)
     message.error('일정 공유 상태 변경에 실패했습니다')
   }
+}
+
+// 수정 모드 토글
+const toggleEditMode = () => {
+  isEditMode.value = !isEditMode.value
 }
 
 // 모달 관련 메서드
@@ -56,6 +84,143 @@ const closeModal = () => {
   isModalVisible.value = false
 }
 
+const handleMoveSpot = (spotId: number, targetDay: number) => {
+  if (!schedule.value) return
+
+  // 로컬 상태 업데이트
+  const spotToMove = schedule.value.scheduleDetailItems.find(
+    (item) => item.spotInfo.spotId === spotId,
+  )
+
+  if (spotToMove) {
+    spotToMove.day = targetDay
+    // 순서 재정렬
+    const daySpots = schedule.value.scheduleDetailItems.filter((item) => item.day === targetDay)
+    daySpots.forEach((spot, index) => {
+      spot.order = index + 1
+    })
+  }
+}
+
+// 최소 일수 계산 (현재 관광지를 넣은 상태에서의 최소 기준)
+const minDays = computed(() => {
+  if (!schedule.value) return 1
+  const days = new Set(schedule.value.scheduleDetailItems.map((item) => item.day))
+  return Math.max(...Array.from(days))
+})
+
+// 시작일과 종료일 변경 시 최소 일수 체크
+const handleDateChange = () => {
+  const start = new Date(editedStartDate.value)
+  const end = new Date(editedEndDate.value)
+  const diffDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1
+
+  if (diffDays < minDays.value) {
+    message.error(`일정은 최소 ${minDays.value}일 이상이어야 합니다`)
+    // 원래 날짜로 되돌리기
+    editedStartDate.value = schedule.value?.startDate || ''
+    editedEndDate.value = schedule.value?.endDate || ''
+    return
+  }
+
+  // 로컬 상태 업데이트
+  if (schedule.value) {
+    schedule.value = {
+      ...schedule.value,
+      startDate: editedStartDate.value,
+      endDate: editedEndDate.value,
+    }
+  }
+}
+
+// selectedDay가 availableDays 범위를 벗어나지 않도록 감시
+watch(
+  () => availableDays.value,
+  (newDays) => {
+    if (newDays.length > 0) {
+      const maxDay = Math.max(...newDays)
+      if (selectedDay.value > maxDay) {
+        selectedDay.value = maxDay
+      }
+    }
+  },
+  { immediate: true },
+)
+
+// 일정 정보 실시간 체크
+watch(
+  () => schedule.value,
+  (newSchedule) => {
+    if (newSchedule) {
+      editedTitle.value = newSchedule.title
+      editedStartDate.value = newSchedule.startDate
+      editedEndDate.value = newSchedule.endDate
+    }
+  },
+  { immediate: true },
+)
+
+// 제목 변경 실시간 체크
+watch(
+  () => editedTitle.value,
+  (newTitle) => {
+    if (schedule.value) {
+      schedule.value.title = newTitle
+    }
+  },
+)
+
+// 일정 저장
+const saveSchedule = async () => {
+  if (!schedule.value) return
+
+  isSaving.value = true
+  try {
+    // 일정 기본 정보와 순서 업데이트
+    const scheduleItems = schedule.value.scheduleDetailItems.map((spot) => ({
+      spotId: spot.spotInfo.spotId,
+      day: spot.day,
+      sequence: spot.order,
+    }))
+
+    // 요청 보내기 전 날짜별로 sequence는 1부터 시작하도록 변경
+    const dayGroups = scheduleItems.reduce(
+      (acc, spot) => {
+        if (!acc[spot.day]) {
+          acc[spot.day] = []
+        }
+        acc[spot.day].push(spot)
+        return acc
+      },
+      {} as Record<number, typeof scheduleItems>,
+    )
+
+    // 각 날짜별로 sequence 재정렬
+    Object.values(dayGroups).forEach((spots) => {
+      spots.forEach((spot, index) => {
+        spot.sequence = index + 1
+      })
+    })
+
+    await authApi.put(`/trip/schedule`, {
+      tripScheduleId: Number(scheduleId),
+      title: editedTitle.value,
+      startDate: editedStartDate.value,
+      endDate: editedEndDate.value,
+      scheduleItems: scheduleItems,
+    })
+
+    message.success('일정이 저장되었습니다')
+    isEditMode.value = false
+  } catch (error) {
+    console.error('일정 저장에 실패했습니다:', error)
+    message.error('일정 저장에 실패했습니다')
+  } finally {
+    isSaving.value = false
+  }
+}
+
+// 일정 정보 불러오기
 onMounted(async () => {
   try {
     const response = await authApi.get(`/trip/schedule/${scheduleId}`)
@@ -74,14 +239,39 @@ onMounted(async () => {
     <div v-if="schedule" class="schedule-detail">
       <div class="title-container">
         <div class="title-left">
-          <h1 class="title">{{ schedule.title }}</h1>
+          <h1 v-if="!isEditMode" class="title">{{ schedule.title }}</h1>
+          <input
+            v-else
+            v-model="editedTitle"
+            class="title-input"
+            placeholder="일정 제목을 입력하세요"
+          />
         </div>
         <div class="title-right">
-          <span class="period">{{ schedule.startDate }} ~ {{ schedule.endDate }}</span>
-          <button 
-            v-if="schedule.mine" 
-            class="share-button" 
-            :class="{ 'shared': schedule.shared }"
+          <template v-if="!isEditMode">
+            <span class="period">{{ schedule.startDate }} ~ {{ schedule.endDate }}</span>
+          </template>
+          <template v-else>
+            <div class="date-inputs">
+              <input
+                v-model="editedStartDate"
+                type="date"
+                class="date-input"
+                @change="handleDateChange"
+              />
+              <span>~</span>
+              <input
+                v-model="editedEndDate"
+                type="date"
+                class="date-input"
+                @change="handleDateChange"
+              />
+            </div>
+          </template>
+          <button
+            v-if="schedule.mine"
+            class="share-button"
+            :class="{ shared: schedule.shared }"
             @click="toggleShare"
           >
             {{ schedule.shared ? '공유 취소' : '공유' }}
@@ -100,9 +290,36 @@ onMounted(async () => {
         <div class="schedule-route-item spots-list">
           <div class="schedule-route-item-title">
             <h3>방문 장소</h3>
-            <button class="mobile-map-button" @click="showModal">지도 보기</button>
+            <div class="title-actions">
+              <button
+                v-if="schedule?.mine"
+                class="edit-button"
+                :class="{ editing: isEditMode }"
+                @click="toggleEditMode"
+              >
+                <EditOutlined v-if="!isEditMode" />
+                <CloseOutlined v-else />
+              </button>
+              <button
+                v-if="isEditMode"
+                class="save-button"
+                :disabled="isSaving"
+                @click="saveSchedule"
+              >
+                <CheckOutlined />
+              </button>
+              <button v-if="!isEditMode" class="mobile-map-button" @click="showModal">
+                지도 보기
+              </button>
+            </div>
           </div>
-          <ScheduleSpotList :spots="selectedDaySpots" />
+          <ScheduleSpotList
+            :spots="selectedDaySpots"
+            :is-edit-mode="isEditMode"
+            :current-day="selectedDay"
+            :available-days="availableDays"
+            @move-spot="handleMoveSpot"
+          />
         </div>
         <!-- 지도 -->
         <div class="schedule-route-item map-container desktop-only">
@@ -355,5 +572,83 @@ onMounted(async () => {
 .share-button.shared:hover {
   background-color: #40a9ff;
   border-color: #40a9ff;
+}
+
+.title-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.edit-button {
+  padding: 6px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  background-color: white;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.edit-button:hover {
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+.edit-button.editing {
+  border-color: #ff4d4f;
+  color: #ff4d4f;
+}
+
+.save-button {
+  padding: 6px;
+  border: 1px solid #52c41a;
+  border-radius: 4px;
+  background-color: white;
+  color: #52c41a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.save-button:hover {
+  background-color: #52c41a;
+  color: white;
+}
+
+.save-button:disabled {
+  border-color: #d9d9d9;
+  color: #d9d9d9;
+  cursor: not-allowed;
+}
+
+.title-input {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 4px 8px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-input {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  color: #666;
 }
 </style>
