@@ -141,6 +141,18 @@ const roomMap = reactive(new Map<string, RoomHeader>())
 const rooms = computed(() =>
   Array.from(roomMap.values()).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
 )
+const filteredRooms = computed(() => {
+  return rooms.value.filter((room) => {
+    const value = keyword.value.toLowerCase()
+    if (searchOption.value === 'title') {
+      return room.title.toLowerCase().includes(value)
+    } else if (searchOption.value === 'destination') {
+      const destName = destinationStore.getDestinationName(room.destination)
+      return destName?.toLowerCase().includes(value)
+    }
+    return true
+  })
+})
 
 const addRoom = (room: RoomHeader) => {
   roomMap.set(room.roomId, room)
@@ -181,7 +193,7 @@ const options1 = ref<SelectProps['options']>([
     label: '제목',
   },
   {
-    value: 'tripTarger',
+    value: 'destination',
     label: '목적지',
   },
 ])
@@ -269,7 +281,7 @@ const passwordModalClose = () => {
           <div v-else class="room-list">
             <div
               class="room-item"
-              v-for="room in rooms"
+              v-for="room in filteredRooms"
               :key="room.roomId"
               @click="
                 () => {
