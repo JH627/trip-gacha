@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import logoImage from '@/assets/logo.png'
 import { onMounted, ref, reactive, computed, watch } from 'vue'
 import {
   LobyEventType,
@@ -240,6 +241,7 @@ const passwordModalClose = () => {
     />
     <div class="lobby-header">
       <div class="logo">
+        <img :src="logoImage" alt="로고" class="logo-icon" @click="router.push('/')" />
         <h1>여행 로비</h1>
       </div>
       <button class="create-room-btn" @click="open">
@@ -357,6 +359,20 @@ const passwordModalClose = () => {
   font-weight: 700;
   color: #333;
   margin: 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.logo {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo img {
+  width: 70px;
 }
 
 .create-room-btn {

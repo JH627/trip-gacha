@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import logoImage from '@/assets/logo.jpg'
+import logoImage from '@/assets/logo.png'
 import { UserOutlined } from '@ant-design/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted, watch } from 'vue'
