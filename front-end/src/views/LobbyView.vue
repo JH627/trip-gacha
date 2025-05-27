@@ -280,7 +280,7 @@ const passwordModalClose = () => {
               <!-- 목적지 -->
               <div class="room-destination">
                 <MapPinIcon :size="16" class="room-icon" />
-                <span>{{ room.destination }}</span>
+                <span>{{ destinationStore.getDestinationName(room.destination) }}</span>
               </div>
 
               <!-- 제목 및 날짜 -->
