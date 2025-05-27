@@ -32,6 +32,8 @@ public class LobbyController {
     public void enterLoby(StompHeaderAccessor accessor, SocketUserInfo userInfo) {
         String sessionId = accessor.getUser().getName();
 
+        roomStore.initTestData();
+
         userInfo.setSocketId(sessionId);
         userInfo.setNickname(userInfo.getNickname()+store.getAll().size());
 
