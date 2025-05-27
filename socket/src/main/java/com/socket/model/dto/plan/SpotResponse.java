@@ -13,5 +13,6 @@ import lombok.ToString;
 @ToString
 public class SpotResponse {
     private String type;
-    private List<Integer> spotIds;
+    private List<SpotDto> spotInfos;
+    private String nickname;
 }

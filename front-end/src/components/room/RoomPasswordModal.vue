@@ -32,6 +32,7 @@ import type { CreateRoomRequest, JoinRoomRequest } from '@/socket/webSocket'
 import { useAuthStore } from '@/stores/auth'
 import { useSocketStore } from '@/stores/socket'
 import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 
 const emit = defineEmits(['close-modal'])
 const props = defineProps({
@@ -49,7 +50,7 @@ const form = ref<{
 
 const handleSubmit = () => {
   if (form.value.password.length === 0) {
-    alert('비밀번호를 입력해주세요!')
+    message.error('비밀번호를 입력해주세요!')
     return
   }
 

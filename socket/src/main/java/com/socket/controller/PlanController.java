@@ -94,7 +94,7 @@ public class PlanController {
                 planStore.getPlanProgress(planId)
             );
             
-            SpotResponse response = new SpotResponse("add", planStore.getSpotIdListByPlanId(planId));
+            SpotResponse response = new SpotResponse("add", planStore.getSelectedSpotList(planId), "");
 
             messagingTemplate.convertAndSend(
                 "/topic/plan/spot/" + planId,
@@ -217,14 +217,25 @@ public class PlanController {
     @MessageMapping("/plan/add-cart/**")
     public void addToSpotCart(StompHeaderAccessor accessor, SpotDto spotInfo){
         String destination = accessor.getDestination();
+        String userId = accessor.getUser().getName();
 
         if (destination != null && destination.startsWith("/app/plan/add-cart/")) {
             String planId = destination.substring("/app/plan/add-cart/".length());
-            System.out.println(planId);
+            
             planStore.addSpot(planId, spotInfo);
             // 모두에게 이번에 추가한 Id 전달 (리스트에 담아서 전달)
+            List<SocketRoomUser> planUserList = planStore.getPlanUserList(planId);
 
-            SpotResponse response = new SpotResponse("add", new ArrayList<>(Arrays.asList(spotInfo.getSpotId())));
+            String nickname = "";
+
+            for(SocketRoomUser user : planUserList){
+                if(user.getUserId().equals(userId)){
+                    nickname = user.getNickname();
+                    break;
+                }
+            }
+
+            SpotResponse response = new SpotResponse("add", new ArrayList<>(Arrays.asList(spotInfo)), nickname);
 
             messagingTemplate.convertAndSend(
                 "/topic/plan/spot/" + planId,
@@ -236,14 +247,26 @@ public class PlanController {
     @MessageMapping("/plan/remove-cart/**")
     public void removeToSpotCart(StompHeaderAccessor accessor, SpotDto spotInfo){
         String destination = accessor.getDestination();
+        String userId = accessor.getUser().getName();
 
         if (destination != null && destination.startsWith("/app/plan/remove-cart/")) {
             String planId = destination.substring("/app/plan/remove-cart/".length());
-            System.out.println(planId);
+
             planStore.removeSpot(planId, spotInfo);
             // 모두에게 이번에 추가한 Id 전달 (리스트에 담아서 전달)
 
-            SpotResponse response = new SpotResponse("remove", new ArrayList<>(Arrays.asList(spotInfo.getSpotId())));
+            List<SocketRoomUser> planUserList = planStore.getPlanUserList(planId);
+
+            String nickname = "";
+
+            for(SocketRoomUser user : planUserList){
+                if(user.getUserId().equals(userId)){
+                    nickname = user.getNickname();
+                    break;
+                }
+            }
+
+            SpotResponse response = new SpotResponse("remove", new ArrayList<>(Arrays.asList(spotInfo)), nickname);
 
             messagingTemplate.convertAndSend(
                 "/topic/plan/spot/" + planId,

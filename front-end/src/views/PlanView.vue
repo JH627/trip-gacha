@@ -117,7 +117,8 @@ import SocketScheduleDetailView from '@/components/plan/SocketScheduleDetailView
 import { authApi } from '@/api/axios'
 import { useDestinationStore } from '@/stores/destination'
 import { useScheduleStore } from '@/stores/schedule'
-import type { ScheduleDetail } from '@/types/trip'
+import type { ScheduleDetail, SpotInfo } from '@/types/trip'
+import { message } from 'ant-design-vue'
 
 const route = useRoute()
 const planId = computed(() => route.params.planId as string)
@@ -142,8 +143,8 @@ const categoryTags = [
   { label: '찜', value: 'MARKED', icon: Heart },
 ]
 
-const processMessage = (message: string) => {
-  alert(message)
+const processMessage = (msg: string) => {
+  message.error(msg)
 }
 
 const processJoinMessage = (body: string) => {
@@ -167,16 +168,24 @@ const processDestinationId = (body: string) => {
 const spotStore = useSpotStore()
 
 const processSpotIdMessage = (body: string) => {
-  const response: { type: string; spotIds: number[] } = JSON.parse(body)
-
-  console.log(response.spotIds)
+  const response: { type: string; nickname: string; spotInfos: SpotInfo[] } = JSON.parse(body)
+  const spotIds: number[] = []
 
   switch (response.type) {
     case 'add':
-      spotStore.addSpotIds(response.spotIds)
+      response.spotInfos.forEach((spotInfo) => {
+        message.success(response.nickname + '님이' + spotInfo.name + '을 추가했습니다.')
+        spotIds.push(spotInfo.spotId)
+      })
+
+      spotStore.addSpotIds(spotIds)
       break
     case 'remove':
-      spotStore.removeSpotIds(response.spotIds)
+      response.spotInfos.forEach((spotInfo) => {
+        message.error(response.nickname + '님이' + spotInfo.name + '을 삭제했습니다.')
+        spotIds.push(spotInfo.spotId)
+      })
+      spotStore.removeSpotIds(spotIds)
       break
   }
 }
@@ -184,7 +193,7 @@ const processSpotIdMessage = (body: string) => {
 const router = useRouter()
 
 const processByeMessage = (body: string) => {
-  alert('여행 계획 생성 완료!')
+  message.success('여행 계획 생성 완료!')
 
   router.push('/')
 }
@@ -210,7 +219,7 @@ const saveSchedule = async () => {
   const finalSchedule: ScheduleDetail | null = scheduleStore.schedule
 
   if (!finalSchedule) {
-    console.log('왜 없지')
+    message.error('여행 계획 저장 실패!')
   }
 
   const scheduleItems = finalSchedule?.scheduleDetailItems.map((item) => {
