@@ -7,7 +7,6 @@ export enum PlanProgress {
   SELECT_TOURIST_SPOTS = 'SELECT_TOURIST_SPOTS',
   FINALIZE_DESTINATIONS = 'FINALIZE_DESTINATIONS',
   REVIEW_AND_EDIT = 'REVIEW_AND_EDIT',
-  COMPLETE = 'COMPLETE',
 }
 
 export const progressTextMap: Record<PlanProgress, string> = {
@@ -15,7 +14,6 @@ export const progressTextMap: Record<PlanProgress, string> = {
   [PlanProgress.SELECT_TOURIST_SPOTS]: '관광지 선택 중',
   [PlanProgress.FINALIZE_DESTINATIONS]: '여행지 확정 중',
   [PlanProgress.REVIEW_AND_EDIT]: '검토 및 수정 중',
-  [PlanProgress.COMPLETE]: '여행 계획 완성',
 }
 
 export interface JoinPlan {

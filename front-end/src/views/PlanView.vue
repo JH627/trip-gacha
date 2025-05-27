@@ -1,12 +1,28 @@
 <template>
   <div class="container">
     <div class="progress-header">
-      <button class="nav-button prev-button" @click="goPrev">뒤로</button>
-      <div class="progress-text">{{ progressTextMap[currentProgress] }}</div>
-      <button v-if="currentProgress !== endProgress" class="nav-button next-button" @click="goNext">
-        앞으로
-      </button>
-      <button v-else class="complete-button" @click="saveSchedule">완료</button>
+      <div>
+        <button class="nav-button prev-button" @click="goPrev">뒤로</button>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" :style="{ width: `${progressPercentage}%` }"></div>
+        </div>
+        <div class="progress-info">
+          <span class="progress-text">{{ progressTextMap[currentProgress] }}</span>
+          <span class="progress-count">({{ currentStep }}/{{ totalSteps }})</span>
+        </div>
+      </div>
+      <div>
+        <button
+          v-if="currentProgress !== endProgress"
+          class="nav-button next-button"
+          @click="goNext"
+        >
+          앞으로
+        </button>
+        <button v-else class="complete-button" @click="saveSchedule">완료</button>
+      </div>
     </div>
 
     <!-- Body 섹션 - currentProgress에 따라 다른 컴포넌트 렌더링 -->
@@ -299,6 +315,14 @@ const handleSpotDetail = (spot: any) => {
   console.log('선택된 스팟 상세보기:', spot)
   // 상세보기 모달이나 페이지로 이동하는 로직 추가
 }
+
+const progressValues = Object.values(PlanProgress)
+const currentStep = computed(() => progressValues.indexOf(currentProgress.value) + 1)
+const totalSteps = computed(() => progressValues.length)
+
+const progressPercentage = computed(() => {
+  return (currentStep.value / totalSteps.value) * 100
+})
 </script>
 
 <style scoped>
@@ -346,13 +370,46 @@ const handleSpotDetail = (spot: any) => {
   order: 1;
 }
 
+.progress-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 20px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 0.3s ease;
+}
+
+.progress-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .progress-text {
-  order: 2;
-  flex: 1;
+  font-size: 14px;
+  color: #666;
   text-align: center;
-  font-size: 18px;
+}
+
+.progress-count {
+  font-size: 14px;
+  color: #4caf50;
   font-weight: 600;
-  color: #333;
 }
 
 .next-button {
