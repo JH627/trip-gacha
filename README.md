@@ -99,11 +99,18 @@
 5-1. private_key.pem, private_key_pkcs8.pem, public_key.pem
 6. schema 생성 (src/resources/data.sql)
 7. Data import (src/resources/Dumpdata.sql)
-8. 서버 실행
+8. 서버 실행    
+
+9. 회원가입 없이 사용가능한 계정    
+9-1. ID: string@test.com, PW: string    
+9-2. ID: string@string.com, PW: String12!    
+10. 회원가입 시에는      
+10-1. 이메일 인증 필요    
+10-2. 비밀번호(8자 이상, 대소문자, 숫자, 특수문자) 설정 필요    
 
 - env 파일 내용
 ```
-# 이메일 발송 설정
+# 이메일 발송 설정 (구글 이메일, 구글 APP 비밀번호)
 MAIL_USERNAME=your_email@example.com
 MAIL_PASSWORD=your_email_password_or_app_key
 
@@ -153,6 +160,7 @@ npm run dev
 
 - env 파일 내용
 ```
-# kakao developer API
+# kakao developer API (애플리케이션 등록 - 플랫폼 Web (http://localhost:5173) 등록 - 카카오맵 활성화 설정 상태 ON)
+# 앱 키 (JavaScript 키)
 VITE_KAKAO_MAP_API_KEY=api_key
 ```
