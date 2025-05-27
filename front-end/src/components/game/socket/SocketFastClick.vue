@@ -1,5 +1,8 @@
 <template>
   <div class="game-container" :class="getBackgroundClass()" @click="handleClick">
+    <audio ref="bgm" loop preload="auto">
+      <source src="@/assets/music/gameBGM2.mp3" type="audio/mpeg" />
+    </audio>
     <!-- 대기 화면 (초대받은 사람용) -->
     <div v-if="currentProgress === 'waiting'" class="waiting-screen">
       <h1 class="title">반응 속도 게임</h1>
@@ -107,7 +110,7 @@ const authStore = useAuthStore()
 
 // 게임 상태를 단순화
 const currentProgress = ref<'waiting' | 'intro' | 'playing' | 'result'>('waiting')
-const introCountdown = ref(3)
+const bgm = ref<HTMLAudioElement | null>(null)
 
 // 게임 상태
 const gameState = ref<'countdown' | 'waiting' | 'active' | 'finished'>('countdown')
@@ -293,11 +296,20 @@ const handleStartGame = () => {
 
 // 컴포넌트 마운트 시 자동 시작
 onMounted(() => {
+  bgm.value = document.querySelector('audio')
   gameId.value = planId.value
   socketStore.subscribe(`/topic/game/fast-click/${gameId.value}`, processGameOperation)
 
   // 모든 사용자가 대기 상태로 시작
   currentProgress.value = 'waiting'
+
+  if (bgm.value) {
+    bgm.value.volume = 0.1
+    bgm.value.currentTime = 0
+    bgm.value.play().catch((error) => {
+      console.log('BGM 재생 실패:', error)
+    })
+  }
 })
 
 // 컴포넌트 언마운트 시 정리

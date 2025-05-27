@@ -1,4 +1,7 @@
 <template>
+  <audio ref="bgm" loop preload="auto">
+    <source src="@/assets/music/gameBGM.mp3" type="audio/mpeg" />
+  </audio>
   <div class="crocodile-game">
     <h1 class="game-title">악어 이빨 게임</h1>
 
@@ -189,6 +192,7 @@ const gameId = ref('')
 const isMouthClosed = ref(false)
 const isShaking = ref(false)
 const isPressing = ref(-1)
+const bgm = ref<HTMLAudioElement | null>(null)
 
 // 현재 플레이어 계산
 const currentPlayer = computed(() => {
@@ -298,6 +302,7 @@ const processGetMyId = (body: string) => {
 
 // 컴포넌트 마운트
 onMounted(() => {
+  bgm.value = document.querySelector('audio')
   gameId.value = planId.value
   socketStore.subscribe(`/topic/game/crocodile/${gameId.value}`, processGameOperation)
   socketStore.subscribe(`/user/queue/game/userId`, processGetMyId)
@@ -306,6 +311,14 @@ onMounted(() => {
   socketStore.send(`/app/game/get-user-id`, authStore.accessToken || '', null)
   // 게임 참가 요청
   socketStore.send(`/app/game/crocodile/join/${gameId.value}`, authStore.accessToken || '', null)
+
+  if (bgm.value) {
+    bgm.value.volume = 0.1
+    bgm.value.currentTime = 0
+    bgm.value.play().catch((error) => {
+      console.log('BGM 재생 실패:', error)
+    })
+  }
 })
 </script>
 
