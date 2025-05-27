@@ -330,7 +330,7 @@ onMounted(() => {
   justify-content: center;
   background: linear-gradient(to bottom, #f0fdf4, #dcfce7);
   padding: 1rem;
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 .game-title {

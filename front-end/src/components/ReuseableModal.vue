@@ -3,13 +3,13 @@
     <a-modal
       :visible="visible"
       :title="title"
-      centered
       :footer="null"
       :maskClosable="false"
       @cancel="$emit('close')"
-      :width="modalWidth"
+      width="70%"
+      height="90%"
       :bodyStyle="{
-        height: modalHeight,
+        height: '1000px',
         padding: '0',
         overflow: 'hidden',
         display: 'flex',
@@ -79,13 +79,6 @@ const modalWidth = computed(() => {
     return '90%'
   }
   return '691.2px'
-})
-
-// 모달 높이 계산 (최대 700px, 화면 높이 - 100px 이하)
-const modalHeight = computed(() => {
-  const maxHeight = 700
-  const availableHeight = windowHeight.value - 100
-  return `${Math.min(availableHeight, maxHeight)}px`
 })
 </script>
 
