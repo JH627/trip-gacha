@@ -10,7 +10,6 @@ import { EditOutlined, CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-d
 import { useSocketStore } from '@/stores/socket'
 import { useAuthStore } from '@/stores/auth'
 import { useScheduleStore } from '@/stores/schedule'
-import { authApi } from '@/api/axios'
 
 // 컴포넌트 상태 관리
 const route = useRoute()
@@ -74,6 +73,8 @@ const processFinalMessage = (body: string) => {
     const response: ScheduleDetail = JSON.parse(body)
     schedule.value = response
     scheduleStore.saveSchedule(response)
+
+    editedTitle.value = response.title
 
     if (schedule.value && schedule.value.scheduleDetailItems.length > 0) {
       selectedDay.value = schedule.value.scheduleDetailItems[0].day

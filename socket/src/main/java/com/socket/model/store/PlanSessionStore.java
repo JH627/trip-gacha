@@ -229,7 +229,7 @@ public class PlanSessionStore {
         LocalDate end = LocalDate.parse(planDto.getEndDate(), formatter);
 
         ScheduleDetail scheduleDetail = ScheduleDetail.builder()
-            .title("Plan " + planDto.getPlanId())
+            .title("")
             .startDate(planDto.getStartDate())
             .endDate(planDto.getEndDate())
             .createAt(LocalDateTime.now()) // PlanDto에 없으므로 현재 시각 사용
