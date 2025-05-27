@@ -54,7 +54,12 @@
         <div class="ranking">
           <h3 class="ranking-title">순위</h3>
           <div class="ranking-list">
-            <div v-for="(player, index) in gameResult" :key="player.userId" class="ranking-item">
+            <div
+              v-for="(player, index) in gameResult"
+              :key="player.userId"
+              class="ranking-item"
+              :class="{ highlight: player.userId == userId }"
+            >
               <div class="rank-info">
                 <span class="rank">{{ index + 1 }}위</span>
                 <img :src="player.img" :alt="player.nickname" class="player-avatar" />
@@ -120,6 +125,12 @@ const myClickTime = ref(999)
 const gameResult = ref<GameUserInfo[]>([])
 const gameId = ref('')
 const gameStarted = ref(false) // 게임 시작 여부 추가
+const userId = ref('')
+
+const processGetMyId = (body: string) => {
+  console.log('내 아이디지롱:' + JSON.parse(body))
+  userId.value = JSON.parse(body)
+}
 
 // 타이머
 let introTimer: number | null = null
@@ -299,6 +310,8 @@ onMounted(() => {
   bgm.value = document.querySelector('audio')
   gameId.value = planId.value
   socketStore.subscribe(`/topic/game/fast-click/${gameId.value}`, processGameOperation)
+  socketStore.subscribe(`/user/queue/game/userId`, processGetMyId)
+  socketStore.send(`/app/game/get-user-id`, authStore.accessToken || '', null)
 
   // 모든 사용자가 대기 상태로 시작
   currentProgress.value = 'waiting'
@@ -469,7 +482,7 @@ onBeforeUnmount(() => {
 }
 
 .ranking-item {
-  padding: 0.75rem 0;
+  padding: 0.75rem 10px;
   border-bottom: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
@@ -624,5 +637,11 @@ onBeforeUnmount(() => {
   40% {
     transform: scale(1);
   }
+}
+
+.ranking-item.highlight {
+  background-color: #fff3b0;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
 }
 </style>
