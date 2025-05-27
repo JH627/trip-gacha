@@ -1,5 +1,6 @@
 package com.socket.model.store;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +50,7 @@ public class RoomSessionStore {
                             .title(titles[i])
                             .destination(Integer.parseInt(destinations[i]))
                             .userList(testUserList)
+                            .createdAt(LocalDateTime.now())
                             .build();
             
             rooms.put(roomId, sr);
@@ -74,11 +76,15 @@ public class RoomSessionStore {
 
         for(SocketRoom room : roomList){
             roomHeaders.add(new SocketRoomHeader(room.getRoomId(), 
-                                                room.getTitle(), 
-                                                room.getDestination(),
-                                                room.getUserList().size(), 
-                                                room.getStartDate(), 
-                                                room.getEndDate()));
+                                                            room.getTitle(), 
+                                                            room.getDestination(),
+                                                            room.getUserList().size(), 
+                                                            room.getStartDate(), 
+                                                            room.getEndDate(),
+                                                            room.getCreatedAt()
+                                                        )
+                                                            
+            );
         }
 
         return roomHeaders;

@@ -1,5 +1,6 @@
 package com.socket.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -48,7 +49,8 @@ public class RoomController {
                                             roomInfo.getDestination(),
                                             owner,
                                             false,
-                                            new ArrayList<>());
+                                            new ArrayList<>(),
+                                            LocalDateTime.now());
 
         store.add(newRoom.getRoomId(), newRoom);
 
@@ -67,7 +69,8 @@ public class RoomController {
                                 newRoom.getDestination(), 
                                 1, 
                                 newRoom.getStartDate(), 
-                                newRoom.getEndDate());
+                                newRoom.getEndDate(),
+                                LocalDateTime.now());
         
         // 모든 사용자
         messagingTemplate.convertAndSend(

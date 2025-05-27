@@ -139,7 +139,7 @@ watch(
 
 const roomMap = reactive(new Map<string, RoomHeader>())
 const rooms = computed(() =>
-  Array.from(roomMap.values()).sort((a, b) => a.roomId.localeCompare(b.roomId)),
+  Array.from(roomMap.values()).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
 )
 
 const addRoom = (room: RoomHeader) => {

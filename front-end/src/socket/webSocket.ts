@@ -87,6 +87,7 @@ export interface RoomHeader {
   userCount: number | null
   startDate: string
   endDate: string
+  createdAt: string
 }
 
 export interface RoomResponse<T> {

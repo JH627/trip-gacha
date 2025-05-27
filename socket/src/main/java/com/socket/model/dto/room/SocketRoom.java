@@ -24,4 +24,5 @@ public class SocketRoom {
     private SocketRoomUser owner;
     private boolean isPlanning;
     private List<SocketRoomUser> userList;
+    private LocalDateTime createdAt;
 }
